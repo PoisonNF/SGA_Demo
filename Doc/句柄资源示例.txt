@@ -1,0 +1,335 @@
+/* 串口句柄示例 */
+tagUART_T demoUart = 
+{
+	.tUARTHandle.Instance 				= USART1,			/* STM32 串口设备 */
+	.tUARTHandle.Init.BaudRate   		= 19200,				/* 串口波特率 */
+	.tUARTHandle.Init.WordLength 		= UART_WORDLENGTH_8B,
+	.tUARTHandle.Init.StopBits   		= UART_STOPBITS_1,
+	.tUARTHandle.Init.Parity     		= UART_PARITY_NONE,
+	.tUARTHandle.Init.HwFlowCtl  		= UART_HWCONTROL_NONE,
+	.tUARTHandle.Init.Mode       		= UART_MODE_TX_RX,
+	.tUARTHandle.Init.OverSampling 		= UART_OVERSAMPLING_16,
+	.tRxInfo.usRxLenth                  = 100,                 /* 接收数据长度 长度保持在协议最长字节*2以上，确保缓存池一定能够稳定接收一个完整的数据帧*/
+#if defined (STM32L4_SGA_ENABLE)
+	.tUARTHandle.Init.OneBitSampling 	= UART_ONE_BIT_SAMPLE_DISABLE,
+	.tUARTHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT,
+#endif
+	
+	.ulPriority							= 1,				/* 中断优先级 */
+	.ulSubPriority						= 3,				/* 中断子优先级 */
+	
+	
+	
+	.tGPIO[0].tGPIOInit.Pin 		= GPIO_PIN_9,				/* GPIO引脚 */
+	.tGPIO[0].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tGPIO[0].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tGPIO[0].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tGPIO[0].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+	
+	.tGPIO[1].tGPIOInit.Pin 		= GPIO_PIN_10,				/* GPIO引脚 */
+	.tGPIO[1].tGPIOInit.Mode 	= GPIO_MODE_INPUT,			/* GPIO模式 */
+	.tGPIO[1].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tGPIO[1].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tGPIO[1].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+};
+
+/* GPIO句柄示例 */
+tagGPIO_T demoGPIO[3] =
+{
+	/* ADS1256电源使能 */
+	[0]=
+	{ 
+		.tGPIOInit.Pin 		= GPIO_PIN_6,				/* GPIO引脚 */
+		.tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
+		.tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+		.tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+		.tGPIOPort 			= GPIOC,					/* GPIO分组 */
+	},
+	/* 5V引脚使能 */
+	[1]=
+	{ 
+		.tGPIOInit.Pin 		= GPIO_PIN_1,				/* GPIO引脚 */
+		.tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
+		.tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+		.tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+		.tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	},
+	/* SD卡使能 */
+	[2]=
+	{ 
+		.tGPIOInit.Pin 		= GPIO_PIN_4,				/* GPIO引脚 */
+		.tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
+		.tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+		.tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+		.tGPIOPort 			= GPIOC,					/* GPIO分组 */
+	},
+};
+
+/* SPI资源结构体示例 */
+tagSPI_T demoSPI = 
+{
+	.tSPIHandle.Instance 				= SPI2,
+	.tSPIHandle.Init.Mode 				= SPI_MODE_MASTER,
+	.tSPIHandle.Init.Direction 		= SPI_DIRECTION_2LINES,
+	.tSPIHandle.Init.DataSize 			= SPI_DATASIZE_8BIT,
+	.tSPIHandle.Init.CLKPolarity 		= SPI_POLARITY_LOW,
+	.tSPIHandle.Init.CLKPhase 			= SPI_PHASE_2EDGE,
+	.tSPIHandle.Init.NSS 				= SPI_NSS_SOFT,
+	.tSPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256,
+	.tSPIHandle.Init.FirstBit 			= SPI_FIRSTBIT_MSB,
+	.tSPIHandle.Init.TIMode 			= SPI_TIMODE_DISABLE,
+	.tSPIHandle.Init.CRCCalculation 	= SPI_CRCCALCULATION_DISABLE,
+	.tSPIHandle.Init.CRCPolynomial 	= 7,	
+#if defined (STM32L4_SGA_ENABLE)
+	.tSPIHandle.Init.CRCLength 		= SPI_CRC_LENGTH_DATASIZE,
+	.tSPIHandle.Init.NSSPMode 			= SPI_NSS_PULSE_ENABLE,	
+#endif
+};
+
+/* IIC资源结构体示例 */
+tagIICSoft_T demoIIC = 
+{
+	/* SCL线 */
+	.tIICSoft[0].tGPIOInit.Pin 		= GPIO_PIN_5,				/* GPIO引脚 */
+	.tIICSoft[0].tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
+	.tIICSoft[0].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tIICSoft[0].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tIICSoft[0].tGPIOPort 			= GPIOE,					/* GPIO分组 */
+	
+	/* SDA线 */
+	.tIICSoft[1].tGPIOInit.Pin 		= GPIO_PIN_3,				/* GPIO引脚 */
+	.tIICSoft[1].tGPIOInit.Mode 	= GPIO_MODE_INPUT,			/* GPIO模式 */
+	.tIICSoft[1].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tIICSoft[1].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tIICSoft[1].tGPIOPort 			= GPIOE,					/* GPIO分组 */
+};
+
+/* 定时器Timer资源结构体示例 */
+tagTIM_T tTimer = 
+{
+	.tTimerHandle.Instance				=TIM3,						/* 通用定时器3 */
+    .tTimerHandle.Init.Prescaler		=72-1,						/* 分频系数，最大值65535 */
+    .tTimerHandle.Init.CounterMode		=TIM_COUNTERMODE_UP,		/* 向上计数器 */
+    .tTimerHandle.Init.Period			=1000-1,					/* 自动装载值，最大值65535 */
+    .tTimerHandle.Init.ClockDivision	=TIM_CLOCKDIVISION_DIV1,	/* 时钟分频因子 */
+	
+	.ulPriority						= 3,				/* 中断优先级 */
+	.ulSubPriority					= 2,				/* 中断子优先级 */
+};
+
+/* ADS1256句柄示例 */
+tagADS1256_T demoADS1256 = 
+{
+	.tDrdyGPIO.tGPIOInit.Pin 			= GPIO_PIN_9,				/* Drdy  GPIO引脚 */
+	.tDrdyGPIO.tGPIOInit.Mode			= GPIO_MODE_INPUT,			/* GPIO模式，上升沿触发 */
+	.tDrdyGPIO.tGPIOInit.Pull 			= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tDrdyGPIO.tGPIOInit.Speed 			= GPIO_SPEED_FREQ_LOW,		/* GPIO速度 */	
+	.tDrdyGPIO.tGPIOPort 				= GPIOD,						/* GPIO分组 */
+	
+	.tCsGPIO.tGPIOInit.Pin 				= GPIO_PIN_12,				/* CS  GPIO引脚 */
+	.tCsGPIO.tGPIOInit.Mode 			= GPIO_MODE_OUTPUT_PP,		/* GPIO模式，上升沿触发 */
+	.tCsGPIO.tGPIOInit.Pull 			= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tCsGPIO.tGPIOInit.Speed 			= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tCsGPIO.tGPIOPort 					= GPIOB,					/* GPIO分组 */
+	
+	.tSPI.tSPIHandle.Instance 				= SPI2,
+	.tSPI.tSPIHandle.Init.Mode 				= SPI_MODE_MASTER,
+	.tSPI.tSPIHandle.Init.Direction 		= SPI_DIRECTION_2LINES,
+	.tSPI.tSPIHandle.Init.DataSize 			= SPI_DATASIZE_8BIT,
+	.tSPI.tSPIHandle.Init.CLKPolarity 		= SPI_POLARITY_LOW,
+	.tSPI.tSPIHandle.Init.CLKPhase 			= SPI_PHASE_2EDGE,
+	.tSPI.tSPIHandle.Init.NSS 				= SPI_NSS_SOFT,
+	.tSPI.tSPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256,
+	.tSPI.tSPIHandle.Init.FirstBit 			= SPI_FIRSTBIT_MSB,
+	.tSPI.tSPIHandle.Init.TIMode 			= SPI_TIMODE_DISABLE,
+	.tSPI.tSPIHandle.Init.CRCCalculation 	= SPI_CRCCALCULATION_DISABLE,
+	.tSPI.tSPIHandle.Init.CRCPolynomial 	= 7,	
+#if defined (STM32L4_SGA_ENABLE)
+	.tSPI.tSPIHandle.Init.CRCLength 		= SPI_CRC_LENGTH_DATASIZE,
+	.tSPI.tSPIHandle.Init.NSSPMode 			= SPI_NSS_PULSE_ENABLE,	
+#endif
+
+	.tSPI.tGPIO[0].tGPIOInit.Pin 		= GPIO_PIN_13,				/* GPIO引脚 */
+	.tSPI.tGPIO[0].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[0].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[0].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[0].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	
+	.tSPI.tGPIO[1].tGPIOInit.Pin 		= GPIO_PIN_15,				/* GPIO引脚 */
+	.tSPI.tGPIO[1].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[1].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[1].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[1].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	
+	.tSPI.tGPIO[2].tGPIOInit.Pin 		= GPIO_PIN_14,				/* GPIO引脚 */
+	.tSPI.tGPIO[2].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[2].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[2].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[2].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+};
+
+/* ADC句柄示例 */
+tagADC_T demoADC[1] = 
+{
+	[0]=
+	{ 
+		.tGPIO.tGPIOInit.Pin 		= GPIO_PIN_0,				/* GPIO引脚 */
+		.tGPIO.tGPIOInit.Mode 		= GPIO_MODE_ANALOG,		/* GPIO模式 */
+		.tGPIO.tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+		.tGPIO.tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+		.tGPIO.tGPIOPort 			= GPIOA,					/* GPIO分组 */
+		
+		.tADCHandle.Instance					=ADC1,
+		.tADCHandle.Init.DataAlign				=ADC_DATAALIGN_RIGHT,	/* 右对齐 */
+		.tADCHandle.Init.ScanConvMode			=DISABLE,				/* 非扫描模式 */
+		.tADCHandle.Init.ContinuousConvMode		=DISABLE,				/* 关闭连续转换 */
+		.tADCHandle.Init.NbrOfConversion		=1,						/* 1个转换在规则序列中 也就是只转换规则序列1 */ 
+		.tADCHandle.Init.DiscontinuousConvMode	=DISABLE,				/* 禁止不连续采样模式 */
+		.tADCHandle.Init.NbrOfDiscConversion	=0,						/* 不连续采样通道数为0 */
+		.tADCHandle.Init.ExternalTrigConv		=ADC_SOFTWARE_START,	/* 软件触发 */
+		
+		.tADCChannel.Channel		= ADC_CHANNEL_0,				/* 通道 */
+		.tADCChannel.Rank			= 1,							/* 第1个序列，序列1 */
+		.tADCChannel.SamplingTime	= ADC_SAMPLETIME_239CYCLES_5,	/* 采样时间 */
+		
+		.ucAverageNum				= 10,							/* 均值滤波均值数 */
+	},
+};
+
+/* DS3231示例 */
+tagDS3231_T tDS3231 = 
+{
+	/* SCL线 */
+	.tIICSoft.tIICSoft[0].tGPIOInit.Pin 		= GPIO_PIN_5,				/* GPIO引脚 */
+	.tIICSoft.tIICSoft[0].tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
+	.tIICSoft.tIICSoft[0].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tIICSoft.tIICSoft[0].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tIICSoft.tIICSoft[0].tGPIOPort 			= GPIOE,					/* GPIO分组 */
+	
+	/* SDA线 */
+	.tIICSoft.tIICSoft[1].tGPIOInit.Pin 		= GPIO_PIN_3,				/* GPIO引脚 */
+	.tIICSoft.tIICSoft[1].tGPIOInit.Mode 	= GPIO_MODE_INPUT,			/* GPIO模式 */
+	.tIICSoft.tIICSoft[1].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tIICSoft.tIICSoft[1].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tIICSoft.tIICSoft[1].tGPIOPort 			= GPIOE,					/* GPIO分组 */
+};
+
+/* SD卡，FATFS文件系统示例 */
+tagFATFS_T tFATFS = 
+{
+	.tSPI.tSPIHandle.Instance 				= SPI1,
+	.tSPI.tSPIHandle.Init.Mode 				= SPI_MODE_MASTER,
+	.tSPI.tSPIHandle.Init.Direction 		= SPI_DIRECTION_2LINES,
+	.tSPI.tSPIHandle.Init.DataSize 			= SPI_DATASIZE_8BIT,
+	.tSPI.tSPIHandle.Init.CLKPolarity 		= SPI_POLARITY_HIGH,
+	.tSPI.tSPIHandle.Init.CLKPhase 			= SPI_PHASE_2EDGE,
+	.tSPI.tSPIHandle.Init.NSS 				= SPI_NSS_SOFT,
+	.tSPI.tSPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256,
+	.tSPI.tSPIHandle.Init.FirstBit 			= SPI_FIRSTBIT_MSB,
+	.tSPI.tSPIHandle.Init.TIMode 			= SPI_TIMODE_DISABLE,
+	.tSPI.tSPIHandle.Init.CRCCalculation 	= SPI_CRCCALCULATION_DISABLE,
+	.tSPI.tSPIHandle.Init.CRCPolynomial 	= 7,	
+#if defined (STM32L4_SGA_ENABLE)
+	.tSPI.tSPIHandle.Init.CRCLength 		= SPI_CRC_LENGTH_DATASIZE,
+	.tSPI.tSPIHandle.Init.NSSPMode 			= SPI_NSS_PULSE_ENABLE,	
+#endif
+	
+	.tSPI.tGPIO[0].tGPIOInit.Pin 		= GPIO_PIN_5,				/* GPIO引脚 */
+	.tSPI.tGPIO[0].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[0].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[0].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[0].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+	
+	.tSPI.tGPIO[1].tGPIOInit.Pin 		= GPIO_PIN_7,				/* GPIO引脚 */
+	.tSPI.tGPIO[1].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[1].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[1].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[1].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+	
+	.tSPI.tGPIO[2].tGPIOInit.Pin 		= GPIO_PIN_6,				/* GPIO引脚 */
+	.tSPI.tGPIO[2].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[2].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[2].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[2].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+};
+
+/* AT24系列示例 */
+tagAT24CXX_T tAT24CXX = 
+{
+	/* SCL线 */
+	.tIIC.tIICSoft[0].tGPIOInit.Pin 		= GPIO_PIN_0,				/* GPIO引脚 */
+	.tIIC.tIICSoft[0].tGPIOInit.Mode		= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
+	.tIIC.tIICSoft[0].tGPIOInit.Pull		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tIIC.tIICSoft[0].tGPIOInit.Speed		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tIIC.tIICSoft[0].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+	
+	/* SDA线 */
+	.tIIC.tIICSoft[1].tGPIOInit.Pin 		= GPIO_PIN_1,				/* GPIO引脚 */
+	.tIIC.tIICSoft[1].tGPIOInit.Mode		= GPIO_MODE_INPUT,			/* GPIO模式 */
+	.tIIC.tIICSoft[1].tGPIOInit.Pull		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tIIC.tIICSoft[1].tGPIOInit.Speed		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tIIC.tIICSoft[1].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+};
+
+/* AD4111示例 */
+tagAD4111_T tAD4111 =
+{
+	.tSPI.tSPIHandle.Instance 				= SPI2,
+	.tSPI.tSPIHandle.Init.Mode 				= SPI_MODE_MASTER,
+	.tSPI.tSPIHandle.Init.Direction 		= SPI_DIRECTION_2LINES,
+	.tSPI.tSPIHandle.Init.DataSize 			= SPI_DATASIZE_8BIT,
+	.tSPI.tSPIHandle.Init.CLKPolarity 		= SPI_POLARITY_HIGH,
+	.tSPI.tSPIHandle.Init.CLKPhase 			= SPI_PHASE_2EDGE,
+	.tSPI.tSPIHandle.Init.NSS 				= SPI_NSS_SOFT,
+	.tSPI.tSPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16,
+	.tSPI.tSPIHandle.Init.FirstBit 			= SPI_FIRSTBIT_MSB,
+	.tSPI.tSPIHandle.Init.TIMode 			= SPI_TIMODE_DISABLE,
+	.tSPI.tSPIHandle.Init.CRCCalculation 	= SPI_CRCCALCULATION_DISABLE,
+	.tSPI.tSPIHandle.Init.CRCPolynomial 	= 7,
+#if defined (STM32L4_SGA_ENABLE)
+	.tSPI.tSPIHandle.Init.CRCLength 		= SPI_CRC_LENGTH_DATASIZE,
+	.tSPI.tSPIHandle.Init.NSSPMode 			= SPI_NSS_PULSE_ENABLE,
+#endif
+
+	.tSPI.tGPIO[0].tGPIOInit.Pin 		= GPIO_PIN_13,				/* GPIO引脚 */
+	.tSPI.tGPIO[0].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[0].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[0].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[0].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	
+	.tSPI.tGPIO[1].tGPIOInit.Pin 		= GPIO_PIN_15,				/* GPIO引脚 */
+	.tSPI.tGPIO[1].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[1].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[1].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[1].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	
+	.tSPI.tGPIO[2].tGPIOInit.Pin 		= GPIO_PIN_14,				/* GPIO引脚 */
+	.tSPI.tGPIO[2].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tSPI.tGPIO[2].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tSPI.tGPIO[2].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tSPI.tGPIO[2].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	
+	.ulGain								= 0x500000,					/* 实际增益ulGain/0x400000*2 */
+	.ulOffset							= 0x800000,					/* 实际偏移量ulOffset-0x800000 */
+};
+
+/* 看门狗示例 */
+tagIWDG_T tIWDG = 
+{
+	.usTime = 1000,		/* 1S喂狗时间 */
+};
+
+/* PWM示例 */
+tagPWM_T tPWMDemo[] =
+{
+	[0] =
+	{
+		.tPWMHandle.Instance	= TIM3,         	/* 定时器3 */
+		.fDuty					= 7.5,				/* 初始占空比 */
+		.ulFreq					= 50,				/* 频率 */
+		.ulChannel				= TIM_CHANNEL_1,	/* 通道 */
+		.tGPIO.tGPIOInit.Pin	= GPIO_PIN_6,		/* IO映射 */
+		.tGPIO.tGPIOPort		= GPIOC,			/* IO组映射 */
+		.tGPIO.ucMode			= 2,				/* IO模式，0-普通模式；1-复用模式；2-重映射模式 */
+	},
+};
