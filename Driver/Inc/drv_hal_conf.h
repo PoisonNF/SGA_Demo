@@ -1,9 +1,12 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2022/02/28 V0.0.1a"
+#define DRIVER_VERSION	"2022/08/04 V1.1.1"
 
-#define PRINTF_UART	USART1
+/* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
+//#define RTT_ENABLE               
+
+#define PRINTF_UART	USART1				/* printf使用的串口 */
 
 /* STM32芯片选择 */
 #ifdef STM32F1_SGA_ENABLE

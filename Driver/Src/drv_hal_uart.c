@@ -8,9 +8,11 @@
 
 * 文件历史：
 
-* 版本号	日期		作者		说明
+* 版本号	  日期		  作者		说明
 
-* 1.0.0a 	2020-02-22	李环宇		创建该文件
+* 1.1.1 	2022-08-04   鲍程璐		修复了串口输出不正确的问题
+
+* 1.0.0a 	2020-02-22	 李环宇		创建该文件
 
 ****************************************************************************/
 #include "drv_hal_conf.h"
@@ -168,8 +170,8 @@ static void S_UART_GPIOConfig(tagUART_T *_tUART)
 void Drv_Uart_ITInit(tagUART_T *_tUART)
 {
 	S_Uart_CLKConfig();
-	S_UART_GPIOConfig(_tUART);
 	S_UART_CLKEnable(_tUART);
+	S_UART_GPIOConfig(_tUART);
 	S_Uart_ParamConfig(_tUART);		/* 设置串口参数 */
 	S_Uart_NVICConfig(_tUART);		/* 设置中断优先级 */
 }

@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "task_rttinit.h": "c",
+        "drv_hal_conf.h": "c",
+        "rtthread.h": "c",
+        "task_userinit.h": "c",
+        "rtconfig.h": "c",
+        "sga_func.h": "c"
+    }
+}

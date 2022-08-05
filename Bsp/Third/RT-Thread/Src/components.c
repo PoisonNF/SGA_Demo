@@ -220,8 +220,9 @@ int rtthread_startup(void)
     rt_hw_board_init();
 
     /* show RT-Thread version */
+    #ifdef RTT_ENABLE
     rt_show_version();
-
+    #endif
     /* timer system initialization */
     rt_system_timer_init();
 

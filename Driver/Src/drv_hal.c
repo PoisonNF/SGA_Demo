@@ -293,20 +293,7 @@ void DebugMon_Handler(void)
   /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
-/**
-  * @brief This function handles Pendable request for system service.
-  */
-#ifndef RTT_ENABLE
-void PendSV_Handler(void)
-{
-  /* USER CODE BEGIN PendSV_IRQn 0 */
 
-  /* USER CODE END PendSV_IRQn 0 */
-  /* USER CODE BEGIN PendSV_IRQn 1 */
-
-  /* USER CODE END PendSV_IRQn 1 */
-}
-#endif
 
 /**
   * @brief This function handles System tick timer.
@@ -338,7 +325,8 @@ void HAL_MspInit(void)
 #endif
 	
 #ifdef STM32F1_SGA_ENABLE
-	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+    /* 优先级分组，主优先级4位，副优先级4位 */
+	  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
     /* System interrupt init*/
     __HAL_RCC_AFIO_CLK_ENABLE();
     /* MemoryManagement_IRQn interrupt configuration */
@@ -406,4 +394,8 @@ int fputc(int ch, FILE *f)
 	return ch;
 }
 #endif
+
+
+
+
 

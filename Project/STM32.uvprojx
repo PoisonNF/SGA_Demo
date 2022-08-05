@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE,STM32F1_SGA_ENABLE</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Apply\Logic\Inc;..\Apply\Task\Inc;..\Bsp\Bsp\Inc;..\Bsp\OCD\Inc;..\Bsp\FatFs\Inc;..\Bsp\Third\SGA\inc;..\Driver\Inc;..\Hardware\STM32F1XX\CMSIS\Include;..\Hardware\STM32F1XX\CMSIS\Device\ST\STM32F1xx\Include;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc\Legacy</IncludePath>
+              <IncludePath>..\Apply\Logic\Inc;..\Apply\Task\Inc;..\Bsp\Bsp\Inc;..\Bsp\OCD\Inc;..\Bsp\FatFs\Inc;..\Bsp\Third\SGA\inc;..\Driver\Inc;..\Hardware\STM32F1XX\CMSIS\Include;..\Hardware\STM32F1XX\CMSIS\Device\ST\STM32F1xx\Include;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc\Legacy;..\Bsp\Third\RT-Thread\include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -386,11 +386,6 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Apply\Logic\Src\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>threadpool.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Apply\Logic\Src\threadpool.c</FilePath>
             </File>
           </Files>
         </Group>
