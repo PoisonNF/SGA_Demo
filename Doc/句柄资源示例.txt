@@ -2,7 +2,7 @@
 tagUART_T demoUart = 
 {
 	.tUARTHandle.Instance 				= USART1,			/* STM32 串口设备 */
-	.tUARTHandle.Init.BaudRate   		= 19200,				/* 串口波特率 */
+	.tUARTHandle.Init.BaudRate   		= 115200,				/* 串口波特率 */
 	.tUARTHandle.Init.WordLength 		= UART_WORDLENGTH_8B,
 	.tUARTHandle.Init.StopBits   		= UART_STOPBITS_1,
 	.tUARTHandle.Init.Parity     		= UART_PARITY_NONE,
@@ -330,6 +330,6 @@ tagPWM_T tPWMDemo[] =
 		.ulChannel				= TIM_CHANNEL_1,	/* 通道 */
 		.tGPIO.tGPIOInit.Pin	= GPIO_PIN_6,		/* IO映射 */
 		.tGPIO.tGPIOPort		= GPIOC,			/* IO组映射 */
-		.tGPIO.ucMode			= 2,				/* IO模式，0-普通模式；1-复用模式；2-重映射模式 */
+		.tGPIO.ucMode			= NO_REMAP,			/* IO重映射模式 */
 	},
 };

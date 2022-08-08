@@ -343,7 +343,7 @@ void HAL_MspInit(void)
     HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
     /* SysTick_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
-    /**DISABLE: JTAG-DP Disabled and SW-DP Disabled**/
+    /** JTAG-DP Disabled and SW-DP Enabled**/
     __HAL_AFIO_REMAP_SWJ_NOJTAG();
 #endif
 }

@@ -9,7 +9,18 @@ typedef struct
 	GPIO_TypeDef* 		tGPIOPort;
 	uint8_t				ulPriority;		/* 中断优先级，0-15 */
 	uint8_t 			ulSubPriority;	/* 中断子优先级，0-15 */
+
+	uint8_t				ucMode;			/* 重映射设置参数 @ref ucMode_define*/
 }tagGPIO_T;
+
+/** @defgroup ucMode_define  remap
+  * @brief GPIO remap
+  * @{
+  */
+#define NO_REMAP 		0	/*不进行映射操作*/
+#define PARTIAL_REMAP 	1	/*部分重映射*/
+#define PARTIAL_REMAP2 	2	/*部分重映射2 仅TIM2独有*/
+#define FULL_REMAP 		3	/*完全重映射*/
 
 void Drv_GPIO_Set(tagGPIO_T *_tGPIO);
 void Drv_GPIO_Reset(tagGPIO_T *_tGPIO);

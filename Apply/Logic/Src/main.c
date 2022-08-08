@@ -14,7 +14,12 @@ int main()
 {
 #ifdef	RTT_ENABLE
 	rt_kprintf("RTT 启动\r\n");
-#else
+	/*
+     * 开发板硬件初始化， RT-Thread 系统初始化已经在 main 函数之前完成，
+     * 即在 component.c 文件中的 rtthread_startup()函数中完成了。 
+     * 所以在 main 函数中，只需要创建线程和启动线程即可。
+    */
+#else	/* 裸机代码 */
 	Task_Sys_Init();		/* 系统初始化，必需 */
 	Task_UserInit();		/* 用户外设初始化 */
 	
