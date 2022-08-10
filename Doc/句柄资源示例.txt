@@ -70,20 +70,40 @@ tagSPI_T demoSPI =
 {
 	.tSPIHandle.Instance 				= SPI2,
 	.tSPIHandle.Init.Mode 				= SPI_MODE_MASTER,
-	.tSPIHandle.Init.Direction 		= SPI_DIRECTION_2LINES,
+	.tSPIHandle.Init.Direction 			= SPI_DIRECTION_2LINES,
 	.tSPIHandle.Init.DataSize 			= SPI_DATASIZE_8BIT,
 	.tSPIHandle.Init.CLKPolarity 		= SPI_POLARITY_LOW,
 	.tSPIHandle.Init.CLKPhase 			= SPI_PHASE_2EDGE,
 	.tSPIHandle.Init.NSS 				= SPI_NSS_SOFT,
-	.tSPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256,
+	.tSPIHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_256,
 	.tSPIHandle.Init.FirstBit 			= SPI_FIRSTBIT_MSB,
 	.tSPIHandle.Init.TIMode 			= SPI_TIMODE_DISABLE,
 	.tSPIHandle.Init.CRCCalculation 	= SPI_CRCCALCULATION_DISABLE,
-	.tSPIHandle.Init.CRCPolynomial 	= 7,	
+	.tSPIHandle.Init.CRCPolynomial 		= 7,	
 #if defined (STM32L4_SGA_ENABLE)
 	.tSPIHandle.Init.CRCLength 		= SPI_CRC_LENGTH_DATASIZE,
 	.tSPIHandle.Init.NSSPMode 			= SPI_NSS_PULSE_ENABLE,	
 #endif
+    /**SPI2 GPIO Configuration
+    PB13     ------> SPI2_SCK
+    PB14     ------> SPI2_MISO
+    PB15     ------> SPI2_MOSI
+    */
+    .tGPIO[0].tGPIOInit.Pin		= GPIO_PIN_13,
+	.tGPIO[0].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,
+	.tGPIO[0].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
+	.tGPIO[0].tGPIOPort			= GPIOB,
+
+	.tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_14,
+	.tGPIO[1].tGPIOInit.Mode 	= GPIO_MODE_INPUT,
+	.tGPIO[1].tGPIOInit.Pull 	= GPIO_NOPULL,
+	.tGPIO[1].tGPIOPort			= GPIOB,
+
+	.tGPIO[2].tGPIOInit.Pin		= GPIO_PIN_15,
+	.tGPIO[2].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,
+	.tGPIO[2].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
+	.tGPIO[2].tGPIOPort			= GPIOB,
+
 };
 
 /* IIC资源结构体示例 */

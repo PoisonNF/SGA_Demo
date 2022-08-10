@@ -387,6 +387,11 @@
               <FileType>1</FileType>
               <FilePath>..\Apply\Logic\Src\main.c</FilePath>
             </File>
+            <File>
+              <FileName>usercode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Apply\Logic\Src\usercode.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -401,11 +406,6 @@
               <FileName>task_sysinit.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Apply\Task\Src\task_sysinit.c</FilePath>
-            </File>
-            <File>
-              <FileName>task_userdebug.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Apply\Task\Src\task_userdebug.c</FilePath>
             </File>
             <File>
               <FileName>task_userinit.c</FileName>

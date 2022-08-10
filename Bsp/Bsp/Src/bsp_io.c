@@ -65,3 +65,7 @@ tagUART_T demoUart =
 	.tGPIO[1].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tGPIO[1].tGPIOPort 			= GPIOA,					/* GPIO分组 */
 };
+
+
+
+

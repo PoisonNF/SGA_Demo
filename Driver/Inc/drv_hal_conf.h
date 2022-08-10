@@ -25,6 +25,7 @@
 	#define STM32L4X_PIN_NUMBERS 64
 #endif
 
+/* 启动模块 */
 #define DRV_HAL_ENABLE
 #define DRV_HAL_GPIO_ENABLE
 #define DRV_HAL_DELAY_ENABLE
@@ -70,13 +71,16 @@
 #include "drv_hal_adc.h"
 #endif
 
+/* C语言标准库 */
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
 #include <math.h>
+
+/* I/O初始化头文件 */
+#include "bsp_io.h"
 
 #endif
