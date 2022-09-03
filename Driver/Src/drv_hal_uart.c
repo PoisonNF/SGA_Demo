@@ -9,6 +9,7 @@
 * 文件历史：
 
 * 版本号	  日期		  作者		说明
+* 1.1.4 	2022-09-03   鲍程璐		新增串口引脚重映射代码
 
 * 1.1.1 	2022-08-04   鲍程璐		修复了串口输出不正确的问题
 
@@ -159,7 +160,33 @@ static void S_UART_CLKEnable(tagUART_T *_tUART)
 */
 static void S_UART_GPIOConfig(tagUART_T *_tUART)
 {
-	Drv_GPIO_Init(_tUART->tGPIO, 2);
+	/* 开启复用模式时钟 */
+	__HAL_RCC_AFIO_CLK_ENABLE();
+
+	/* 根据不同串口的AFMode开启对应的重映射，重映射表在drv_hal_uart.h中 */
+	if(_tUART->tUARTHandle.Instance == USART1)
+	{
+		if(_tUART->tGPIO->AFMode == FULL_REMAP) 	__HAL_AFIO_REMAP_USART1_ENABLE();
+		if(_tUART->tGPIO->AFMode == PARTIAL_REMAP)	while(1);
+		if(_tUART->tGPIO->AFMode == PARTIAL_REMAP2)	while(1);
+		if(_tUART->tGPIO->AFMode == NO_REMAP)		__HAL_AFIO_REMAP_USART1_DISABLE();
+	}
+	if(_tUART->tUARTHandle.Instance == USART2)
+	{
+		if(_tUART->tGPIO->AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART2_ENABLE();
+		if(_tUART->tGPIO->AFMode == PARTIAL_REMAP)	while(1);
+		if(_tUART->tGPIO->AFMode == PARTIAL_REMAP2)	while(1);
+		if(_tUART->tGPIO->AFMode == NO_REMAP)		__HAL_AFIO_REMAP_USART2_DISABLE();
+	}	
+	if(_tUART->tUARTHandle.Instance == USART3)
+	{
+		if(_tUART->tGPIO->AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART3_ENABLE();
+		if(_tUART->tGPIO->AFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_USART3_PARTIAL();
+		if(_tUART->tGPIO->AFMode == PARTIAL_REMAP2)	while(1);
+		if(_tUART->tGPIO->AFMode == NO_REMAP)		__HAL_AFIO_REMAP_USART3_DISABLE();
+	}
+	
+	Drv_GPIO_Init(_tUART->tGPIO, 2); 	/* GPIO初始化 */
 }
 
 /**

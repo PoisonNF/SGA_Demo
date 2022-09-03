@@ -9,7 +9,7 @@ tagUART_T demoUart =
 	.tUARTHandle.Init.HwFlowCtl  		= UART_HWCONTROL_NONE,
 	.tUARTHandle.Init.Mode       		= UART_MODE_TX_RX,
 	.tUARTHandle.Init.OverSampling 		= UART_OVERSAMPLING_16,
-	//.tRxInfo.usRxLenth                  = 100,                 /* 接收数据长度 长度保持在协议最长字节*2以上，确保缓存池一定能够稳定接收一个完整的数据帧*/
+	//.tRxInfo.usRxLenth                = 100,                 /* 接收数据长度 长度保持在协议最长字节*2以上，确保缓存池一定能够稳定接收一个完整的数据帧*/
 #if defined (STM32L4_SGA_ENABLE)
 	.tUARTHandle.Init.OneBitSampling 	= UART_ONE_BIT_SAMPLE_DISABLE,
 	.tUARTHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT,
@@ -21,16 +21,18 @@ tagUART_T demoUart =
 	
 	
 	.tGPIO[0].tGPIOInit.Pin 		= GPIO_PIN_9,				/* GPIO引脚 */
-	.tGPIO[0].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,			/* GPIO模式 */
-	.tGPIO[0].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
-	.tGPIO[0].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tGPIO[0].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
+	.tGPIO[0].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tGPIO[0].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tGPIO[0].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+	.tGPIO[0].AFMode				= NO_REMAP,					/* GPIO重映射 */
 	
 	.tGPIO[1].tGPIOInit.Pin 		= GPIO_PIN_10,				/* GPIO引脚 */
-	.tGPIO[1].tGPIOInit.Mode 	= GPIO_MODE_INPUT,			/* GPIO模式 */
-	.tGPIO[1].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
-	.tGPIO[1].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tGPIO[1].tGPIOInit.Mode 		= GPIO_MODE_INPUT,			/* GPIO模式 */
+	.tGPIO[1].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tGPIO[1].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tGPIO[1].tGPIOPort 			= GPIOA,					/* GPIO分组 */
+	.tGPIO[1].AFMode				= NO_REMAP,					/* GPIO重映射 */
 };
 
 /* GPIO句柄示例 */
@@ -93,16 +95,19 @@ tagSPI_T demoSPI =
 	.tGPIO[0].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,
 	.tGPIO[0].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
 	.tGPIO[0].tGPIOPort			= GPIOB,
+	.tGPIO[0].AFMode			= NO_REMAP,
 
 	.tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_14,
-	.tGPIO[1].tGPIOInit.Mode 	= GPIO_MODE_INPUT,
+	.tGPIO[1].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,
 	.tGPIO[1].tGPIOInit.Pull 	= GPIO_NOPULL,
 	.tGPIO[1].tGPIOPort			= GPIOB,
+	.tGPIO[1].AFMode			= NO_REMAP,
 
 	.tGPIO[2].tGPIOInit.Pin		= GPIO_PIN_15,
 	.tGPIO[2].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,
 	.tGPIO[2].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
 	.tGPIO[2].tGPIOPort			= GPIOB,
+	.tGPIO[2].AFMode			= NO_REMAP,
 
 };
 
@@ -174,18 +179,21 @@ tagADS1256_T demoADS1256 =
 	.tSPI.tGPIO[0].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tSPI.tGPIO[0].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tSPI.tGPIO[0].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	.tGPIO[0].AFMode					= NO_REMAP,					/* GPIO重映射 */
 	
 	.tSPI.tGPIO[1].tGPIOInit.Pin 		= GPIO_PIN_15,				/* GPIO引脚 */
 	.tSPI.tGPIO[1].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
 	.tSPI.tGPIO[1].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tSPI.tGPIO[1].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tSPI.tGPIO[1].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	.tGPIO[1].AFMode					= NO_REMAP,					/* GPIO重映射 */
 	
 	.tSPI.tGPIO[2].tGPIOInit.Pin 		= GPIO_PIN_14,				/* GPIO引脚 */
 	.tSPI.tGPIO[2].tGPIOInit.Mode 		= GPIO_MODE_AF_PP,			/* GPIO模式 */
 	.tSPI.tGPIO[2].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tSPI.tGPIO[2].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tSPI.tGPIO[2].tGPIOPort 			= GPIOB,					/* GPIO分组 */
+	.tGPIO[2].AFMode					= NO_REMAP,					/* GPIO重映射 */
 };
 
 /* ADC句柄示例 */
@@ -350,6 +358,6 @@ tagPWM_T tPWMDemo[] =
 		.ulChannel				= TIM_CHANNEL_1,	/* 通道 */
 		.tGPIO.tGPIOInit.Pin	= GPIO_PIN_6,		/* IO映射 */
 		.tGPIO.tGPIOPort		= GPIOC,			/* IO组映射 */
-		.tGPIO.ucMode			= NO_REMAP,			/* IO重映射模式 */
+		.tGPIO.AFMode			= NO_REMAP,			/* IO重映射模式 */
 	},
 };

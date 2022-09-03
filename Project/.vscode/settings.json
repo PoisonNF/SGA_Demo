@@ -7,6 +7,9 @@
         "rtconfig.h": "c",
         "sga_func.h": "c",
         "math.h": "c",
-        "drv_hal_timer.h": "c"
+        "drv_hal_timer.h": "c",
+        "drv_hal_pwm.h": "c",
+        "stdio.h": "c",
+        "ocd_jy901.h": "c"
     }
 }

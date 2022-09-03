@@ -9,6 +9,11 @@ typedef struct
 	tagGPIO_T			tGPIO[3];
 }tagSPI_T;
 
+/* SPI÷ÿ”≥…‰±Ì
+	SPI1 full remap (NSS/PA15, SCK/PB3, MISO/PB4, MOSI/PB5)
+		 no remap (NSS/PA4,  SCK/PA5, MISO/PA6, MOSI/PA7)
+*/
+
 #define SPI_SPEED_HIGH	1
 #define SPI_SPEED_LOW	0
 

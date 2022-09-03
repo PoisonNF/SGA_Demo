@@ -8,7 +8,8 @@
 
 * 文件历史：
 
-* 版本号	日期		作者		说明
+* 版本号		日期		作者		说明
+* 1.1.4 	2022-09-03   鲍程璐		新增SPI引脚重映射代码
 
 * 1.0.0a 	2020-02-22	李环宇		创建该文件
 
@@ -98,7 +99,17 @@ static void S_SPI_CLKEnable(tagSPI_T *_tSPI)
 */
 static void S_SPI_GPIOConfig(tagSPI_T *_tSPI)
 {
-	Drv_GPIO_Init(_tSPI->tGPIO, 3);
+	/* 开启复用模式时钟 */
+	__HAL_RCC_AFIO_CLK_ENABLE();
+
+	/* 根据不同SPI的AFMode开启对应的重映射，重映射表在drv_hal_spi.h中 */
+	if(_tSPI->tSPIHandle.Instance == SPI1)
+	{
+		if(_tSPI->tGPIO->AFMode == FULL_REMAP)	__HAL_AFIO_REMAP_SPI1_ENABLE();
+		if(_tSPI->tGPIO->AFMode == NO_REMAP)	__HAL_AFIO_REMAP_SPI1_DISABLE();
+	}
+	
+	Drv_GPIO_Init(_tSPI->tGPIO, 3);	/* GPIO初始化 */
 }
 
 /**

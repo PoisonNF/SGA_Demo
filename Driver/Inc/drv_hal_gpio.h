@@ -10,10 +10,10 @@ typedef struct
 	uint8_t				ulPriority;		/* 中断优先级，0-15 */
 	uint8_t 			ulSubPriority;	/* 中断子优先级，0-15 */
 
-	uint8_t				ucMode;			/* 重映射设置参数 @ref ucMode_define*/
+	uint8_t				AFMode;			/* 重映射设置参数 @ref AFMode_define*/
 }tagGPIO_T;
 
-/** @defgroup ucMode_define  remap
+/** @defgroup AFMode_define remap
   * @brief GPIO remap
   * @{
   */

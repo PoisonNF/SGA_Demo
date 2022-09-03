@@ -1,7 +1,4 @@
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'F:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Demo'
-compiling usercode.c...
-linking...
-Program Size: Code=8494 RO-data=362 RW-data=208 ZI-data=1024  
 ".\Objects\STM32.axf" - 0 Error(s), 0 Warning(s).
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:02
