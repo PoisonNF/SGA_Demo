@@ -3,10 +3,10 @@
 #include "task_conf.h"
 #include "bsp_io.h"
 
-/* ç”¨æˆ·é€»è¾‘ä»£ç  */
+/* ÓÃ»§Âß¼­´úÂë */
 void UserLogic_Code(void)
 {
-	
+
 	while(1)
 	{
 		

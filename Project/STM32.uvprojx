@@ -462,6 +462,11 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\OCD\Src\ocd_sdcard.c</FilePath>
             </File>
+            <File>
+              <FileName>ocd_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\OCD\Src\ocd_oled.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

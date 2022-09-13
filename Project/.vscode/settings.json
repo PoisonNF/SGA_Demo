@@ -10,6 +10,22 @@
         "drv_hal_timer.h": "c",
         "drv_hal_pwm.h": "c",
         "stdio.h": "c",
-        "ocd_jy901.h": "c"
+        "ocd_jy901.h": "c",
+        "ocd_ads1256.h": "c",
+        "ocd_oled.h": "c",
+        "ocd_ads4111_reg.h": "c",
+        "ocd_sdcard.h": "c",
+        "ocd_oled_font.h": "c",
+        "bsp_io.h": "c",
+        "deque": "c",
+        "queue": "c",
+        "string": "c",
+        "vector": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "utility": "c",
+        "task_conf.h": "c",
+        "sstream": "c"
     }
 }
