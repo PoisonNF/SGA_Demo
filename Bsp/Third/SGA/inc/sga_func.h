@@ -14,5 +14,6 @@ void SGA_Function_Insert_Sub(uint8_t *_ucpStrA, uint8_t *_ucpStrB, uint16_t usOf
 uint16_t SGA_Function_Crc16_Modbus(uint8_t *_puchMsg, uint16_t _usDataLen);
 uint32_t SGA_StringToHex(uint8_t *_ucpSrc, uint8_t _ucLen );
 uint8_t SGA_DecToHex(uint8_t _ucDec);
+uint8_t SGA_HexToDec(uint8_t hex);
 
 #endif

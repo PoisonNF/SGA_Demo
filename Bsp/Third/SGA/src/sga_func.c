@@ -8,11 +8,12 @@
 
 * 文件历史：
 
-* 版本号	日期		作者		说明
-
-* 1.0.0a 	2020-02-22	李环宇		创建该文件
+* 版本号		日期	  作者				说明
+* 1.1.6 	2022-09-24	鲍程璐		增加Hex至Dec的转换函数
 * 1.0.1a 	2020-03-15	李环宇		新增SGA_StringToHex函数
 									修改SGA_Function_Query_Sub执行逻辑、参数和返回值
+* 1.0.0a 	2020-02-22	李环宇		创建该文件
+
 
 ****************************************************************************/
 #include "sga_func.h"
@@ -181,4 +182,18 @@ uint8_t SGA_DecToHex(uint8_t _ucDec)
 	res = _ucDec + (_ucDec / 10) * 6;	
 
 	return res;
+}
+
+/**
+ * @brief 十六进制转Dec显示（如0x37转换为55）
+ * @param hex---需要转换的十六进制数
+ * @retval uint8_t---转换后的十进制数
+*/
+uint8_t SGA_HexToDec(uint8_t hex)
+{
+	uint8_t dec;
+	uint8_t num1 = hex >> 4;
+	uint8_t num2 = hex & 0x0F;
+	dec = num1*16 + num2;
+	return dec;
 }

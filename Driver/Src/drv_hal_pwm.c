@@ -54,6 +54,41 @@ void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM, float _fDuty)
 }
 
 /**
+ * @brief PWM波频率设置
+ * @param _tPWM-PWM结构体指针
+ * @param Freq -频率(单位：Hz)
+ * @retval null
+*/
+void Drv_PMW_FreqSet(tagPWM_T *_tPWM, uint16_t Freq)
+{
+	if(_tPWM->ulFreq == 50)
+	{
+		switch(_tPWM->ulChannel)
+		{
+			case TIM_CHANNEL_1:
+				_tPWM->tPWMHandle.Instance->CCR1 = Freq;
+			break;
+			
+			case TIM_CHANNEL_2:
+				_tPWM->tPWMHandle.Instance->CCR2 = Freq;
+			break;
+			
+			case TIM_CHANNEL_3:
+				_tPWM->tPWMHandle.Instance->CCR3 = Freq;
+			break;
+			
+			case TIM_CHANNEL_4:
+				_tPWM->tPWMHandle.Instance->CCR4 = Freq;
+			break;
+			
+			default:
+				Drv_HAL_Error(__FILE__, __LINE__);
+			break;
+		}
+	}
+}
+
+/**
  * @brief PWM波时钟使能
  * @param _tPWM-PWM结构体指针
  * @retval null

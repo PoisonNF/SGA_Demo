@@ -2,6 +2,7 @@
 #define __BSP_IO_H_
 
 #include "drv_hal_conf.h"
+#include "ocd_conf.h"
 
 /* 用户头文件包含区 */
 
