@@ -21,6 +21,10 @@
 	#include "stm32l4xx_hal.h"
 #endif
 
+#define bool	_Bool
+#define true	1
+#define false	0
+
 void Drv_HAL_PrintBuf(const char *_cpMsg, ...);
 void Drv_HAL_PrintLog(const char *_cpMsg,const char *_cpFunc, const int _iLine,const char *_cpFmt,...);
 
