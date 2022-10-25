@@ -171,7 +171,7 @@ void TIM7_IRQHandler(void)
 //    Drv_Timer_IRQHandler(&demoTIM);
 }
 
-#ifndef RTT_ENBALE
+#ifndef RTT_ENABLE
 /**
   * @brief This function handles Pendable request for system service.
   */

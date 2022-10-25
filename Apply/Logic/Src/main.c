@@ -1,12 +1,12 @@
 #include "main.h"
 #include "drv_hal_conf.h"	/* 裸机相关定义 */ 
 #include "task_userinit.h"
+#include "usercode.h"
 
 #ifdef RTT_ENABLE
 #include <rtthread.h>		/* RTOS参数修改在rtconfig.h中*/
 #else
 #include "task_sysinit.h"
-#include "usercode.h"
 #endif
 
 int main()
@@ -20,8 +20,8 @@ int main()
     */
 #else	/* 裸机代码 */
 	Task_Sys_Init();		/* 系统初始化，必需 */
-	Task_UserInit();		/* 用户外设初始化 */
-	
-	UserLogic_Code();		/* 用户逻辑执行 */
 #endif
+    Task_UserInit();		/* 用户外设初始化 */	
+    UserLogic_Code();		/* 用户逻辑执行 */
 }
+

@@ -6,7 +6,7 @@
 typedef struct
 {
 	SPI_HandleTypeDef	tSPIHandle;
-	tagGPIO_T			tGPIO[3];
+	tagGPIO_T			tGPIO[4];
 }tagSPI_T;
 
 /* SPI÷ÿ”≥…‰±Ì

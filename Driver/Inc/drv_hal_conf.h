@@ -1,10 +1,13 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2022/10/11 V1.1.7"
+#define DRIVER_VERSION	"2022/10/25 V1.1.8"
 
 /* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
 //#define RTT_ENABLE               
+#ifdef RTT_ENABLE
+#include <rtthread.h>
+#endif // RTT相关头文件
 
 #define PRINTF_UART	USART1				/* printf使用的串口 */
 
@@ -31,6 +34,7 @@
 #define DRV_HAL_DELAY_ENABLE
 #define DRV_HAL_TIMER_ENABLE
 #define DRV_HAL_SPI_ENABLE
+#define DRV_HAL_SPI_SOFT_ENABLE 
 #define DRV_HAL_ADC_ENABLE
 #define DRV_HAL_UART_ENABLE
 #define	DRV_HAL_IIC_SOFT_ENABLE
@@ -53,6 +57,10 @@
 
 #ifdef DRV_HAL_SPI_ENABLE
 #include "drv_hal_spi.h"
+#endif
+
+#ifdef DRV_HAL_SPI_SOFT_ENABLE
+#include "drv_hal_spi_soft.h"
 #endif
 
 #ifdef DRV_HAL_TIMER_ENABLE

@@ -19,11 +19,14 @@
 #define TYPE_NUM		8	/* 字节位数 */
 #define IIC_GPIO_NUM	2	/* IIC所需的GPIO数量 */
 
+/**
+ * @brief IIC的微秒延时函数
+ * @param _ucUs 需要延时的数值
+ * @retval Null
+*/
 static void S_IIC_DelayUs(uint8_t _ucUs)
 {
-	int i,j;
-	for(i = 0; i < _ucUs; i++)
-		for(j = 0; j < 12; j++);
+	Drv_Delay_Us(_ucUs);
 }
 
 /**

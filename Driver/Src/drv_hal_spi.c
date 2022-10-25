@@ -111,7 +111,7 @@ static void S_SPI_GPIOConfig(tagSPI_T *_tSPI)
 		else if(_tSPI->tGPIO->AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_SPI1_ENABLE();		
 	}
 	
-	Drv_GPIO_Init(_tSPI->tGPIO, 3);	/* GPIO初始化 */
+	Drv_GPIO_Init(_tSPI->tGPIO, 4);	/* GPIO初始化 */
 }
 
 /**

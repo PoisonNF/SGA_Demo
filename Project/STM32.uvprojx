@@ -467,6 +467,11 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\OCD\Src\ocd_oled.c</FilePath>
             </File>
+            <File>
+              <FileName>ocd_rm3100.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\OCD\Src\ocd_rm3100.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -531,6 +536,11 @@
               <FileName>drv_hal_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Driver\Src\drv_hal_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_hal_spi_soft.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Driver\Src\drv_hal_spi_soft.c</FilePath>
             </File>
             <File>
               <FileName>drv_hal_timer.c</FileName>
