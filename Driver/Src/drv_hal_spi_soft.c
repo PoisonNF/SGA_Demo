@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期		作者		说明
+*  1.2		2023-2-22	  鲍程璐     按照句柄资源举例，统一初始化顺序
+
 * 1.1.8 	2022-10-25     李豪		 创建该文件
 
 ****************************************************************************/
@@ -37,15 +39,14 @@ void Drv_SPI_CLK(tagSPISoft_T *_tSPI, uint8_t level)
 }
 
 /**
- * @brief SPIMOSI 输出
+ * @brief SPIMISO 输出
  * @param id-第几个软件spi 对应于定义时的顺序 
  * @retval 读到的电平
 */
 
 GPIO_PinState Drv_SPI_MISO(tagSPISoft_T *_tSPI)
 {
-	return HAL_GPIO_ReadPin(_tSPI->tSPISoft[3].tGPIOPort, _tSPI->tSPISoft[3].tGPIOInit.Pin);
-
+	return HAL_GPIO_ReadPin(_tSPI->tSPISoft[1].tGPIOPort, _tSPI->tSPISoft[1].tGPIOInit.Pin);
 }
 
 /**
@@ -67,7 +68,7 @@ void Drv_SPI_MOSI(tagSPISoft_T *_tSPI, uint8_t level)
 */
 void Drv_SPI_NSS(tagSPISoft_T *_tSPI,uint8_t level)
 {
-	HAL_GPIO_WritePin(_tSPI->tSPISoft[1].tGPIOPort, _tSPI->tSPISoft[1].tGPIOInit.Pin, level?GPIO_PIN_SET:GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(_tSPI->tSPISoft[3].tGPIOPort, _tSPI->tSPISoft[3].tGPIOInit.Pin, level?GPIO_PIN_SET:GPIO_PIN_RESET);
 }
 
 /**

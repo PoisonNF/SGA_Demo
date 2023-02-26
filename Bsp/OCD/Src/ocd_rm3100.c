@@ -95,7 +95,7 @@ void OCD_SPI_Read_M3D3100(tagSPI_T *_tSPI,uint8_t reg_addr,uint8_t *dataout,uint
  * @param _tSPI-spi句柄指针
  * @retval 成功-1  失败-0
 */
-uint8_t OCD_setCycleCount(uint16_t value,tagSPI_T *_tSPI) 
+uint8_t OCD_setCycleCount(tagSPI_T *_tSPI,uint16_t value) 
 {
     uint8_t to_reg[6];
 
@@ -126,7 +126,7 @@ uint8_t OCD_setCycleCount(uint16_t value,tagSPI_T *_tSPI)
  * @param _tSPI-spi句柄指针
  * @retval 成功-1  失败-0
 */
-uint8_t OCD_setCMMdatarate(uint8_t conf,tagSPI_T *_tSPI) 
+uint8_t OCD_setCMMdatarate(tagSPI_T *_tSPI,uint8_t conf) 
 {
     if (conf < CMM_UPDATERATE_600 || conf > CMM_UPDATERATE_0_075)
         return 0;
@@ -179,7 +179,7 @@ uint8_t OCD_setCMMdatarate(uint8_t conf,tagSPI_T *_tSPI)
  * @param _tSPI-spi句柄指针
  * @retval NULL
 */
-void OCD_continuousModeConfig (uint8_t conf ,tagSPI_T *_tSPI) 
+void OCD_continuousModeConfig (tagSPI_T *_tSPI,uint8_t conf ) 
 {
     uint8_t *ptr;
     ptr = &conf ;
@@ -192,7 +192,7 @@ void OCD_continuousModeConfig (uint8_t conf ,tagSPI_T *_tSPI)
  * @param _tSPI-spi句柄指针
  * @retval NULL
 */
-void  OCD_singlemeasure(uint8_t conf,tagSPI_T *_tSPI) 
+void  OCD_singlemeasure(tagSPI_T *_tSPI,uint8_t conf) 
 {
     uint8_t *ptr;
     ptr = &conf ;
@@ -219,13 +219,13 @@ uint8_t OCD_getDataReadyStatus(tagSPI_T *_tSPI)
 void OCD_ThreeD3100_magic_init(tagSPI_T *_tSPI)
 {
     #ifdef  RM3100_SINGLE
-	OCD_singlemeasure(CMM_ALL_AXIS_ON,_tSPI);     //单测
+	OCD_singlemeasure(_tSPI,CMM_ALL_AXIS_ON);     //单测
 	#endif
 
 	#ifndef RM3100_SINGLE
-  	OCD_continuousModeConfig(CMM_ALL_AXIS_ON|DRDY_WHEN_ALL_AXIS_MEASURED|CM_START,_tSPI); 			//设置测试轴,drdy 开启连续模式
-  	OCD_setCycleCount(200,_tSPI);												
-  	OCD_setCMMdatarate(12,_tSPI);
+  	OCD_continuousModeConfig(_tSPI,CMM_ALL_AXIS_ON|DRDY_WHEN_ALL_AXIS_MEASURED|CM_START); 			//设置测试轴,drdy 开启连续模式
+  	OCD_setCycleCount(_tSPI,200);												
+  	OCD_setCMMdatarate(_tSPI,12);
 	#endif
 }
 
@@ -235,7 +235,7 @@ void OCD_ThreeD3100_magic_init(tagSPI_T *_tSPI)
  * @param _tSPI-spi句柄指针
  * @retval Null
 */
-void OCD_ThreeD3100_magic_GetData(MagData_t* buff,tagSPI_T *_tSPI)
+void OCD_ThreeD3100_magic_GetData(tagSPI_T *_tSPI,MagData_t* buff)
 {
 	uint8_t i;
 	uint8_t temp[9]={0};
@@ -253,7 +253,7 @@ void OCD_ThreeD3100_magic_GetData(MagData_t* buff,tagSPI_T *_tSPI)
 		if(Mag_Data[i]&0x00800000)
 		Mag_Data[i]|=0xff000000;
 	}
- 
+	
 	buff->MAG_X=Mag_Data[1]*13;
 	buff->MAG_Y=-Mag_Data[0]*13;
 	buff->MAG_Z=-Mag_Data[2]*13; 
@@ -270,7 +270,7 @@ void OCD_ThreeD3100_magic_GetData(MagData_t* buff,tagSPI_T *_tSPI)
  * @param _tSPI-软件spi句柄指针
  * @retval NULL
 */
-void OCD_SPI_Write_M3D3100_soft(uint8_t reg_addr,uint8_t *datain,uint8_t lenth,tagSPISoft_T *_tSPI)
+void OCD_SPI_Write_M3D3100_soft(tagSPISoft_T *_tSPI,uint8_t reg_addr,uint8_t *datain,uint8_t lenth)
 {
 	uint8_t bytecount=0;
 	uint8_t temp=0;
@@ -297,7 +297,7 @@ void OCD_SPI_Write_M3D3100_soft(uint8_t reg_addr,uint8_t *datain,uint8_t lenth,t
  * @param _tSPI-软件spi句柄指针
  * @retval NULL
 */
-void  OCD_SPI_Read_M3D3100_soft(uint8_t reg_addr,uint8_t *dataout,uint8_t lenth,tagSPISoft_T *_tSPI)
+void  OCD_SPI_Read_M3D3100_soft(tagSPISoft_T *_tSPI,uint8_t reg_addr,uint8_t *dataout,uint8_t lenth)
 {
 	uint8_t bytecount=0;
 	uint8_t temp=0;	
@@ -321,12 +321,12 @@ void  OCD_SPI_Read_M3D3100_soft(uint8_t reg_addr,uint8_t *dataout,uint8_t lenth,
  * @param _tSPI-软件spi句柄指针
  * @retval NULL
 */
-void OCD_singlemeasure_soft(uint8_t conf,tagSPISoft_T *_tSPI) 
+void OCD_singlemeasure_soft(tagSPISoft_T *_tSPI,uint8_t conf) 
 {
     uint8_t *ptr;
 
     ptr = &conf ;
-    OCD_SPI_Write_M3D3100_soft(M3D_3100_POLL, ptr,1,_tSPI);
+    OCD_SPI_Write_M3D3100_soft(_tSPI,M3D_3100_POLL, ptr,1);
 }
 
 /**
@@ -338,7 +338,7 @@ uint8_t OCD_getDataReadyStatus_soft(tagSPISoft_T *_tSPI)
 {
     char data[1];
 
-    OCD_SPI_Read_M3D3100_soft(M3D_3100_STATUS, (uint8_t*) data,1,_tSPI);
+    OCD_SPI_Read_M3D3100_soft(_tSPI,M3D_3100_STATUS, (uint8_t*) data,1);
 
     return (data[0] & STATUS_MASK);
 }
@@ -349,12 +349,12 @@ uint8_t OCD_getDataReadyStatus_soft(tagSPISoft_T *_tSPI)
  * @param _tSPI-软件spi句柄指针
  * @retval 成功-0  失败-1
 */
-void OCD_continuousModeConfig_soft(uint8_t conf,tagSPISoft_T *_tSPI) 
+void OCD_continuousModeConfig_soft(tagSPISoft_T *_tSPI,uint8_t conf) 
 {
     uint8_t *ptr;
 
     ptr = &conf ;
-    OCD_SPI_Write_M3D3100_soft(M3D_3100_CMM, ptr,1,_tSPI);
+    OCD_SPI_Write_M3D3100_soft(_tSPI,M3D_3100_CMM, ptr,1);
 }
 
 /**
@@ -363,7 +363,7 @@ void OCD_continuousModeConfig_soft(uint8_t conf,tagSPISoft_T *_tSPI)
  * @param _tSPI-软件spi句柄指针
  * @retval 成功-1  失败-0
 */
-uint8_t OCD_setCycleCount_soft(uint16_t value ,tagSPISoft_T *_tSPI)
+uint8_t OCD_setCycleCount_soft( tagSPISoft_T *_tSPI,uint16_t value)
 {
     uint8_t to_reg[6];
 
@@ -381,7 +381,7 @@ uint8_t OCD_setCycleCount_soft(uint16_t value ,tagSPISoft_T *_tSPI)
 		to_reg[4] = to_reg[0];
 		to_reg[5] = to_reg[1];
 
-		OCD_SPI_Write_M3D3100_soft(M3D_3100_CCX, to_reg,6,_tSPI);
+		OCD_SPI_Write_M3D3100_soft(_tSPI,M3D_3100_CCX, to_reg,6);
     }
     return 1;
 }
@@ -392,7 +392,7 @@ uint8_t OCD_setCycleCount_soft(uint16_t value ,tagSPISoft_T *_tSPI)
  * @param _tSPI-软件spi句柄指针
  * @retval 成功-1  失败-0
 */
-uint8_t OCD_setCMMdatarate_soft(uint8_t conf ,tagSPISoft_T *_tSPI)
+uint8_t OCD_setCMMdatarate_soft(tagSPISoft_T *_tSPI,uint8_t conf )
 {
     if (conf < CMM_UPDATERATE_600 || conf > CMM_UPDATERATE_0_075)
         return 0;
@@ -434,7 +434,7 @@ uint8_t OCD_setCMMdatarate_soft(uint8_t conf ,tagSPISoft_T *_tSPI)
         return 0;
 
       	ptr = &conf ;
-      	OCD_SPI_Write_M3D3100_soft(M3D_3100_TMRC, ptr,1,_tSPI);
+      	OCD_SPI_Write_M3D3100_soft(_tSPI,M3D_3100_TMRC, ptr,1);
     }
    	return 1;
 }
@@ -447,13 +447,13 @@ uint8_t OCD_setCMMdatarate_soft(uint8_t conf ,tagSPISoft_T *_tSPI)
 void OCD_ThreeD3100_magic_init_soft(tagSPISoft_T *_tSPI)
 {
 	#ifdef  RM3100_SINGLE
-	OCD_singlemeasure_soft(CMM_ALL_AXIS_ON,_tSPI);     //单测
+	OCD_singlemeasure_soft(_tSPI,CMM_ALL_AXIS_ON);     //单测
 	#endif
 	#ifndef RM3100_SINGLE
-  	OCD_continuousModeConfig_soft(CMM_ALL_AXIS_ON|DRDY_WHEN_ALL_AXIS_MEASURED|CM_START,_tSPI); 			//设置测试轴,drdy 开启连续模式
+  	OCD_continuousModeConfig_soft(_tSPI,CMM_ALL_AXIS_ON|DRDY_WHEN_ALL_AXIS_MEASURED|CM_START); 			//设置测试轴,drdy 开启连续模式
 
-  	OCD_setCycleCount_soft(200,_tSPI);												
-  	OCD_setCMMdatarate_soft(12,_tSPI);
+  	OCD_setCycleCount_soft(_tSPI,200);												
+  	OCD_setCMMdatarate_soft(_tSPI,12);
 	#endif
 }
 
@@ -463,7 +463,7 @@ void OCD_ThreeD3100_magic_init_soft(tagSPISoft_T *_tSPI)
  * @param _tSPI-软件spi句柄指针
  * @retval Null
 */
-void OCD_ThreeD3100_magic_GetData_soft(MagData_t* buff,tagSPISoft_T *_tSPI)
+void OCD_ThreeD3100_magic_GetData_soft(tagSPISoft_T *_tSPI,MagData_t* buff)
 {
 	uint8_t i;
 	uint8_t temp[9]={0};
@@ -472,7 +472,7 @@ void OCD_ThreeD3100_magic_GetData_soft(MagData_t* buff,tagSPISoft_T *_tSPI)
 
 	while(OCD_getDataReadyStatus_soft(_tSPI)==0);
 	Drv_SPI_NSS(_tSPI,1); 
-	OCD_SPI_Read_M3D3100_soft(0x24,temp,9,_tSPI);
+	OCD_SPI_Read_M3D3100_soft(_tSPI,0x24,temp,9);
 	Mag_Data[0]=temp[0]<<16 | temp[1]<<8 | temp[2];			
 	Mag_Data[1]=temp[3]<<16 | temp[4]<<8 | temp[5];
 	Mag_Data[2]=temp[6]<<16 | temp[7]<<8 | temp[8];
@@ -482,7 +482,7 @@ void OCD_ThreeD3100_magic_GetData_soft(MagData_t* buff,tagSPISoft_T *_tSPI)
 		if(Mag_Data[i]&0x00800000)
 		Mag_Data[i]|=0xff000000;
 	}
- 
+	
 	buff->MAG_X=Mag_Data[1]*13;
 	buff->MAG_Y=-Mag_Data[0]*13;
 	buff->MAG_Z=-Mag_Data[2]*13; 

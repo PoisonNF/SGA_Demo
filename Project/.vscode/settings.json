@@ -29,6 +29,7 @@
         "sstream": "c",
         "ocd_conf.h": "c",
         "drv_hal_spi_soft.h": "c",
-        "ocd_rm3100.h": "c"
+        "ocd_rm3100.h": "c",
+        "ocd_ps2.h": "c"
     }
 }

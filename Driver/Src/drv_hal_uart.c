@@ -8,7 +8,9 @@
 
 * 文件历史：
 
-* 版本号	  日期		  作者		说明
+* 版本号	  日期		  作者				说明
+*  1.2		2023-2-26    鲍程璐		新增串口DMA发送相关函数，优化注释
+
 * 1.1.7 	2022-10-11   鲍程璐		新增串口DMA接收相关函数
 
 * 1.1.4 	2022-09-03   鲍程璐		新增串口引脚重映射代码
@@ -34,6 +36,34 @@
 void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
 {	
 	HAL_UART_Transmit(&_tUART->tUARTHandle, _ucpTxData, _uspSize, TIME_OUT);
+}
+
+/**
+ * @brief 串口中断发送数据函数
+ * @param _tUART-串口实例指针
+ * @param _ucpTxData-发送数据地址指针
+ * @param _uspSize-发送数据大小
+ * @retval Null
+*/
+void Drv_Uart_Transmit_IT(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
+{	
+	HAL_UART_Transmit_IT(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
+}
+
+/**
+ * @brief 串口DMA发送数据函数
+ * @param _tUART-串口实例指针
+ * @param _ucpTxData-发送数据地址指针
+ * @param _uspSize-发送数据大小
+ * @retval Null
+*/
+void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
+{
+	/* 获取DMA状态 */
+	while(HAL_DMA_GetState(&_tUART->tUartDMA.tDMATx) != HAL_DMA_STATE_READY);
+
+	/* 准备状态即可发送 */
+	HAL_UART_Transmit_DMA(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
 }
 
 /**
@@ -89,34 +119,63 @@ static void S_Uart_NVICConfig(tagUART_T *_tUART)
 */
 static void S_Uart_DMA_NVICConfig(tagUART_T *_tUART)
 {
-	//目前只有接收
-	if(_tUART->tUARTHandle.Instance == USART1)
+	/* DMA接收使能 */
+	if(_tUART->tUartDMA.bRxEnable == true)
 	{
-		/* DMA1_Channel5_IRQn interrupt configuration */
-		HAL_NVIC_SetPriority(DMA1_Channel5_IRQn,_tUART->tUartDMA.ulDMAPriority, _tUART->tUartDMA.ulDMASubPriority);
-  		HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
+		if(_tUART->tUARTHandle.Instance == USART1)
+		{
+			/* DMA1_Channel5_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Channel5_IRQn,_tUART->tUartDMA.ulDMARxPriority, _tUART->tUartDMA.ulDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART2)
+		{
+			/* DMA1_Channel6_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Channel6_IRQn,_tUART->tUartDMA.ulDMARxPriority, _tUART->tUartDMA.ulDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART3)
+		{
+			/* DMA1_Channel3_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Channel3_IRQn,_tUART->tUartDMA.ulDMARxPriority, _tUART->tUartDMA.ulDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == UART4)
+		{
+			/* DMA2_Channel3_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA2_Channel3_IRQn,_tUART->tUartDMA.ulDMARxPriority, _tUART->tUartDMA.ulDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA2_Channel3_IRQn);
+		}
 	}
-	else if(_tUART->tUARTHandle.Instance == USART2)
+	/* DMA发送使能 */
+	if(_tUART->tUartDMA.bTxEnable == true)
 	{
-		/* DMA1_Channel6_IRQn interrupt configuration */
-		HAL_NVIC_SetPriority(DMA1_Channel6_IRQn,_tUART->tUartDMA.ulDMAPriority, _tUART->tUartDMA.ulDMASubPriority);
-		HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
+		if(_tUART->tUARTHandle.Instance == USART1)
+		{
+			/* DMA1_Channel4_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Channel4_IRQn,_tUART->tUartDMA.ulDMATxPriority,_tUART->tUartDMA.ulDMATxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART2)
+		{
+			/* DMA1_Channel7_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Channel7_IRQn,_tUART->tUartDMA.ulDMATxPriority,_tUART->tUartDMA.ulDMATxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART3)
+		{
+			/* DMA1_Channel2_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Channel2_IRQn,_tUART->tUartDMA.ulDMATxPriority,_tUART->tUartDMA.ulDMATxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == UART4)
+		{
+			/* DMA2_Channel5_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA2_Channel4_5_IRQn,_tUART->tUartDMA.ulDMATxPriority,_tUART->tUartDMA.ulDMATxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA2_Channel4_5_IRQn);
+		}
 	}
-	else if(_tUART->tUARTHandle.Instance == USART3)
-	{
-		/* DMA1_Channel3_IRQn interrupt configuration */
-		HAL_NVIC_SetPriority(DMA1_Channel3_IRQn,_tUART->tUartDMA.ulDMAPriority, _tUART->tUartDMA.ulDMASubPriority);
-		HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
-	}
-	else if(_tUART->tUARTHandle.Instance == UART4)
-	{
-		/* DMA2_Channel3_IRQn interrupt configuration */
-		HAL_NVIC_SetPriority(DMA2_Channel3_IRQn,_tUART->tUartDMA.ulDMAPriority, _tUART->tUartDMA.ulDMASubPriority);
-		HAL_NVIC_EnableIRQ(DMA2_Channel3_IRQn);
-	}
-
 }
-
 
 /**
  * @brief 串口参数配置函数
@@ -124,7 +183,8 @@ static void S_Uart_DMA_NVICConfig(tagUART_T *_tUART)
  * @retval Null
 */
 static void S_Uart_ParamConfig(tagUART_T *_tUART)
-{	
+{
+	/* 调用串口初始化函数 */
 	if (HAL_UART_Init(&_tUART->tUARTHandle) != HAL_OK)
 	{
 		Drv_HAL_Error(__FILE__, __LINE__);
@@ -138,10 +198,15 @@ static void S_Uart_ParamConfig(tagUART_T *_tUART)
 */
 static void S_Uart_DMAParamConfig(tagUART_T *_tUART)
 {
-	//目前只有接收
-	if(HAL_DMA_Init(&_tUART->tUartDMA.tDMARx) != HAL_OK)
+	/* 如果使能DMA接收 */
+	if(_tUART->tUartDMA.bRxEnable == true)
 	{
-		Drv_HAL_Error(__FILE__,__LINE__);
+		if(HAL_DMA_Init(&_tUART->tUartDMA.tDMARx) != HAL_OK)	Drv_HAL_Error(__FILE__,__LINE__);
+	}
+	/* 如果使能DMA发送 */
+	if(_tUART->tUartDMA.bTxEnable == true)
+	{
+		if(HAL_DMA_Init(&_tUART->tUartDMA.tDMATx) != HAL_OK)	Drv_HAL_Error(__FILE__,__LINE__);
 	}
 }
 
@@ -216,7 +281,12 @@ static void S_UART_DMA_CLKEnable(tagUART_T *_tUART)
 	else if(_tUART->tUARTHandle.Instance == USART2)		__HAL_RCC_DMA1_CLK_ENABLE();
 	else if(_tUART->tUARTHandle.Instance == USART3)		__HAL_RCC_DMA1_CLK_ENABLE();
 	else if(_tUART->tUARTHandle.Instance == UART4)		__HAL_RCC_DMA2_CLK_ENABLE();
-	else if(_tUART->tUARTHandle.Instance == UART5)		while(1);	//uart5不能使用DMA
+	else if(_tUART->tUARTHandle.Instance == UART5)
+	{
+		/* Uart5不能使用DMA */
+		Drv_HAL_Error(__FILE__,__LINE__);
+		while(1);
+	}
 }
 
 /**
@@ -268,6 +338,7 @@ void Drv_Uart_ITInit(tagUART_T *_tUART)
 	S_Uart_ParamConfig(_tUART);		/* 设置串口参数 */
 	S_Uart_NVICConfig(_tUART);		/* 设置中断优先级 */
 
+	/* 往一级缓冲区中接收一个字符 */
 	HAL_UART_Receive_IT(&_tUART->tUARTHandle, _tUART->tRxInfo.ucpRxBuffer, 1);
 }
 
@@ -279,21 +350,43 @@ void Drv_Uart_ITInit(tagUART_T *_tUART)
 void Drv_Uart_DMAInit(tagUART_T *_tUART)
 {
 	S_Uart_CLKConfig();				/* L4所需 */
-
+	
+	/* DMA配置 */
 	S_UART_DMA_CLKEnable(_tUART);
-	S_Uart_DMA_NVICConfig(_tUART);
-	S_Uart_DMAParamConfig(_tUART);
+	S_Uart_DMA_NVICConfig(_tUART);	/* DMA中断配置 */
+	S_Uart_DMAParamConfig(_tUART);	/* 设置DMA参数 */
 
+	/* 串口配置 */
 	S_UART_CLKEnable(_tUART);
 	S_UART_GPIOConfig(_tUART);
-	S_Uart_NVICConfig(_tUART);		/* 设置中断优先级 */
+	S_Uart_NVICConfig(_tUART);		/* 串口中断配置 */
 	S_Uart_ParamConfig(_tUART);		/* 设置串口参数 */
 
-	__HAL_LINKDMA(&_tUART->tUARTHandle,hdmarx,_tUART->tUartDMA.tDMARx);
-	_tUART->tRxInfo.ucpRxCache = (uint8_t *)malloc(_tUART->tRxInfo.usRxMAXLenth);	//为cache申请一段长度的动态内存
-	__HAL_UART_ENABLE_IT(&_tUART->tUARTHandle,UART_IT_IDLE); //打开空闲中断
-	HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpRxCache,_tUART->tRxInfo.usRxMAXLenth);//开启DMA接收
+	/* 如果使能DMA接收 */
+	if(_tUART->tUartDMA.bRxEnable == true)
+	{
+		/* 关联串口和DMA接收 */
+		__HAL_LINKDMA(&_tUART->tUARTHandle,hdmarx,_tUART->tUartDMA.tDMARx);
 
+		/* 为cache申请一段长度的动态内存 */
+		_tUART->tRxInfo.ucpRxCache = (uint8_t *)malloc(_tUART->tRxInfo.usRxMAXLenth);
+
+		/*	打开空闲中断 */
+		__HAL_UART_ENABLE_IT(&_tUART->tUARTHandle,UART_IT_IDLE);
+
+		/* 开启DMA接收 */
+		HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpRxCache,_tUART->tRxInfo.usRxMAXLenth);
+	}
+
+	/* 如果使能DMA接收 */
+	if(_tUART->tUartDMA.bTxEnable == true)
+	{
+		/* 关联串口和DMA发送 */
+		__HAL_LINKDMA(&_tUART->tUARTHandle,hdmatx,_tUART->tUartDMA.tDMATx);
+
+		/* 为cache申请一段长度的动态内存 */
+		_tUART->tTxInfo.ucpTxCache = (uint8_t *)malloc(_tUART->tTxInfo.usTxMAXLenth);
+	}
 }
 
 /**
@@ -311,17 +404,62 @@ void Drv_Uart_IRQHandler(tagUART_T *_tUART)
  * @param _tUART-串口结构体指针
  * @retval Null
 */
-void Drv_Uart_DMA_Handler(tagUART_T *_tUART)
+void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART)
 {
-	if(__HAL_UART_GET_FLAG(&_tUART->tUARTHandle,UART_FLAG_IDLE) != RESET) // 空闲中断标记被置位
+	/* 空闲中断标记被置位 */
+	if(__HAL_UART_GET_FLAG(&_tUART->tUARTHandle,UART_FLAG_IDLE) != RESET) 
 	{
-		__HAL_UART_CLEAR_IDLEFLAG(&_tUART->tUARTHandle);// 清除中断标记
-		HAL_UART_DMAStop(&_tUART->tUARTHandle);// 停止DMA接收
-		_tUART->tRxInfo.usRxLenth = _tUART->tRxInfo.usRxMAXLenth - __HAL_DMA_GET_COUNTER(_tUART->tUARTHandle.hdmarx);// 总数据量减去未接收到的数据量为已经接收到的数据量
-        _tUART->tUartDMA.DMARxCplt = 1;// 标记接收结束
-        HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpRxCache,_tUART->tRxInfo.usRxMAXLenth);// 重新启动DMA接收
+		/* 清除中断标记 */
+		__HAL_UART_CLEAR_IDLEFLAG(&_tUART->tUARTHandle);
+
+		/* 停止DMA接收 */
+		HAL_UART_DMAStop(&_tUART->tUARTHandle);
+
+		/* 总数据量减去未接收到的数据量为已经接收到的数据量 */
+		_tUART->tRxInfo.usRxLenth = _tUART->tRxInfo.usRxMAXLenth - __HAL_DMA_GET_COUNTER(_tUART->tUARTHandle.hdmarx);
+
+		/* 接收标志位置1 */
+        _tUART->tUartDMA.DMARxCplt = 1;
+
+		/* 重新启动DMA接收 */
+        HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpRxCache,_tUART->tRxInfo.usRxMAXLenth);
 	}
 }
 
+/**
+ * @brief 串口DMA中断发送处理子函数(用于DMA中断处理函数中)
+ * @param _tUART-串口结构体指针
+ * @note 串口DMA连续发送必须在对应DMA中断处理函数中加入此函数，不然只能单次发送
+ * @retval Null
+*/
+void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART)
+{
+	uint32_t FLAG;
+
+	/* UART1发送通道 */
+	if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel4)		FLAG = DMA_FLAG_TC4;
+	/* UART2发送通道 */
+	else if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel7)	FLAG = DMA_FLAG_TC7;
+	/* UART3发送通道 */
+	else if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel2) 	FLAG = DMA_FLAG_TC2;
+	/* UART4发送通道 */
+	else if(_tUART->tUartDMA.tDMATx.Instance == DMA2_Channel5)	FLAG = DMA_FLAG_TC5;
+
+	/* 判断对应通道是否完成发送 */
+	if(__HAL_DMA_GET_TC_FLAG_INDEX(&_tUART->tUartDMA.tDMATx) == FLAG)
+	{
+		/* 关闭串口DMA */
+		HAL_UART_DMAStop(&_tUART->tUARTHandle);
+
+		/* 清除发送完成标志位 */
+		__HAL_DMA_CLEAR_FLAG(&_tUART->tUartDMA.tDMATx,FLAG);
+
+		/* 重载CNDTR寄存器，数量为最大传递数组大小 */
+		_tUART->tUartDMA.tDMATx.Instance->CNDTR = _tUART->tTxInfo.usTxMAXLenth;
+
+		/* 开启DMA发送 */
+		__HAL_DMA_ENABLE(&_tUART->tUartDMA.tDMATx);
+	}
+}
 
 #endif

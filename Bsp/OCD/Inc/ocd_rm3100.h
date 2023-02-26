@@ -62,15 +62,15 @@ typedef struct {
 
 
 
-void OCD_singlemeasure_soft(uint8_t conf ,tagSPISoft_T *_tSPI);
-void OCD_singlemeasure(uint8_t conf,tagSPI_T *_tSPI);
+void OCD_singlemeasure_soft(tagSPISoft_T *_tSPI,uint8_t conf );
+void OCD_singlemeasure(tagSPI_T *_tSPI,uint8_t conf);
 
 void OCD_ThreeD3100_magic_init(tagSPI_T *_tSPI);
 void OCD_ThreeD3100_magic_init_soft(tagSPISoft_T *_tSPI);
 
 
-void OCD_ThreeD3100_magic_GetData(MagData_t* buff,tagSPI_T *_tSPI);
-void OCD_ThreeD3100_magic_GetData_soft(MagData_t* buff,tagSPISoft_T *_tSPI);
+void OCD_ThreeD3100_magic_GetData(tagSPI_T *_tSPI,MagData_t* buff);
+void OCD_ThreeD3100_magic_GetData_soft(tagSPISoft_T *_tSPI,MagData_t* buff);
 
 
 void OCD_SPI_Write_M3D3100(tagSPI_T *_tSPI,uint8_t reg_addr,uint8_t *datain,uint8_t lenth);

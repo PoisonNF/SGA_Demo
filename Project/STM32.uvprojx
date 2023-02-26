@@ -472,6 +472,11 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\OCD\Src\ocd_rm3100.c</FilePath>
             </File>
+            <File>
+              <FileName>ocd_ps2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\OCD\Src\ocd_ps2.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -1,15 +1,7 @@
-#include "threadpool.h"
+#include "usercode.h"
+#include "drv_hal_conf.h"   //SGA库头文件配置
+#include "task_conf.h"      //task层头文件配置
+#include "ocd_conf.h"       //OCD层头文件配置
+#include "bsp_io.h"			//I/O头文件配置
 
-void (*ucNowThread)();
-void (*ucNextThread)();
-
-void ThreadPool(void)
-{
-//	ucNowThread = Thread_Sleep;	/* 默认线程 */
-	
-	while(1)
-	{
-		ucNowThread();	/* 执行当前线程 */
-		ucNowThread = ucNextThread;
-	}
-}
+/* 线程入口函数 */

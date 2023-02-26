@@ -35,8 +35,9 @@ tagGPIO_T demoGPIO[] =
 /* 串口句柄示例 */
 tagUART_T demoUart = 
 {
-	.tUARTHandle.Instance 				= USART1,			/* STM32 串口设备 */
-	.tUARTHandle.Init.BaudRate   		= 115200,				/* 串口波特率 */
+	//串口工作模式配置
+	.tUARTHandle.Instance 				= USART1,					/* STM32 串口设备 */
+	.tUARTHandle.Init.BaudRate   		= 115200,					/* 串口波特率 */
 	.tUARTHandle.Init.WordLength 		= UART_WORDLENGTH_8B,
 	.tUARTHandle.Init.StopBits   		= UART_STOPBITS_1,
 	.tUARTHandle.Init.Parity     		= UART_PARITY_NONE,
@@ -44,29 +45,47 @@ tagUART_T demoUart =
 	.tUARTHandle.Init.Mode       		= UART_MODE_TX_RX,
 	.tUARTHandle.Init.OverSampling 		= UART_OVERSAMPLING_16,
 
-	.tRxInfo.usRxMAXLenth             	= 100,                 /* 接收数据长度 长度保持在协议最长字节*2以上，确保缓存池一定能够稳定接收一个完整的数据帧*/
-
 #if defined (STM32L4_SGA_ENABLE)
 	.tUARTHandle.Init.OneBitSampling 	= UART_ONE_BIT_SAMPLE_DISABLE,
 	.tUARTHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT,
 #endif
 	
-	.ulPriority							= 1,				/* 中断优先级 */
-	.ulSubPriority						= 3,				/* 中断子优先级 */
+	.ulPriority							= 1,						/* 中断优先级 */
+	.ulSubPriority						= 3,						/* 中断子优先级 */
 	
+	//串口DMA接收参数配置
+	.tUartDMA.bRxEnable					= true,						/* DMA接收使能 */
 	.tUartDMA.tDMARx.Instance			= DMA1_Channel5,
 	.tUartDMA.tDMARx.Init.Direction		= DMA_PERIPH_TO_MEMORY,
 	.tUartDMA.tDMARx.Init.PeriphInc		= DMA_PINC_DISABLE,
 	.tUartDMA.tDMARx.Init.MemInc		= DMA_MINC_ENABLE,
 	.tUartDMA.tDMARx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE,
 	.tUartDMA.tDMARx.Init.MemDataAlignment	  = DMA_MDATAALIGN_BYTE,
-	.tUartDMA.tDMARx.Init.Mode			= DMA_NORMAL,
+	.tUartDMA.tDMARx.Init.Mode			= DMA_CIRCULAR,
 	.tUartDMA.tDMARx.Init.Priority		= DMA_PRIORITY_LOW,
 
-	.tUartDMA.ulDMAPriority				= 1,				/* DMA中断优先级 */
-	.tUartDMA.ulDMASubPriority			= 1,				/* DMA中断子优先级 */
+	.tRxInfo.usRxMAXLenth             	= 100,              		/* 接收数据长度 长度保持在协议最长字节*2以上，确保缓存池一定能够稳定接收一个完整的数据帧*/
+
+	.tUartDMA.ulDMARxPriority				= 1,					/* DMA接收中断优先级 */
+	.tUartDMA.ulDMARxSubPriority			= 1,					/* DMA接收中断子优先级 */
 	
+	//串口DMA发送参数配置
+	.tUartDMA.bTxEnable					= true,						/* DMA发送使能 */
+	.tUartDMA.tDMATx.Instance			= DMA1_Channel4,
+	.tUartDMA.tDMATx.Init.Direction		= DMA_MEMORY_TO_PERIPH,
+	.tUartDMA.tDMATx.Init.PeriphInc		= DMA_PINC_DISABLE,
+	.tUartDMA.tDMATx.Init.MemInc		= DMA_MINC_ENABLE,
+	.tUartDMA.tDMATx.Init.PeriphDataAlignment	= DMA_PDATAALIGN_BYTE,
+	.tUartDMA.tDMATx.Init.MemDataAlignment		= DMA_MDATAALIGN_BYTE,
+	.tUartDMA.tDMATx.Init.Mode			= DMA_NORMAL,
+	.tUartDMA.tDMATx.Init.Priority		= DMA_PRIORITY_LOW,
+
+	.tTxInfo.usTxMAXLenth				= 50,						/* 最大发送数据长度 */
 	
+	.tUartDMA.ulDMATxPriority				= 1,					/* DMA发送中断优先级 */
+	.tUartDMA.ulDMATxSubPriority			= 1,					/* DMA发送中断子优先级 */
+
+	//串口GPIO配置
 	.tGPIO[0].tGPIOInit.Pin 			= GPIO_PIN_9,				/* GPIO引脚 */
 	.tGPIO[0].tGPIOInit.Mode 			= GPIO_MODE_AF_PP,			/* GPIO模式 */
 	.tGPIO[0].tGPIOInit.Pull 			= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
