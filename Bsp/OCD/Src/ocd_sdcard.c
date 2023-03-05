@@ -2,7 +2,7 @@
 
 * Sigma团队
 
-* 文件名: ut_sdcard.c
+* 文件名: ocd_sdcard.c
 
 * 内容简述：SD卡模块文件
 
@@ -16,34 +16,6 @@
 #include "ocd_sdcard.h"
 
 #include "diskio.h"			/* 不使用FATFS时注释掉 */
-
-/* SD卡相关寄存器宏定义 */  
-#define CMD0    0       /* 卡复位 */
-#define CMD1    1
-#define CMD8    8       /* 命令8 ，SEND_IF_COND */
-#define CMD9    9       /* 命令9 ，读CSD数据 */
-#define CMD10   10      /* 命令10，读CID数据 */
-#define CMD12   12      /* 命令12，停止数据传输 */
-#define CMD16   16      /* 命令16，设置SectorSize 应返回0x00 */
-#define CMD17   17      /* 命令17，读sector */
-#define CMD18   18      /* 命令18，读Multi sector */
-#define CMD23   23      /* 命令23，设置多sector写入前预先擦除N个block */
-#define CMD24   24      /* 命令24，写sector */
-#define CMD25   25      /* 命令25，写Multi sector */
-#define CMD41   41      /* 命令41，应返回0x00 */
-#define CMD55   55      /* 命令55，应返回0x01 */
-#define CMD58   58      /* 命令58，读OCR信息 */
-#define CMD59   59      /* 命令59，使能/禁止CRC，应返回0x00 */
-
-/* SD卡类型宏定义 */
-#define SD_TYPE_ERR     0X00
-#define SD_TYPE_MMC     0X01
-#define SD_TYPE_V1      0X02
-#define SD_TYPE_V2      0X04
-#define SD_TYPE_V2HC    0X06 
-
-static uint8_t s_ucSdType = 0;
-static tagSPI_T s_tSPI;  	/* SPI结构体 */
 
 /**
  * @brief SD卡发送等待终止信号
@@ -104,8 +76,8 @@ static uint8_t S_SDCard_Wait(void)
 */
 static uint8_t S_SDCard_SendCMD(uint8_t _ucCmd, uint32_t _ulArg, uint8_t _ucCrc)
 {
-	uint8_t ucRx;	
-	uint8_t ucReTryNum = 0; 
+	uint8_t ucRx;
+	uint8_t ucReTryNum = 0;
 	
 	S_SDCard_WaitStop();
 	
@@ -117,7 +89,7 @@ static uint8_t S_SDCard_SendCMD(uint8_t _ucCmd, uint32_t _ulArg, uint8_t _ucCrc)
     Drv_SPI_TransmitReceive( &s_tSPI, _ulArg >> 16);
     Drv_SPI_TransmitReceive( &s_tSPI, _ulArg >>  8);
     Drv_SPI_TransmitReceive( &s_tSPI, _ulArg);	  
-    Drv_SPI_TransmitReceive( &s_tSPI, _ucCrc); 
+    Drv_SPI_TransmitReceive( &s_tSPI, _ucCrc);
 	if(_ucCmd == CMD12)
 		Drv_SPI_TransmitReceive( &s_tSPI, 0xFF);
 	
@@ -133,14 +105,14 @@ static uint8_t S_SDCard_SendCMD(uint8_t _ucCmd, uint32_t _ulArg, uint8_t _ucCrc)
 /**
  * @brief SD卡的初始化
  * @param NULL
- * @retval Null
+ * @retval uint8_t
 */
 static uint8_t S_SDCard_Init(void)
 {
 	uint8_t ucRx;      
 	uint8_t index;
 	uint16_t usReTryNum;  
-	uint8_t ucRxBuffer[4];
+	uint8_t ucaRxBuffer[4];
 	
 	Drv_SPI_Init(&s_tSPI);
 	Drv_SPI_SpeedConfig(&s_tSPI, 0);
@@ -159,10 +131,10 @@ static uint8_t S_SDCard_Init(void)
 		if(S_SDCard_SendCMD( CMD8, 0x1AA, 0x87) == 1)
 		{
 			for(index = 0; index < 4; index++)
-				ucRxBuffer[index] = Drv_SPI_TransmitReceive(&s_tSPI, 0xFF);	
+				ucaRxBuffer[index] = Drv_SPI_TransmitReceive(&s_tSPI, 0xFF);	
 						
 			/* 卡是否支持2.7~3.6V */
-			if(ucRxBuffer[2]==0x01 && ucRxBuffer[3]==0xAA)
+			if(ucaRxBuffer[2]==0x01 && ucaRxBuffer[3]==0xAA)
 			{
 				usReTryNum = 0XFFFE;
 				do
@@ -174,9 +146,9 @@ static uint8_t S_SDCard_Init(void)
 				if(usReTryNum&&S_SDCard_SendCMD(CMD58, 0, 0x01)==0)
 				{
 					for(index = 0; index < 4; index++)
-						ucRxBuffer[index] = Drv_SPI_TransmitReceive(&s_tSPI, 0xFF);
+						ucaRxBuffer[index] = Drv_SPI_TransmitReceive(&s_tSPI, 0xFF);
 					
-					if(ucRxBuffer[0] & 0x40)
+					if(ucaRxBuffer[0] & 0x40)
 						s_ucSdType=SD_TYPE_V2HC;    
 					else 
 						s_ucSdType=SD_TYPE_V2;   
@@ -227,20 +199,13 @@ static uint8_t S_SDCard_Init(void)
 }
 
 /**
- * @brief SD卡的SPI初始化
- * @param _tSPI-spi结构体
- * @retval Null
+ * @brief SD卡的获得响应
+ * @param _ucAck-应答信号
+ * @retval uint8_t
 */
-uint8_t OCD_SDCard_SPIInit(tagSPI_T _tSPI)
-{
-	s_tSPI = _tSPI;
-	
-	return S_SDCard_Init();
-}
-
 static uint8_t S_SDCard_GetResponse(uint8_t _ucAck)
 {
-	int lCnt = 0XFFFF; 	
+	int lCnt = 0XFFFF;
 	
 	while ((Drv_SPI_TransmitReceive(&s_tSPI, 0XFF) != _ucAck) && lCnt)
 		lCnt--;  
@@ -251,6 +216,12 @@ static uint8_t S_SDCard_GetResponse(uint8_t _ucAck)
 		return  0;
 }
 
+/**
+ * @brief SD卡的接收数据
+ * @param _ucpBuffer-缓冲区地址
+ * @param _usLength-数据长度
+ * @retval uint8_t
+*/
 static uint8_t S_SDCard_ReceiveData(uint8_t *_ucpBuffer, uint16_t _usLength)
 {
 	if(S_SDCard_GetResponse(0xFE) == 1)
@@ -268,6 +239,13 @@ static uint8_t S_SDCard_ReceiveData(uint8_t *_ucpBuffer, uint16_t _usLength)
     return 0;
 }
 
+/**
+ * @brief SD卡的读取磁盘数据
+ * @param _ucpBuffer-缓冲区地址
+ * @param _ulSec-分区
+ * @param _ucCnt-数据长度
+ * @retval uint8_t
+*/
 static uint8_t S_SDCard_ReadDisk(uint8_t *_ucpBuffer, uint32_t _ulSec, uint8_t _ucCnt)
 {
 	uint8_t ucRx;
@@ -300,6 +278,12 @@ static uint8_t S_SDCard_ReadDisk(uint8_t *_ucpBuffer, uint32_t _ulSec, uint8_t _
 	return ucRx;
 }
 
+/**
+ * @brief SD卡的发送数据块
+ * @param _ucpBuffer-缓冲区地址
+ * @param _ucCmd-命令
+ * @retval uint8_t
+*/
 static uint8_t S_SDCard_SendBlock(uint8_t *_ucpBuffer, uint8_t _ucCmd)
 {
 	uint16_t t;
@@ -325,6 +309,13 @@ static uint8_t S_SDCard_SendBlock(uint8_t *_ucpBuffer, uint8_t _ucCmd)
 	return 0;
 }
 
+/**
+ * @brief SD卡的写磁盘
+ * @param _ucpBuffer-缓冲区地址
+ * @param _ulSec-分区
+ * @param _ucCnt-数据长度
+ * @retval uint8_t
+*/
 static uint8_t S_SDCard_WriteDisk(uint8_t *_ucpBuffer, uint32_t _ulSec, uint8_t _ucCnt)
 {
 	uint8_t ucRx=0;
@@ -360,6 +351,18 @@ static uint8_t S_SDCard_WriteDisk(uint8_t *_ucpBuffer, uint32_t _ulSec, uint8_t 
 	
 	S_SDCard_WaitStop();
 	return ucRx;
+}
+
+/**
+ * @brief SD卡的SPI初始化
+ * @param _tSPI-spi结构体
+ * @retval uint8_t
+*/
+uint8_t OCD_SDCard_SPIInit(tagSPI_T _tSPI)
+{
+	s_tSPI = _tSPI;
+	
+	return S_SDCard_Init();
 }
 
 /* FATFS文件系统 start */
@@ -445,7 +448,7 @@ DRESULT disk_write (
 		default:
 			res=1; 
 	}
-    //处理返回值，将SPI_SD_driver.c的返回值转成ff.c的返回值
+    /* 处理返回值，将SPI_SD_driver.c的返回值转成ff.c的返回值 */
     if(res == 0x00)
 		return RES_OK;	 
     else 
@@ -483,7 +486,7 @@ DRESULT disk_ioctl (
 	    }
 	}
 	else 
-		res=RES_ERROR;//其他的不支持
+		res=RES_ERROR; /* 其他的不支持 */
 	return 
 	  res;
 }

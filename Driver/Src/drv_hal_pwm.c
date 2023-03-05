@@ -20,79 +20,10 @@
 
 #ifdef DRV_HAL_PWM_ENABLE
 
-#define MAX_RELOAD		1000000
-
-/**
- * @brief PWM波占空比设置
- * @param _tPWM-PWM结构体指针
- * @param _fDuty-占空比(单位：%)
- * @retval null
-*/
-void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM, float _fDuty)
-{
-	switch(_tPWM->ulChannel)
-	{
-		case TIM_CHANNEL_1:
-			_tPWM->tPWMHandle.Instance->CCR1 = (MAX_RELOAD /_tPWM->ulFreq - 1) * _fDuty / 100;
-		break;
-		
-		case TIM_CHANNEL_2:
-			_tPWM->tPWMHandle.Instance->CCR2 = (MAX_RELOAD /_tPWM->ulFreq - 1) * _fDuty / 100;
-		break;
-		
-		case TIM_CHANNEL_3:
-			_tPWM->tPWMHandle.Instance->CCR3 = (MAX_RELOAD /_tPWM->ulFreq - 1) * _fDuty / 100;
-		break;
-		
-		case TIM_CHANNEL_4:
-			_tPWM->tPWMHandle.Instance->CCR4 = (MAX_RELOAD /_tPWM->ulFreq - 1) * _fDuty / 100;
-		break;
-		
-		default:
-			Drv_HAL_Error(__FILE__, __LINE__);
-		break;
-	}
-}
-
-/**
- * @brief PWM波频率设置
- * @param _tPWM-PWM结构体指针
- * @param Freq -频率(单位：Hz)
- * @retval null
-*/
-void Drv_PMW_FreqSet(tagPWM_T *_tPWM, uint16_t Freq)
-{
-	if(_tPWM->ulFreq == 50)
-	{
-		switch(_tPWM->ulChannel)
-		{
-			case TIM_CHANNEL_1:
-				_tPWM->tPWMHandle.Instance->CCR1 = Freq;
-			break;
-			
-			case TIM_CHANNEL_2:
-				_tPWM->tPWMHandle.Instance->CCR2 = Freq;
-			break;
-			
-			case TIM_CHANNEL_3:
-				_tPWM->tPWMHandle.Instance->CCR3 = Freq;
-			break;
-			
-			case TIM_CHANNEL_4:
-				_tPWM->tPWMHandle.Instance->CCR4 = Freq;
-			break;
-			
-			default:
-				Drv_HAL_Error(__FILE__, __LINE__);
-			break;
-		}
-	}
-}
-
 /**
  * @brief PWM波时钟使能
  * @param _tPWM-PWM结构体指针
- * @retval null
+ * @retval Null
 */
 static void S_PWM_CLKEnable(tagPWM_T *_tPWM)
 {
@@ -125,29 +56,29 @@ static void S_PWM_CLKEnable(tagPWM_T *_tPWM)
 /**
  * @brief PWM波参数设置
  * @param _tPWM-PWM结构体指针
- * @retval null
+ * @retval Null
 */
 static void S_PWM_PramConfig(tagPWM_T *_tPWM)
 {	
-	_tPWM->tPWMHandle.Init.Prescaler			=SYSTEM_CLOCK - 1;          /* 定时器分频 */
-	_tPWM->tPWMHandle.Init.CounterMode			=TIM_COUNTERMODE_UP;		/* 向上计数模式 */
-	_tPWM->tPWMHandle.Init.Period				=MAX_RELOAD /_tPWM->ulFreq - 1;	/* 自动重装载值 */
-	_tPWM->tPWMHandle.Init.ClockDivision		=TIM_CLOCKDIVISION_DIV1;
+	_tPWM->tPWMHandle.Init.Prescaler			= SYSTEM_CLOCK - 1;         		/* 定时器分频 */
+	_tPWM->tPWMHandle.Init.CounterMode			= TIM_COUNTERMODE_UP;			/* 向上计数模式 */
+	_tPWM->tPWMHandle.Init.Period				= MAX_RELOAD /_tPWM->ulFreq - 1;	/* 自动重装载值 */
+	_tPWM->tPWMHandle.Init.ClockDivision		= TIM_CLOCKDIVISION_DIV1;
 	_tPWM->tPWMHandle.Init.AutoReloadPreload 	= TIM_AUTORELOAD_PRELOAD_DISABLE;
 	if (HAL_TIM_PWM_Init(&_tPWM->tPWMHandle) != HAL_OK)
 	{
 		Drv_HAL_Error(__FILE__, __LINE__);
 	}
 	
-	_tPWM->tPWMChannel.OCMode		=TIM_OCMODE_PWM1; 			/* 模式选择PWM1 */
-	_tPWM->tPWMChannel.Pulse		=(MAX_RELOAD / _tPWM->ulFreq -1) * _tPWM->fDuty / 100; 		/* 设置比较值,此值用来确定占空比，默认比较值为自动重装载值的一半,即占空比为50% */
-	_tPWM->tPWMChannel.OCPolarity	=TIM_OCPOLARITY_HIGH; 		/* 输出比较极性为低 */
+	_tPWM->tPWMChannel.OCMode		= TIM_OCMODE_PWM1; 			/* 模式选择PWM1 */
+	_tPWM->tPWMChannel.Pulse		= (MAX_RELOAD / _tPWM->ulFreq -1) * _tPWM->fDuty / 100; 		/* 设置比较值,此值用来确定占空比，默认比较值为自动重装载值的一半,即占空比为50% */
+	_tPWM->tPWMChannel.OCPolarity	= TIM_OCPOLARITY_HIGH; 		/* 输出比较极性为低 */
 	
-	if(HAL_TIM_PWM_ConfigChannel(&_tPWM->tPWMHandle,&_tPWM->tPWMChannel,_tPWM->ulChannel))	/* 配置通道 */
+	if(HAL_TIM_PWM_ConfigChannel(&_tPWM->tPWMHandle,&_tPWM->tPWMChannel,_tPWM->ucChannel))	/* 配置通道 */
 	{
 		Drv_HAL_Error(__FILE__, __LINE__);
 	}				
-	if(HAL_TIM_PWM_Start(&_tPWM->tPWMHandle,_tPWM->ulChannel))	/* 开启通道 */
+	if(HAL_TIM_PWM_Start(&_tPWM->tPWMHandle,_tPWM->ucChannel))	/* 开启通道 */
 	{
 		Drv_HAL_Error(__FILE__, __LINE__);
 	}
@@ -156,7 +87,7 @@ static void S_PWM_PramConfig(tagPWM_T *_tPWM)
 /**
  * @brief PWM对应GPIO配置
  * @param _tPWM-PWM结构体指针
- * @retval null
+ * @retval Null
 */
 static void S_PWM_GPIOConfig(tagPWM_T *_tPWM)
 {
@@ -168,39 +99,39 @@ static void S_PWM_GPIOConfig(tagPWM_T *_tPWM)
 	/* 开启复用模式时钟 */
 	__HAL_RCC_AFIO_CLK_ENABLE();
 
-	/* 根据不同定时器的AFMode开启对应的重映射，重映射表在drv_hal_pwm.h中 */
+	/* 根据不同定时器的ucAFMode开启对应的重映射，重映射表在drv_hal_pwm.h中 */
 	if(_tPWM->tPWMHandle.Instance == TIM1)
 	{
-		if(_tPWM->tGPIO.AFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM1_DISABLE();
-		else if(_tPWM->tGPIO.AFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM1_PARTIAL();
-		else if(_tPWM->tGPIO.AFMode == PARTIAL_REMAP2)	while(1);
-		else if(_tPWM->tGPIO.AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM1_ENABLE();
+		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM1_DISABLE();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM1_PARTIAL();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP2)	while(1);
+		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM1_ENABLE();
 	}
 	else if(_tPWM->tPWMHandle.Instance == TIM2)
 	{
-		if(_tPWM->tGPIO.AFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM2_DISABLE();
-		else if(_tPWM->tGPIO.AFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM2_PARTIAL_1();
-		else if(_tPWM->tGPIO.AFMode == PARTIAL_REMAP2)	__HAL_AFIO_REMAP_TIM2_PARTIAL_2();
-		else if(_tPWM->tGPIO.AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM2_ENABLE();
+		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM2_DISABLE();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM2_PARTIAL_1();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP2)	__HAL_AFIO_REMAP_TIM2_PARTIAL_2();
+		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM2_ENABLE();
 	}
 	else if(_tPWM->tPWMHandle.Instance == TIM3)
 	{
-		if(_tPWM->tGPIO.AFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM3_DISABLE();
-		else if(_tPWM->tGPIO.AFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM3_PARTIAL();
-		else if(_tPWM->tGPIO.AFMode == PARTIAL_REMAP2)	while(1);
-		else if(_tPWM->tGPIO.AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM3_ENABLE();
+		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM3_DISABLE();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM3_PARTIAL();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP2)	while(1);
+		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM3_ENABLE();
 	}
 	else if(_tPWM->tPWMHandle.Instance == TIM4)
 	{
-		if(_tPWM->tGPIO.AFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM4_DISABLE();
-		else if(_tPWM->tGPIO.AFMode == PARTIAL_REMAP)	while(1);
-		else if(_tPWM->tGPIO.AFMode == PARTIAL_REMAP2)	while(1);
-		else if(_tPWM->tGPIO.AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM4_ENABLE();
+		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM4_DISABLE();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	while(1);
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP2)	while(1);
+		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM4_ENABLE();
 	}
-	else if(_tPWM->tPWMHandle.Instance == TIM5 && _tPWM->ulChannel == TIM_CHANNEL_4)
+	else if(_tPWM->tPWMHandle.Instance == TIM5 && _tPWM->ucChannel == TIM_CHANNEL_4)
 	{
-		if(_tPWM->tGPIO.AFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM5CH4_DISABLE();
-		else if(_tPWM->tGPIO.AFMode == FULL_REMAP) 		__HAL_AFIO_REMAP_TIM5CH4_ENABLE();
+		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM5CH4_DISABLE();
+		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP) 		__HAL_AFIO_REMAP_TIM5CH4_ENABLE();
 	}
 
 
@@ -208,10 +139,77 @@ static void S_PWM_GPIOConfig(tagPWM_T *_tPWM)
 }
 
 /**
+ * @brief PWM波占空比设置
+ * @param _tPWM-PWM结构体指针
+ * @param _fDuty-占空比(单位：%)
+ * @retval Null
+*/
+void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM, float _fDuty)
+{
+	switch(_tPWM->ucChannel)
+	{
+		case TIM_CHANNEL_1:
+			_tPWM->tPWMHandle.Instance->CCR1 = (MAX_RELOAD /_tPWM->ulFreq - 1) * _fDuty / 100;
+		break;
+		
+		case TIM_CHANNEL_2:
+			_tPWM->tPWMHandle.Instance->CCR2 = (MAX_RELOAD /_tPWM->ulFreq - 1) * _fDuty / 100;
+		break;
+		
+		case TIM_CHANNEL_3:
+			_tPWM->tPWMHandle.Instance->CCR3 = (MAX_RELOAD /_tPWM->ulFreq - 1) * _fDuty / 100;
+		break;
+		
+		case TIM_CHANNEL_4:
+			_tPWM->tPWMHandle.Instance->CCR4 = (MAX_RELOAD /_tPWM->ulFreq - 1) * _fDuty / 100;
+		break;
+		
+		default:
+			Drv_HAL_Error(__FILE__, __LINE__);
+		break;
+	}
+}
+
+/**
+ * @brief PWM波频率设置
+ * @param _tPWM-PWM结构体指针
+ * @param _ulFreq -频率(单位：Hz)
+ * @retval Null
+*/
+void Drv_PMW_FreqSet(tagPWM_T *_tPWM, uint32_t _ulFreq)
+{
+	if(_tPWM->ulFreq == 50)
+	{
+		switch(_tPWM->ucChannel)
+		{
+			case TIM_CHANNEL_1:
+				_tPWM->tPWMHandle.Instance->CCR1 = _ulFreq;
+			break;
+			
+			case TIM_CHANNEL_2:
+				_tPWM->tPWMHandle.Instance->CCR2 = _ulFreq;
+			break;
+			
+			case TIM_CHANNEL_3:
+				_tPWM->tPWMHandle.Instance->CCR3 = _ulFreq;
+			break;
+			
+			case TIM_CHANNEL_4:
+				_tPWM->tPWMHandle.Instance->CCR4 = _ulFreq;
+			break;
+			
+			default:
+				Drv_HAL_Error(__FILE__, __LINE__);
+			break;
+		}
+	}
+}
+
+/**
  * @brief PWM初始化
  * @param _tPWM-PWM结构体指针
- * @param _num-PWM数量
- * @retval null
+ * @param _ucNum-PWM数量
+ * @retval Null
 */
 void Drv_PWM_Init(tagPWM_T *_tPWM, uint8_t _ucNum)
 {

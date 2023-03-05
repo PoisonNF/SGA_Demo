@@ -2,6 +2,8 @@
 #define __DRV_ADC_H_
 
 #include "drv_hal_conf.h"
+
+#define POLL_NUM	10		/* 轮询次数 */
  
 typedef struct
 {

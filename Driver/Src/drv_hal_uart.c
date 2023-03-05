@@ -24,60 +24,6 @@
 
 #ifdef DRV_HAL_UART_ENABLE
 
-#define TIME_OUT	0xff
-
-/**
- * @brief 串口发送数据函数
- * @param _tUART-串口实例指针
- * @param _ucpTxData-发送数据地址指针
- * @param _uspSize-发送数据大小
- * @retval Null
-*/
-void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
-{	
-	HAL_UART_Transmit(&_tUART->tUARTHandle, _ucpTxData, _uspSize, TIME_OUT);
-}
-
-/**
- * @brief 串口中断发送数据函数
- * @param _tUART-串口实例指针
- * @param _ucpTxData-发送数据地址指针
- * @param _uspSize-发送数据大小
- * @retval Null
-*/
-void Drv_Uart_Transmit_IT(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
-{	
-	HAL_UART_Transmit_IT(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
-}
-
-/**
- * @brief 串口DMA发送数据函数
- * @param _tUART-串口实例指针
- * @param _ucpTxData-发送数据地址指针
- * @param _uspSize-发送数据大小
- * @retval Null
-*/
-void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
-{
-	/* 获取DMA状态 */
-	while(HAL_DMA_GetState(&_tUART->tUartDMA.tDMATx) != HAL_DMA_STATE_READY);
-
-	/* 准备状态即可发送 */
-	HAL_UART_Transmit_DMA(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
-}
-
-/**
- * @brief 串口接收中断重置函数
- * @param _tUART-串口实例指针
- * @param _ucpBuffer-发送数据指针
- * @param _usSize-发送数据大小
- * @retval Null 
-*/
-void Drv_Uart_ReceIT_Enable(tagUART_T *_tUART, uint8_t *_ucpBuffer, uint16_t _usSize)
-{
-	HAL_UART_Receive_IT(&_tUART->tUARTHandle, _ucpBuffer, _usSize);
-}
-
 /**
  * @brief 串口中断配置函数
  * @param _tUART-串口实例指针
@@ -87,27 +33,27 @@ static void S_Uart_NVICConfig(tagUART_T *_tUART)
 {	
 	if(_tUART->tUARTHandle.Instance == USART1)
 	{
-		HAL_NVIC_SetPriority(USART1_IRQn, _tUART->ulPriority, _tUART->ulSubPriority);
+		HAL_NVIC_SetPriority(USART1_IRQn, _tUART->ucPriority, _tUART->ucSubPriority);
 		HAL_NVIC_EnableIRQ(USART1_IRQn);
 	}       
 	else if(_tUART->tUARTHandle.Instance == USART2)
 	{
-		HAL_NVIC_SetPriority(USART2_IRQn, _tUART->ulPriority, _tUART->ulSubPriority);
+		HAL_NVIC_SetPriority(USART2_IRQn, _tUART->ucPriority, _tUART->ucSubPriority);
 		HAL_NVIC_EnableIRQ(USART2_IRQn);
 	}
 	else if(_tUART->tUARTHandle.Instance == USART3)
 	{
-		HAL_NVIC_SetPriority(USART3_IRQn, _tUART->ulPriority, _tUART->ulSubPriority);
+		HAL_NVIC_SetPriority(USART3_IRQn, _tUART->ucPriority, _tUART->ucSubPriority);
 		HAL_NVIC_EnableIRQ(USART3_IRQn);
 	}
 	else if(_tUART->tUARTHandle.Instance == UART4)
 	{
-		HAL_NVIC_SetPriority(UART4_IRQn, _tUART->ulPriority, _tUART->ulSubPriority);
+		HAL_NVIC_SetPriority(UART4_IRQn, _tUART->ucPriority, _tUART->ucSubPriority);
 		HAL_NVIC_EnableIRQ(UART4_IRQn);
 	}
 	else if(_tUART->tUARTHandle.Instance == UART5)
 	{
-		HAL_NVIC_SetPriority(UART5_IRQn, _tUART->ulPriority, _tUART->ulSubPriority);
+		HAL_NVIC_SetPriority(UART5_IRQn, _tUART->ucPriority, _tUART->ucSubPriority);
 		HAL_NVIC_EnableIRQ(UART5_IRQn);
 	}
 }
@@ -125,25 +71,25 @@ static void S_Uart_DMA_NVICConfig(tagUART_T *_tUART)
 		if(_tUART->tUARTHandle.Instance == USART1)
 		{
 			/* DMA1_Channel5_IRQn interrupt configuration */
-			HAL_NVIC_SetPriority(DMA1_Channel5_IRQn,_tUART->tUartDMA.ulDMARxPriority, _tUART->tUartDMA.ulDMARxSubPriority);
+			HAL_NVIC_SetPriority(DMA1_Channel5_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
 			HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 		}
 		else if(_tUART->tUARTHandle.Instance == USART2)
 		{
 			/* DMA1_Channel6_IRQn interrupt configuration */
-			HAL_NVIC_SetPriority(DMA1_Channel6_IRQn,_tUART->tUartDMA.ulDMARxPriority, _tUART->tUartDMA.ulDMARxSubPriority);
+			HAL_NVIC_SetPriority(DMA1_Channel6_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
 			HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
 		}
 		else if(_tUART->tUARTHandle.Instance == USART3)
 		{
 			/* DMA1_Channel3_IRQn interrupt configuration */
-			HAL_NVIC_SetPriority(DMA1_Channel3_IRQn,_tUART->tUartDMA.ulDMARxPriority, _tUART->tUartDMA.ulDMARxSubPriority);
+			HAL_NVIC_SetPriority(DMA1_Channel3_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
 			HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
 		}
 		else if(_tUART->tUARTHandle.Instance == UART4)
 		{
 			/* DMA2_Channel3_IRQn interrupt configuration */
-			HAL_NVIC_SetPriority(DMA2_Channel3_IRQn,_tUART->tUartDMA.ulDMARxPriority, _tUART->tUartDMA.ulDMARxSubPriority);
+			HAL_NVIC_SetPriority(DMA2_Channel3_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
 			HAL_NVIC_EnableIRQ(DMA2_Channel3_IRQn);
 		}
 	}
@@ -153,25 +99,25 @@ static void S_Uart_DMA_NVICConfig(tagUART_T *_tUART)
 		if(_tUART->tUARTHandle.Instance == USART1)
 		{
 			/* DMA1_Channel4_IRQn interrupt configuration */
-			HAL_NVIC_SetPriority(DMA1_Channel4_IRQn,_tUART->tUartDMA.ulDMATxPriority,_tUART->tUartDMA.ulDMATxSubPriority);
+			HAL_NVIC_SetPriority(DMA1_Channel4_IRQn,_tUART->tUartDMA.ucDMATxPriority,_tUART->tUartDMA.ucDMATxSubPriority);
 			HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
 		}
 		else if(_tUART->tUARTHandle.Instance == USART2)
 		{
 			/* DMA1_Channel7_IRQn interrupt configuration */
-			HAL_NVIC_SetPriority(DMA1_Channel7_IRQn,_tUART->tUartDMA.ulDMATxPriority,_tUART->tUartDMA.ulDMATxSubPriority);
+			HAL_NVIC_SetPriority(DMA1_Channel7_IRQn,_tUART->tUartDMA.ucDMATxPriority,_tUART->tUartDMA.ucDMATxSubPriority);
 			HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
 		}
 		else if(_tUART->tUARTHandle.Instance == USART3)
 		{
 			/* DMA1_Channel2_IRQn interrupt configuration */
-			HAL_NVIC_SetPriority(DMA1_Channel2_IRQn,_tUART->tUartDMA.ulDMATxPriority,_tUART->tUartDMA.ulDMATxSubPriority);
+			HAL_NVIC_SetPriority(DMA1_Channel2_IRQn,_tUART->tUartDMA.ucDMATxPriority,_tUART->tUartDMA.ucDMATxSubPriority);
 			HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
 		}
 		else if(_tUART->tUARTHandle.Instance == UART4)
 		{
 			/* DMA2_Channel5_IRQn interrupt configuration */
-			HAL_NVIC_SetPriority(DMA2_Channel4_5_IRQn,_tUART->tUartDMA.ulDMATxPriority,_tUART->tUartDMA.ulDMATxSubPriority);
+			HAL_NVIC_SetPriority(DMA2_Channel4_5_IRQn,_tUART->tUartDMA.ucDMATxPriority,_tUART->tUartDMA.ucDMATxSubPriority);
 			HAL_NVIC_EnableIRQ(DMA2_Channel4_5_IRQn);
 		}
 	}
@@ -212,7 +158,7 @@ static void S_Uart_DMAParamConfig(tagUART_T *_tUART)
 
 /**
  * @brief 串口时钟初始化函数---L4使用
- * @param null
+ * @param Null
  * @retval Null
 */
 static void S_Uart_CLKConfig(void)
@@ -243,7 +189,7 @@ static void S_Uart_CLKConfig(void)
 
 /**
  * @brief 串口时钟使能函数
- * @param *_tUART-串口结构体指针
+ * @param _tUART-串口结构体指针
  * @retval Null
 */
 static void S_UART_CLKEnable(tagUART_T *_tUART)
@@ -272,7 +218,7 @@ static void S_UART_CLKEnable(tagUART_T *_tUART)
 
 /**
  * @brief DMA时钟使能函数
- * @param *_tUART-串口结构体指针
+ * @param _tUART-串口结构体指针
  * @retval Null
 */
 static void S_UART_DMA_CLKEnable(tagUART_T *_tUART)
@@ -291,7 +237,7 @@ static void S_UART_DMA_CLKEnable(tagUART_T *_tUART)
 
 /**
  * @brief UART的GPIO参数配置函数
- * @param *_tUART-串口句柄指针
+ * @param _tUART-串口句柄指针
  * @retval Null
 */
 static void S_UART_GPIOConfig(tagUART_T *_tUART)
@@ -299,30 +245,82 @@ static void S_UART_GPIOConfig(tagUART_T *_tUART)
 	/* 开启复用模式时钟 */
 	__HAL_RCC_AFIO_CLK_ENABLE();
 
-	/* 根据不同串口的AFMode开启对应的重映射，重映射表在drv_hal_uart.h中 */
+	/* 根据不同串口的ucAFMode开启对应的重映射，重映射表在drv_hal_uart.h中 */
 	if(_tUART->tUARTHandle.Instance == USART1)
 	{
-		if(_tUART->tGPIO->AFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART1_DISABLE();
-		else if(_tUART->tGPIO->AFMode == FULL_REMAP) 	    __HAL_AFIO_REMAP_USART1_ENABLE();
-		else if(_tUART->tGPIO->AFMode == PARTIAL_REMAP)	    while(1);
-		else if(_tUART->tGPIO->AFMode == PARTIAL_REMAP2)	while(1);
+		if(_tUART->tGPIO->ucAFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART1_DISABLE();
+		else if(_tUART->tGPIO->ucAFMode == FULL_REMAP) 	    __HAL_AFIO_REMAP_USART1_ENABLE();
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	    while(1);
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP2)	while(1);
 	}
 	else if(_tUART->tUARTHandle.Instance == USART2)
 	{
-		if(_tUART->tGPIO->AFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART2_DISABLE();
-		else if(_tUART->tGPIO->AFMode == PARTIAL_REMAP)	    while(1);
-		else if(_tUART->tGPIO->AFMode == PARTIAL_REMAP2)	while(1);
-		else if(_tUART->tGPIO->AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART2_ENABLE();
+		if(_tUART->tGPIO->ucAFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART2_DISABLE();
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	    while(1);
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP2)	while(1);
+		else if(_tUART->tGPIO->ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART2_ENABLE();
 	}	
 	else if(_tUART->tUARTHandle.Instance == USART3)
 	{
-		if(_tUART->tGPIO->AFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART3_DISABLE();
-		else if(_tUART->tGPIO->AFMode == PARTIAL_REMAP)	    __HAL_AFIO_REMAP_USART3_PARTIAL();
-		else if(_tUART->tGPIO->AFMode == PARTIAL_REMAP2)	while(1);
-		else if(_tUART->tGPIO->AFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART3_ENABLE();
+		if(_tUART->tGPIO->ucAFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART3_DISABLE();
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	    __HAL_AFIO_REMAP_USART3_PARTIAL();
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP2)	while(1);
+		else if(_tUART->tGPIO->ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART3_ENABLE();
 	}
 	
 	Drv_GPIO_Init(_tUART->tGPIO, 2); 	/* GPIO初始化 */
+}
+
+/**
+ * @brief 串口发送数据函数
+ * @param _tUART-串口实例指针
+ * @param _ucpTxData-发送数据地址指针
+ * @param _uspSize-发送数据大小
+ * @retval Null
+*/
+void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
+{	
+	HAL_UART_Transmit(&_tUART->tUARTHandle, _ucpTxData, _uspSize, UART_TIME_OUT);
+}
+
+/**
+ * @brief 串口中断发送数据函数
+ * @param _tUART-串口实例指针
+ * @param _ucpTxData-发送数据地址指针
+ * @param _uspSize-发送数据大小
+ * @retval Null
+*/
+void Drv_Uart_Transmit_IT(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
+{	
+	HAL_UART_Transmit_IT(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
+}
+
+/**
+ * @brief 串口DMA发送数据函数
+ * @param _tUART-串口实例指针
+ * @param _ucpTxData-发送数据地址指针
+ * @param _uspSize-发送数据大小
+ * @retval Null
+*/
+void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
+{
+	/* 获取DMA状态 */
+	while(HAL_DMA_GetState(&_tUART->tUartDMA.tDMATx) != HAL_DMA_STATE_READY);
+
+	/* 准备状态即可发送 */
+	HAL_UART_Transmit_DMA(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
+}
+
+/**
+ * @brief 串口接收中断重置函数
+ * @param _tUART-串口实例指针
+ * @param _ucpBuffer-发送数据指针
+ * @param _usSize-发送数据大小
+ * @retval Null 
+*/
+void Drv_Uart_ReceIT_Enable(tagUART_T *_tUART, uint8_t *_ucpBuffer, uint16_t _usSize)
+{
+	HAL_UART_Receive_IT(&_tUART->tUARTHandle, _ucpBuffer, _usSize);
 }
 
 /**
@@ -419,7 +417,7 @@ void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART)
 		_tUART->tRxInfo.usRxLenth = _tUART->tRxInfo.usRxMAXLenth - __HAL_DMA_GET_COUNTER(_tUART->tUARTHandle.hdmarx);
 
 		/* 接收标志位置1 */
-        _tUART->tUartDMA.DMARxCplt = 1;
+        _tUART->tUartDMA.ucDMARxCplt = 1;
 
 		/* 重新启动DMA接收 */
         HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpRxCache,_tUART->tRxInfo.usRxMAXLenth);

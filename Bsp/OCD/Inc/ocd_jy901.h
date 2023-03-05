@@ -3,109 +3,6 @@
 
 #include "drv_hal_conf.h"
 
-/* 时间数据结构体 */
-typedef struct 
-{
-	//原始数据
-	uint8_t Year;
-	uint8_t Month;
-	uint8_t Day;
-	uint8_t Hour;
-	uint8_t Min;
-	uint8_t Sec;
-	short	mSec;
-}tagJY901Time;
-
-/* 加速度数据结构体 */
-typedef struct 
-{
-	//原始数据
-	short AccX;
-	short AccY;
-	short AccZ;
-	short T;
-	//转换后的数据
-	float ConAccX;
-	float ConAccY;
-	float ConAccZ;
-}tagJY901Acc;
-
-/* 角速度数据结构体 */
-typedef struct 
-{
-	//原始数据
-	short GyroX;
-	short GyroY;
-	short GyroZ;
-	//转换后的数据
-	float ConGyroX;
-	float ConGyroY;
-	float ConGyroZ;
-}tagJY901Gyro;
-
-/* 欧拉角数据结构体 */
-typedef struct 
-{
-	//原始数据
-	short Roll;
-	short Pitch;
-	short Yaw;
-	//转换后的数据
-	float ConRoll;
-	float ConPitch;
-	float ConYaw;
-}tagJY901Angle;
-
-/* 磁场数据结构体 */
-typedef struct 
-{
-	//原始数据
-	short MagX;
-	short MagY;
-	short MagZ;
-	short T;
-	//转换后的数据
-	float ConMagX;
-	float ConMagY;
-	float ConMagZ;
-}tagJY901Mag;
-
-/* 四元数数据结构体 */
-typedef struct 
-{
-	//原始数据
-	short q0;
-	short q1;
-	short q2;
-	short q3;
-	//转换后的数据
-	float Conq0;
-	float Conq1;
-	float Conq2;
-	float Conq3;
-}tagJY901Quater;
-
-/*JY901参数配置结构体*/
-typedef struct 
-{
-	uint8_t 	ucBaud;	//波特率设置
-	uint8_t 	ucRate;	//速率设置
-	uint16_t 	ucType; //输出类型设置
-}tagJY901config;
-
-/*JY901结构体*/
-typedef struct
-{
-	tagUART_T 			tUART;
-	tagJY901config		tConfig;
-	tagJY901Time		stcTime;
-	tagJY901Acc			stcAcc;
-	tagJY901Gyro 		stcGyro;	
-	tagJY901Angle 		stcAngle;
-	tagJY901Mag			stcMag;
-	tagJY901Quater		stcQuater;
-}tagJY901_T;
-
 /** @defgroup SaveConfig _ucSet
   * @{
   */
@@ -197,6 +94,114 @@ typedef struct
 /**
   * @}
   */
+
+/* 时间数据结构体 */
+typedef struct 
+{
+	/* 原始数据 */
+	uint8_t Year;
+	uint8_t Month;
+	uint8_t Day;
+	uint8_t Hour;
+	uint8_t Min;
+	uint8_t Sec;
+	short	mSec;
+}tagJY901Time;
+
+/* 加速度数据结构体 */
+typedef struct 
+{
+	/* 原始数据 */
+	short AccX;
+	short AccY;
+	short AccZ;
+	short T;
+
+	/* 转换后的数据 */
+	float ConAccX;
+	float ConAccY;
+	float ConAccZ;
+}tagJY901Acc;
+
+/* 角速度数据结构体 */
+typedef struct 
+{
+	/* 原始数据 */
+	short GyroX;
+	short GyroY;
+	short GyroZ;
+	
+	/* 转换后的数据 */
+	float ConGyroX;
+	float ConGyroY;
+	float ConGyroZ;
+}tagJY901Gyro;
+
+/* 欧拉角数据结构体 */
+typedef struct 
+{
+	/* 原始数据 */
+	short Roll;
+	short Pitch;
+	short Yaw;
+
+	/* 转换后的数据 */
+	float ConRoll;
+	float ConPitch;
+	float ConYaw;
+}tagJY901Angle;
+
+/* 磁场数据结构体 */
+typedef struct 
+{
+	/* 原始数据 */
+	short MagX;
+	short MagY;
+	short MagZ;
+	short T;
+
+	/* 转换后的数据 */
+	float ConMagX;
+	float ConMagY;
+	float ConMagZ;
+}tagJY901Mag;
+
+/* 四元数数据结构体 */
+typedef struct 
+{
+	/* 原始数据 */
+	short q0;
+	short q1;
+	short q2;
+	short q3;
+
+	/* 转换后的数据 */
+	float Conq0;
+	float Conq1;
+	float Conq2;
+	float Conq3;
+}tagJY901Quater;
+
+/*JY901参数配置结构体*/
+typedef struct 
+{
+	uint8_t 	ucBaud;	/* 波特率设置 */
+	uint8_t 	ucRate;	/* 速率设置 */
+	uint16_t 	usType; /* 输出类型设置 */
+}tagJY901config;
+
+/*JY901结构体*/
+typedef struct
+{
+	tagUART_T 			tUART;
+	tagJY901config		tConfig;
+	tagJY901Time		stcTime;
+	tagJY901Acc			stcAcc;
+	tagJY901Gyro 		stcGyro;	
+	tagJY901Angle 		stcAngle;
+	tagJY901Mag			stcMag;
+	tagJY901Quater		stcQuater;
+}tagJY901_T;
 
 void OCD_JY901_ITInit(tagJY901_T *_tJY901);
 void OCD_JY901_DMAInit(tagJY901_T *_tJY901);

@@ -6,8 +6,8 @@
 typedef struct
 {
 	TIM_HandleTypeDef 	tTimerHandle;
-	uint8_t				ulPriority;		/* 中断优先级，0-15 */
-	uint8_t 			ulSubPriority;	/* 中断子优先级，0-15 */
+	uint8_t				ucPriority;		/* 中断优先级，0-15 */
+	uint8_t 			ucSubPriority;	/* 中断子优先级，0-15 */
 }tagTIM_T;
 
 void Drv_Timer_Reset(tagTIM_T *_tTimer);

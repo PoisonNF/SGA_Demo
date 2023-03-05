@@ -1,35 +1,47 @@
-#include "ocd_ads4111_reg.h"
+#include "ocd_ads4111.h"
 
-/* Error codes */
-#define OK			0x00
-#define ERROR		0x01
-#define INVALID_VAL 0x02 /* Invalid argument */
-#define COMM_ERR    0x03 /* Communication error on receive */
-#define TIMEOUT     0x04 /* A timeout has occured */
+/****************************************************************************
+
+* Sigma团队
+
+* 文件名: ocd_ads4111.c
+
+* 内容简述：ads4111模块文件
+
+* 文件历史：
+
+* 版本号	日期		作者		说明
+
+* 1.0.0a 	2020-02-22	李环宇		创建该文件
+
+****************************************************************************/
 
 /**
  * @brief ADS4111延时函数
- * @param *_tADS4111-ADS4111结构体指针
  * @retval Null
 */
-static void S_AD4111_Delay(void)
+static void S_ADS4111_Delay(void)
 {
 	Drv_Delay_Ms(10);
 }
 
+const uint8_t s_ucByteSize = 16;
 /**
  * @brief ADS4111通信读写函数
- * @param *_tADS4111-ADS4111结构体指针
- * @retval Null
+ * @param _tADS4111-ADS4111结构体指针
+ * @param _ucpTx-发送数组
+ * @param _ucSize-发送长度
+ * @retval uint8_t
 */
-const uint8_t ucByteSize = 16;
 static uint8_t S_ADS4111WriteAndRead(tagAD4111_T *_tADS4111, uint8_t *_ucpTx, uint8_t _ucSize)
 {
 	uint8_t index;
 	
-	if(_ucSize > ucByteSize)
+	/* 如果发送长度大于16 */
+	if(_ucSize > s_ucByteSize)
 		return ERROR;
 	
+	/* 通过SPI发送 */
 	for(index = 0; index < _ucSize; index++)
 	{
 		_ucpTx[index] = Drv_SPI_TransmitReceive(&_tADS4111->tSPI, _ucpTx[index]);
@@ -40,11 +52,11 @@ static uint8_t S_ADS4111WriteAndRead(tagAD4111_T *_tADS4111, uint8_t *_ucpTx, ui
 
 /**
  * @brief Computes the CRC checksum for a data buffer.
- * @param pBuf    - Data buffer
- * @param bufSize - Data buffer size in bytes
- * @return Returns the computed CRC checksum.
+ * @param _ucpBuf-Data buffer
+ * @param _ucSize-Data buffer size in bytes
+ * @return uint8_t-Returns the computed CRC checksum.
 */
-uint8_t S_AD4111_CRC8(uint8_t * _ucpBuf, uint8_t _ucSize)
+uint8_t S_ADS4111_CRC8(uint8_t *_ucpBuf, uint8_t _ucSize)
 {
 	uint8_t i   = 0;
 	uint8_t crc = 0;
@@ -54,7 +66,8 @@ uint8_t S_AD4111_CRC8(uint8_t * _ucpBuf, uint8_t _ucSize)
 		for(i = 0x80; i != 0; i >>= 1) 
 		{
 			if(((crc & 0x80) != 0) != ((*_ucpBuf & i) != 0)) 
-			{ /* MSB of CRC register XOR input Bit from Data */
+			{
+				/* MSB of CRC register XOR input Bit from Data */
 				crc <<= 1;
 				crc ^= AD411X_CRC8_POLYNOMIAL_REPRESENTATION;
 			} 
@@ -71,11 +84,11 @@ uint8_t S_AD4111_CRC8(uint8_t * _ucpBuf, uint8_t _ucSize)
 
 /**
  * @brief Computes the XOR checksum for a data buffer.
- * @param _ucpBuf    - Data buffer
- * @param _ucSize - Data buffer size in bytes
- * @return Returns the computed XOR checksum.
+ * @param _ucpBuf-Data buffer
+ * @param _ucSize-Data buffer size in bytes
+ * @return uint8_t-Returns the computed XOR checksum.
 */
-static uint8_t S_AD4111_XOR8(uint8_t *_ucpBuf, uint8_t _ucSize)
+static uint8_t S_ADS4111_XOR8(uint8_t *_ucpBuf, uint8_t _ucSize)
 {
 	uint8_t ucRes = 0;
 
@@ -91,11 +104,11 @@ static uint8_t S_AD4111_XOR8(uint8_t *_ucpBuf, uint8_t _ucSize)
 /**
  * @brief  Searches through the list of registers of the driver instance and
  *         retrieves a pointer to the register that matches the given address.
- * @param _tAD4111 - The handler of the instance of the driver.
- * @param _ucAddr - The address to be used to find the register.
- * @return A pointer to the register if found or 0.
+ * @param _tAD4111-The handler of the instance of the driver.
+ * @param _ucAddr-The address to be used to find the register.
+ * @return tagAD4111Reg_T-A pointer to the register if found or 0.
 */
-static tagAD4111Reg_T *S_AD4111_GetReg(tagAD4111_T *_tAD4111,uint8_t _ucAddr)
+static tagAD4111Reg_T *S_ADS4111_GetReg(tagAD4111_T *_tAD4111,uint8_t _ucAddr)
 {
 	uint8_t index;
 	tagAD4111Reg_T *tReg = 0;
@@ -117,21 +130,21 @@ static tagAD4111Reg_T *S_AD4111_GetReg(tagAD4111_T *_tAD4111,uint8_t _ucAddr)
 
 /**
  * @brief Updates the CRC settings.
- * @param _tAD4111 - The handler of the instance of the driver.
- * @return Returns 0 for success or negative error code.
+ * @param _tAD4111-The handler of the instance of the driver.
+ * @return int32_t-Returns 0 for success or negative error code.
 */
-static int32_t S_AD4111_UpdateCRCSetting(tagAD4111_T *_tAD4111)
+static int32_t S_ADS4111_UpdateCRCSetting(tagAD4111_T *_tAD4111)
 {
 	tagAD4111Reg_T *tReg;
 
 	if(!_tAD4111 || !_tAD4111->tADS4111Reg)
 		return INVALID_VAL;
 
-	tReg = S_AD4111_GetReg(_tAD4111, AD411X_IFMODE_REG);
+	tReg = S_ADS4111_GetReg(_tAD4111, AD411X_IFMODE_REG);
 	if (!tReg)
 		return INVALID_VAL;
 
-	/* Get CRC State. */
+	/* Get CRC State */
 	if(AD411X_IFMODE_REG_CRC_STAT(tReg->ulValue))
 	{
 		_tAD4111->tCrcMode = AD411X_USE_CRC;
@@ -148,12 +161,12 @@ static int32_t S_AD4111_UpdateCRCSetting(tagAD4111_T *_tAD4111)
 	return 0;
 }
 
+const uint8_t s_ucResetBuf[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 /**
  * @brief ADS4111复位函数
- * @param *_tADS4111-ADS4111结构体指针
- * @retval Null
+ * @param _tADS4111-ADS4111结构体指针
+ * @retval uint8_t
 */
-const uint8_t s_ucResetBuf[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 static uint8_t S_ADS4111Reset(tagAD4111_T *_tADS4111)
 {
 	uint8_t ucRes;
@@ -166,25 +179,26 @@ static uint8_t S_ADS4111Reset(tagAD4111_T *_tADS4111)
 	return ucRes;
 }
 
+const uint8_t s_ucRegSize = 8;
 /**
  * @brief ADS4111写寄存器
- * @param *_tADS4111-ADS4111结构体指针
- * @retval Null
+ * @param _tADS4111-ADS4111结构体指针
+ * @param _ucAddr-写寄存器的地址
+ * @retval uint8_t
 */
-const uint8_t ucRegSize = 8;
 static uint8_t S_ADS4111WriteRegister(tagAD4111_T *_tADS4111, uint8_t _ucAddr)
 {
 	uint8_t ucRes;
 	uint8_t index;
 	int32_t ulRegValue = 0;
-	uint8_t ucWrRegBuf[ucRegSize] = {0};
-	tagAD4111Reg_T	*tReg;
-	uint8_t ucCrc8     = 0;
+	uint8_t ucWrRegBuf[s_ucRegSize] = {0};
+	tagAD4111Reg_T *tReg;
+	uint8_t ucCrc8 = 0;
 	
 	if(!_tADS4111)
 		return INVALID_VAL;
 	
-	tReg = S_AD4111_GetReg(_tADS4111, _ucAddr);
+	tReg = S_ADS4111_GetReg(_tADS4111, _ucAddr);
 	
 	if (!tReg)
 		return INVALID_VAL;
@@ -202,7 +216,7 @@ static uint8_t S_ADS4111WriteRegister(tagAD4111_T *_tADS4111, uint8_t _ucAddr)
 	/* Compute the CRC */
 	if(_tADS4111->tCrcMode != AD411X_DISABLE) 
 	{
-		ucCrc8 = S_AD4111_CRC8(ucWrRegBuf, tReg->ulSize + 1);
+		ucCrc8 = S_ADS4111_CRC8(ucWrRegBuf, tReg->ulSize + 1);
 		ucWrRegBuf[tReg->ulSize + 1] = ucCrc8;
 	}
 	
@@ -217,12 +231,12 @@ static uint8_t S_ADS4111WriteRegister(tagAD4111_T *_tADS4111, uint8_t _ucAddr)
 
 /**
  * @brief Reads the value of the specified register.
- * @param _tAD4111 - The handler of the instance of the driver.
- * @param addr - The address of the register to be read. The value will be stored
+ * @param _tAD4111-The handler of the instance of the driver.
+ * @param _ucAddr-The address of the register to be read. The value will be stored
  *         inside the register structure that holds info about this register.
  * @return Returns 0 for success or negative error code.
 */
-static int32_t S_AD4111_ReadRegister(tagAD4111_T *_tAD4111, uint8_t addr)
+static int32_t S_ADS4111_ReadRegister(tagAD4111_T *_tAD4111, uint8_t _ucAddr)
 {
 	uint8_t ucRes			= 0;
 	uint8_t ucpBuffer[8]	= {0, 0, 0, 0, 0, 0, 0, 0};
@@ -234,7 +248,7 @@ static int32_t S_AD4111_ReadRegister(tagAD4111_T *_tAD4111, uint8_t addr)
 	if(!_tAD4111)
 		return INVALID_VAL;
 
-	tReg = S_AD4111_GetReg(_tAD4111, addr);
+	tReg = S_ADS4111_GetReg(_tAD4111, _ucAddr);
 	if (!tReg)
 		return INVALID_VAL;
 
@@ -255,7 +269,7 @@ static int32_t S_AD4111_ReadRegister(tagAD4111_T *_tAD4111, uint8_t addr)
 		{
 			ucpMsgBuf[index] = ucpBuffer[index];
 		}
-		ucCheck8 = S_AD4111_CRC8(ucpMsgBuf, tReg->ulSize + 2);
+		ucCheck8 = S_ADS4111_CRC8(ucpMsgBuf, tReg->ulSize + 2);
 	}
 	if(_tAD4111->tCrcMode == AD411X_USE_XOR) 
 	{
@@ -264,7 +278,7 @@ static int32_t S_AD4111_ReadRegister(tagAD4111_T *_tAD4111, uint8_t addr)
 		{
 			ucpMsgBuf[index] = ucpBuffer[index];
 		}
-		ucCheck8 = S_AD4111_XOR8(ucpMsgBuf, tReg->ulSize + 2);
+		ucCheck8 = S_ADS4111_XOR8(ucpMsgBuf, tReg->ulSize + 2);
 	}
 
 	if(ucCheck8 != 0) 
@@ -286,15 +300,15 @@ static int32_t S_AD4111_ReadRegister(tagAD4111_T *_tAD4111, uint8_t addr)
 
 /**
  * @brief ADS4111自检函数
- * @param *_tADS4111-ADS4111结构体指针
+ * @param _tADS4111-ADS4111结构体指针
  * @retval Null
 */
-static void S_AD4111_Check(tagAD4111_T *_tAS4111)
+static void S_ADS4111_Check(tagAD4111_T *_tAS4111)
 {
 	uint8_t ucRes;
 	tagAD4111Reg_T *tReg;
 	
-	tReg = S_AD4111_GetReg(_tAS4111, AD411X_GPIOCON_REG);
+	tReg = S_ADS4111_GetReg(_tAS4111, AD411X_GPIOCON_REG);
 	while (tReg && tReg->ulAddr != AD411X_OFFSET0_REG) 
 	{
 		if (tReg->ulAddr == AD411X_ID_REG) 
@@ -303,7 +317,7 @@ static void S_AD4111_Check(tagAD4111_T *_tAS4111)
 			continue;
 		}
 		
-		S_AD4111_Delay();
+		S_ADS4111_Delay();
 		
 		ucRes = S_ADS4111WriteRegister(_tAS4111, tReg->ulAddr);
 		if (ucRes > 0)
@@ -314,36 +328,36 @@ static void S_AD4111_Check(tagAD4111_T *_tAS4111)
 
 /**
  * @brief ADS4111初始化函数
- * @param *_tADS4111-ADS4111结构体指针
- * @retval Null
+ * @param _tADS4111-ADS4111结构体指针
+ * @retval int8_t
 */
 int8_t OCD_ADS4111Init(tagAD4111_T *_tAS4111)
 {
 	uint8_t ucRes;
 	
 	Drv_SPI_Init(&_tAS4111->tSPI);
-	S_AD4111_Delay();
+	S_ADS4111_Delay();
 	
 	_tAS4111->tADS4111Reg = tAD4111Reg;
 	_tAS4111->ucRegNum = sizeof(tAD4111Reg)/sizeof(tagAD4111_T);
 	_tAS4111->tCrcMode = AD411X_DISABLE;
 	
 	S_ADS4111Reset(_tAS4111);		/* 复位 */
-	S_AD4111_Delay();
+	S_ADS4111_Delay();
 	
 	ucRes = S_ADS4111WriteRegister(_tAS4111, AD411X_ADCMODE_REG);		/* Initialize ADC mode register. */
-	S_AD4111_Delay();
+	S_ADS4111_Delay();
 	ucRes = S_ADS4111WriteRegister(_tAS4111, AD411X_IFMODE_REG);		/* Initialize Interface mode register. */
-	S_AD4111_Delay();
-	ucRes = S_AD4111_UpdateCRCSetting(_tAS4111);									/* Get CRC State */
+	S_ADS4111_Delay();
+	ucRes = S_ADS4111_UpdateCRCSetting(_tAS4111);						/* Get CRC State */
 	
-	S_AD4111_Check(_tAS4111);
-	S_AD4111_Delay();
+	S_ADS4111_Check(_tAS4111);
+	S_ADS4111_Delay();
 	
 	ucRes = S_ADS4111WriteRegister(_tAS4111, AD411X_GAIN0_REG);
-	S_AD4111_Delay();
-	ucRes = S_AD4111_ReadRegister(_tAS4111, AD411X_ID_REG);
-	S_AD4111_Delay();
+	S_ADS4111_Delay();
+	ucRes = S_ADS4111_ReadRegister(_tAS4111, AD411X_ID_REG);
+	S_ADS4111_Delay();
 	
 	return ucRes;
 }

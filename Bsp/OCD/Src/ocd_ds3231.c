@@ -2,7 +2,7 @@
 
 * Sigma团队
 
-* 文件名: ut_ds3231.c
+* 文件名: ocd_ds3231.c
 
 * 内容简述：ds3231模块文件
 
@@ -19,56 +19,25 @@
 ****************************************************************************/
 #include "ocd_ds3231.h"
 
-#define DS3231_IIC_ADDR 	0XD0
-
-#define DS3231_WriteAddress 0xD0    /* 器件写地址 */
-#define DS3231_ReadAddress  0xD1    /* 器件读地址 */
-
-#define DS3231_SECOND       0x00    /* 秒 */
-#define DS3231_MINUTE       0x01    /* 分 */
-#define DS3231_HOUR         0x02    /* 时 */
-#define DS3231_WEEK         0x03    /* 星期 */
-#define DS3231_DAY          0x04    /* 日 */
-#define DS3231_MONTH        0x05    /* 月 */
-#define DS3231_YEAR         0x06    /* 年 */
-
-/* 闹铃1寄存器 */            
-#define DS3231_ALARM1SECOND 0x07    /* 秒 */
-#define DS3231_ALARM1MINUTE 0x08    /* 分 */
-#define DS3231_ALARM1HOUR   0x09    /* 时 */
-#define DS3231_ALARM1WEEK   0x0A    /* 星期/日 */
-
-/* 闹铃2寄存器 */
-#define DS3231_ALARM2MINUTE 0x0b    /* 分 */
-#define DS3231_ALARM2HOUR   0x0c    /* 时 */
-#define DS3231_ALARM2WEEK   0x0d    /* 星期/日 */
-
-#define DS3231_CONTROL      0x0e    /* 控制寄存器 */
-#define DS3231_STATUS       0x0f    /* 状态寄存器 */
-#define BSY                 2       /* 忙 */
-#define OSF                 7       /* 振荡器停止标志 */
-#define DS3231_XTAL         0x10    /* 晶体老化寄存器 */
-#define DS3231_TEMPERATUREH 0x11    /* 温度寄存器高字节(8位) */
-#define DS3231_TEMPERATUREL 0x12    /* 温度寄存器低字节(高2位) */
-
 /**
  * @brief DS3231内部延时函数
- * @param 	_ulUs-延时（单位：us）
+ * @param _ulUs-延时（单位：us）
  * @retval	NULL
  */
 static void S_DS3231_DelayUs(uint8_t _ulUs)
 {
 	int i,j;
+
 	for(i = 0; i < _ulUs; i++)
 		for(j = 0; j < 12; j++);
 }
 
 /**
- * @brief 	向DS3231读数据
- * @param 	*_tDS3231-ds3231结构体指针
- * @param 	_ucDevAddr-地址
- * @param	_ucReg-寄存器
- * @retval	0-读失败；其它-寄存器数据
+ * @brief 向DS3231读数据
+ * @param _tDS3231-ds3231结构体指针
+ * @param _ucDevAddr-地址
+ * @param _ucReg-寄存器
+ * @retval uint8_t-0-读失败；其它-寄存器数据
  */
 static uint8_t S_DS3231_ReadByte(tagDS3231_T *_tDS3231, uint8_t _ucDevAddr, uint8_t _ucReg)
 {
@@ -99,17 +68,16 @@ static uint8_t S_DS3231_ReadByte(tagDS3231_T *_tDS3231, uint8_t _ucDevAddr, uint
 	cmd_fail:
 	
 	Drv_IICSoft_Stop(&_tDS3231->tIICSoft);
-	
 	return 0;
 }
 
 /**
  * @brief 向DS3231写数据
- * @param 	*_tDS3231-ds3231结构体指针
- * @param 	_ucDevAddr-地址
- * @param	_ucReg-寄存器
- * @param	cData-数据
- * @retval	0-写失败；1-写成功
+ * @param _tDS3231-ds3231结构体指针
+ * @param _ucDevAddr-地址
+ * @param _ucReg-寄存器
+ * @param _ucData-数据
+ * @retval uint8_t-0-写失败；1-写成功
  */
 static uint8_t S_DS3231_WriteByte(tagDS3231_T *_tDS3231, uint8_t _ucDevAddr, uint8_t _ucReg, uint8_t _ucData)
 {
@@ -133,15 +101,33 @@ static uint8_t S_DS3231_WriteByte(tagDS3231_T *_tDS3231, uint8_t _ucDevAddr, uin
 	return(1);     
 	
 	cmd_fail:
+
 	Drv_IICSoft_Stop(&_tDS3231->tIICSoft);
 	return(0);
 }
 
 /**
+ * @brief 字符串转换十六进制
+ * @param _ucpSrc-字符地址
+ * @param _ucLen-字符长度
+ * @retval uint32_t-十六进制
+ */
+static uint32_t S_DS3231_StringToHex(uint8_t *_ucpSrc, uint8_t _ucLen)
+{
+	uint8_t index;
+	uint32_t ulRes;
+
+	for(index = 0; index < _ucLen; index++)
+		ulRes += (_ucpSrc[index] - '0') << (_ucLen - index);
+
+	return ulRes;
+}
+
+/**
  * @brief 向DS3231时间设置（十六进制）
- * @param 	*_tDS3231-ds3231结构体指针
- * @param	*_tTime-时间结构体地址指针
- * @retval	0-设置失败；1-设置成功
+ * @param _tDS3231-ds3231结构体指针
+ * @param _tTime-时间结构体地址指针
+ * @retval uint8_t-0-设置失败；1-设置成功
  */
 uint8_t OCD_DS3231_TimeSetHex(tagDS3231_T *_tDS3231, tagDS3231Time_T *_tTime)
 {
@@ -179,48 +165,37 @@ uint8_t OCD_DS3231_TimeSetHex(tagDS3231_T *_tDS3231, tagDS3231Time_T *_tTime)
 	return 1;
 }
 
-//static uint32_t S_DS3231_StringToHex(uint8_t *_ucpSrc, uint8_t _ucLen)
-//{
-//	uint8_t index;
-//	uint32_t ulRes;
-
-//	for(index = 0; index < _ucLen; index++)
-//		ulRes += (_ucpSrc[index] - '0') << (_ucLen - index);
-
-//	return ulRes;
-//}
-
 /**
  * @brief 向DS3231时间设置（ASCII）
- * @param 	*_tDS3231-ds3231结构体指针
- * @param	*_tTime-时间结构体地址指针
- * @retval	0-设置失败；1-设置成功
+ * @param _tDS3231-ds3231结构体指针
+ * @param _tTime-时间结构体地址指针
+ * @retval uint8_t-0-设置失败；1-设置成功
  */
 uint8_t OCD_DS3231_TimeSetASCII(tagDS3231_T *_tDS3231, tagDS3231TimeASCII_T *_tTime)
 {
-//	tagDS3231Time_T tTime;
-//	
-//	tTime.ucYear = S_DS3231_StringToHex(_tTime->ucYear, 2);
-//	tTime.ucMonth = S_DS3231_StringToHex(_tTime->ucMonth, 2);
-//	tTime.ucDate = S_DS3231_StringToHex(_tTime->ucDate, 2);
-//	tTime.ucHour = S_DS3231_StringToHex(_tTime->ucHour, 2);
-//	tTime.ucMinute = S_DS3231_StringToHex(_tTime->ucMinute, 2);
-//	tTime.ucSecond = S_DS3231_StringToHex(_tTime->ucSecond, 2);
+	volatile tagDS3231Time_T tTime;
+	
+	tTime.ucYear = S_DS3231_StringToHex(_tTime->ucYear, 2);
+	tTime.ucMonth = S_DS3231_StringToHex(_tTime->ucMonth, 2);
+	tTime.ucDate = S_DS3231_StringToHex(_tTime->ucDate, 2);
+	tTime.ucHour = S_DS3231_StringToHex(_tTime->ucHour, 2);
+	tTime.ucMinute = S_DS3231_StringToHex(_tTime->ucMinute, 2);
+	tTime.ucSecond = S_DS3231_StringToHex(_tTime->ucSecond, 2);
 	
 	return 1;
 }
 
 /**
  * @brief 向DS3231时间读取（十六进制）
- * @param 	*_tDS3231-ds3231结构体指针
- * @param	*_tTime-时间结构体地址指针
- * @retval	0-设置失败；1-设置成功
+ * @param _tDS3231-ds3231结构体指针
+ * @param _tTime-时间结构体地址指针
+ * @retval uint8_t-0-设置失败；1-设置成功
  */
 uint8_t OCD_DS3231_TimeGetHex(tagDS3231_T *_tDS3231, tagDS3231Time_T *_tTime)
 {	
 	_tTime->ucYear = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_YEAR);		/* 年 */
-	_tTime->ucMonth = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_MONTH);		/* 月 */
-	_tTime->ucDate = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_DAY);			/* 日 */
+	_tTime->ucMonth = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_MONTH);	/* 月 */
+	_tTime->ucDate = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_DAY);		/* 日 */
 	_tTime->ucHour = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_HOUR);		/* 时 */
 	_tTime->ucMinute = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_MINUTE);	/* 分 */
 	_tTime->ucSecond = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_SECOND);	/* 秒 */
@@ -231,9 +206,9 @@ uint8_t OCD_DS3231_TimeGetHex(tagDS3231_T *_tDS3231, tagDS3231Time_T *_tTime)
 
 /**
  * @brief 向DS3231时间读取（ASCII）
- * @param 	*_tDS3231-ds3231结构体指针
- * @param	*_tTime-时间结构体地址指针
- * @retval	0-设置失败；1-设置成功
+ * @param _tDS3231-ds3231结构体指针
+ * @param _tTime-时间结构体地址指针
+ * @retval uint8_t-0-设置失败；1-设置成功
  */
 uint8_t OCD_DS3231_TimeGetASCII(tagDS3231_T *_tDS3231, tagDS3231TimeASCII_T *_tTime)
 {
@@ -260,10 +235,10 @@ uint8_t OCD_DS3231_TimeGetASCII(tagDS3231_T *_tDS3231, tagDS3231TimeASCII_T *_tT
 }
 
 /**
- * @brief 	DS3231闹钟设置（ASCII）
- * @param 	*_tDS3231-ds3231结构体指针
- * @param	*_tTime-时间结构体地址指针
- * @retval	0-设置失败；1-设置成功
+ * @brief DS3231闹钟设置（ASCII）
+ * @param _tDS3231-ds3231结构体指针
+ * @param _tTime-时间结构体地址指针
+ * @retval Null
  */
 void OCD_DS3231_Alarm1ConfigASCII(tagDS3231_T *_tDS3231, tagDS3231TimeASCII_T *_tTime)
 {	
@@ -283,16 +258,16 @@ void OCD_DS3231_Alarm1ConfigASCII(tagDS3231_T *_tDS3231, tagDS3231TimeASCII_T *_
 	S_DS3231_WriteByte(_tDS3231, DS3231_IIC_ADDR, DS3231_CONTROL, ucRes|0x05);
 	
 	ucRes = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_STATUS);
-	S_DS3231_WriteByte(_tDS3231, DS3231_IIC_ADDR, DS3231_STATUS, ucRes&0xfC);////闹钟1、2标志位清零
+	S_DS3231_WriteByte(_tDS3231, DS3231_IIC_ADDR, DS3231_STATUS, ucRes&0xfC);	/* 闹钟1、2标志位清零 */
 	
 	//DS3231_Interrupt_ENABLE(Interrupt_EXTI_X_IRQn,ENABLE);
 }
 
 /**
- * @brief	DS3231闹钟设置（Hex）
- * @param 	*_tDS3231-iic结构体指针
- * @param	*_tTime-时间结构体地址指针
- * @retval	0-设置失败；1-设置成功
+ * @brief DS3231闹钟设置（Hex）
+ * @param _tDS3231-iic结构体指针
+ * @param _tTime-时间结构体地址指针
+ * @retval Null
  */
 void OCD_DS3231_Alarm1ConfigHex(tagDS3231_T *_tDS3231, tagDS3231Time_T *_tTime)
 {	
@@ -307,7 +282,7 @@ void OCD_DS3231_Alarm1ConfigHex(tagDS3231_T *_tDS3231, tagDS3231Time_T *_tTime)
 	S_DS3231_WriteByte(_tDS3231, DS3231_IIC_ADDR, DS3231_CONTROL, ucRes|0x05);
 	
 	ucRes = S_DS3231_ReadByte(_tDS3231, DS3231_IIC_ADDR, DS3231_STATUS);
-	S_DS3231_WriteByte(_tDS3231, DS3231_IIC_ADDR, DS3231_STATUS, ucRes&0xfC);////闹钟1、2标志位清零
+	S_DS3231_WriteByte(_tDS3231, DS3231_IIC_ADDR, DS3231_STATUS, ucRes&0xfC);	/* 闹钟1、2标志位清零 */
 	
 	//DS3231_Interrupt_ENABLE(Interrupt_EXTI_X_IRQn,ENABLE);
 }
@@ -315,7 +290,7 @@ void OCD_DS3231_Alarm1ConfigHex(tagDS3231_T *_tDS3231, tagDS3231Time_T *_tTime)
 /**
  * @brief DS3231初始化
  * @param _tDS3231-ds3231结构体指针
- * @retval None
+ * @retval Null
  */
 void OCD_DS3231_Init(tagDS3231_T *_tDS3231)
 {

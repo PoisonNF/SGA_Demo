@@ -3,16 +3,16 @@
 
 #include "drv_hal_conf.h"
 
-#define DI  Drv_GPIO_Read(&_tPS2->tGPIO[0])     //DI输入
+#define DI  Drv_GPIO_Read(&_tPS2->tGPIO[0])     /* DI输入 */
 
-#define DO_H Drv_GPIO_Set(&_tPS2->tGPIO[1])     //命令位高
-#define DO_L Drv_GPIO_Reset(&_tPS2->tGPIO[1])   //命令位低
+#define DO_H Drv_GPIO_Set(&_tPS2->tGPIO[1])     /* 命令位高 */
+#define DO_L Drv_GPIO_Reset(&_tPS2->tGPIO[1])   /* 命令位低 */
 
-#define CS_H Drv_GPIO_Set(&_tPS2->tGPIO[2])     //CS拉高
-#define CS_L Drv_GPIO_Reset(&_tPS2->tGPIO[2])   //CS拉低
+#define CS_H Drv_GPIO_Set(&_tPS2->tGPIO[2])     /* CS拉高 */
+#define CS_L Drv_GPIO_Reset(&_tPS2->tGPIO[2])   /* CS拉低 */
 
-#define CLK_H Drv_GPIO_Set(&_tPS2->tGPIO[3])    //时钟拉高
-#define CLK_L Drv_GPIO_Reset(&_tPS2->tGPIO[3])  //时钟拉低
+#define CLK_H Drv_GPIO_Set(&_tPS2->tGPIO[3])    /* 时钟拉高 */
+#define CLK_L Drv_GPIO_Reset(&_tPS2->tGPIO[3])  /* 时钟拉低 */
 
 /* 按键对应 */
 #define PSB_SELECT      1
@@ -38,23 +38,17 @@
 #define PSB_CROSS       15
 #define PSB_SQUARE      16
 
-
 /* 摇杆存储位置 */
-#define PSS_RX 5                //右摇杆X轴数据
-#define PSS_RY 6                //右摇杆Y轴数据
-#define PSS_LX 7                //左摇杆X轴数据
-#define PSS_LY 8                //左摇杆Y轴数据
+#define PSS_RX 5                /* 右摇杆X轴数据 */
+#define PSS_RY 6                /* 右摇杆Y轴数据 */
+#define PSS_LX 7                /* 左摇杆X轴数据 */
+#define PSS_LY 8                /* 左摇杆Y轴数据 */
 
 #define DELAY_TIME  Drv_Delay_Us(5); 
 
-typedef struct 
-{
-    tagGPIO_T tGPIO[4];     //按照[0]DI/DAT [1]DO/CMD [2]CS [3]CLK顺序
-}tagPS2_T;
-
-uint16_t Handkey;	// 按键值读取，零时存储。
-uint8_t Comd[2]={0x01,0x42};	//开始命令。请求数据
-uint8_t PS2Data[9]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}; //数据存储数组
+uint16_t Handkey;	            /* 按键值读取，零时存储 */ 
+uint8_t Comd[2]={0x01,0x42};	/* 开始命令。请求数据 */
+uint8_t PS2Data[9]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}; /* 数据存储数组 */
                     /*PS2Data[0]    空 
                       PS2Data[1]    0x73 红灯模式 0x41 灭灯模式
                       PS2Data[2]    0x5A 返回数据预告
@@ -84,11 +78,19 @@ uint16_t MASK[]={
     PSB_PINK
 };
 
-void OCD_PS2_Init(tagPS2_T *_tPS2);
+typedef struct 
+{
+	tagGPIO_T tGPIO[4];     /* 按照[0]DI/DAT [1]DO/CMD [2]CS [3]CLK顺序 */
+}tagPS2_T;
+
+void OCD_PS2_ReadData(tagPS2_T *_tPS2);
+void OCD_PS2_ClearData(void);
 uint8_t OCD_PS2_RedLight(tagPS2_T *_tPS2);
 uint8_t OCD_PS2_AnologData(uint8_t button);
-void OCD_PS2_ReadData(tagPS2_T *_tPS2);
 uint8_t OCD_PS2_DataKey(tagPS2_T *_tPS2);
+void OCD_PS2_Vibration(tagPS2_T *_tPS2,uint8_t _ucMotor1, uint8_t _ucMotor2);
+void OCD_PS2_VibrationMode(tagPS2_T *_tPS2);
+void OCD_PS2_Init(tagPS2_T *_tPS2);
 
 #endif
 

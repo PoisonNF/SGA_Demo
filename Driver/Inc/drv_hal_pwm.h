@@ -3,13 +3,15 @@
 
 #include "drv_hal_conf.h"
 
+#define MAX_RELOAD		1000000
+
 typedef struct
 {
 	TIM_HandleTypeDef 	tPWMHandle;		/* STM32内部PWM设备句柄 */
 	TIM_OC_InitTypeDef	tPWMChannel;	/* STM32内部PWM通道句柄 */
 	uint32_t			ulFreq;			/* 频率 */
 	float				fDuty;			/* 占空比 */
-	uint8_t				ulChannel;		/* 通道 */
+	uint8_t				ucChannel;		/* 通道 */
 	tagGPIO_T			tGPIO;			/* GPIO设置 */
 }tagPWM_T;
 
@@ -36,7 +38,7 @@ typedef struct
 */
 
 void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM,float _fDuty);
-void Drv_PMW_FreqSet(tagPWM_T *_tPWM, uint16_t Freq);
+void Drv_PMW_FreqSet(tagPWM_T *_tPWM, uint32_t _ulFreq);
 void Drv_PWM_Init(tagPWM_T *_tPWM, uint8_t _ucNum);
 
 #endif

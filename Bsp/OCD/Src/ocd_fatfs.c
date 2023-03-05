@@ -2,7 +2,7 @@
 
 * Sigma团队
 
-* 文件名: ut_fatfs.c
+* 文件名: ocd_fatfs.c
 
 * 内容简述：FATFS模块文件
 
@@ -18,25 +18,14 @@
 #include "ocd_fatfs.h"
 
 /**
- * @brief FATFS文件系统初始化
- * @param *_tFATFS-FATFS结构体指针
- * @retval None
- */
-uint8_t OCD_FATFS_Init(tagFATFS_T *_tFATFS)
-{
-	return OCD_SDCard_SPIInit(_tFATFS->tSPI);
-}
-
-/**
  * @brief FATFS文件系统创建文件夹
- * @param *_tFATFS-FATFS结构体指针
- * @param *_cpPath-文件夹路径指针
- * @param *_cpFileNum-文件名索引指针
- * @retval None
+ * @param _tFATFS-FATFS结构体指针
+ * @param _cpPath-文件夹路径指针
+ * @retval uint8_t
  */
 uint8_t OCD_FATFS_CreateDir(tagFATFS_T *_tFATFS, const char *_cpPath)
 {
-	f_mount(&_tFATFS->tFATFSInfo.tFATFS, "0:", 1); // 为SD卡开辟一个工作区
+	f_mount(&_tFATFS->tFATFSInfo.tFATFS, "0:", 1); /* 为SD卡开辟一个工作区 */
 	if(f_mkdir(_cpPath)==0) 
 	{
 	   
@@ -45,14 +34,15 @@ uint8_t OCD_FATFS_CreateDir(tagFATFS_T *_tFATFS, const char *_cpPath)
 	{
 		return 0; /* 创建文件夹失败或文件夹已存在 */
 	}
-	f_mount(NULL, 0, 1); // 注销工作区
+	f_mount(NULL, 0, 1); /* 注销工作区 */
 	return 1;
 }
 
 /**
  * @brief FATFS文件系统读取对应文件夹目录下的文件名
- * @param *_tFATFS-FATFS结构体指针
- * @param *_cpPath-文件夹路径指针
+ * @param _tFATFS-FATFS结构体指针
+ * @param _tpINFO-文件相关信息结构体指针
+ * @param _cpPath-文件夹路径指针
  * @param _ucNameLen-文件名长度
  * @retval uint8_t-文件个数
  */
@@ -88,11 +78,12 @@ uint8_t OCD_FATFS_ReadDir(tagFATFS_T *_tFATFS, tagFileInfo_T *_tpINFO, const cha
 
 /**
  * @brief FATFS文件系统读取对应路径下文件指定长度的数据
- * @param *_tFATFS-FATFS文件系统结构体
- * @param *_cpFileName-文件路径指针
- * @param *_ucData-存放数据的缓冲数组指针
+ * @param _tFATFS-FATFS文件系统结构体
+ * @param _cpFileName-文件路径指针
+ * @param _ucpData-存放数据的缓冲数组指针
+ * @param _usLen-数据长度
  * @param _ulByteVal-读取到的有效字节数
- * @retval None
+ * @retval uint8_t
  */
 uint8_t OCD_FATFS_ReadData_SpecifyFiles(tagFATFS_T *_tFATFS, char *_cpFileName, uint8_t *_ucpData, uint16_t _usLen, uint32_t _ulByteVal)
 {
@@ -116,13 +107,13 @@ uint8_t OCD_FATFS_ReadData_SpecifyFiles(tagFATFS_T *_tFATFS, char *_cpFileName, 
 
 /**
  * @brief FATFS文件系统读取对应路径下文件的指定位置的数据
- * @param *_tFATFS-文件系统结构体
- * @param *_cpFileName-文件路径指针
- * @param *_cpData-存放数据的缓冲数组指针
+ * @param _tFATFS-文件系统结构体
+ * @param _cpFileName-文件路径指针
+ * @param _ucpData-存放数据的缓冲数组指针
  * @param _usLength-读取数据的长度
  * @param _ulOffset-读取位置的偏移量
  * @param _ulByteVal-读取到的有效字节数
- * @retval uint32_t-文件大小
+ * @retval uint8_t
  */
 uint8_t OCD_FATFS_ReadData_SpecifyIndex(tagFATFS_T *_tFATFS, char *_cpFileName, uint8_t *_ucpData, uint16_t _usLength, uint32_t _ulOffset, uint32_t _ulByteVal)
 {
@@ -152,12 +143,12 @@ uint8_t OCD_FATFS_ReadData_SpecifyIndex(tagFATFS_T *_tFATFS, char *_cpFileName, 
 
 /**
  * @brief FATFS文件系统对应路径下文件的指定位置写入数据
- * @param *_tFATFS-文件系统结构体
- * @param *_cpFileName-文件路径指针
- * @param *_cpData-需要写入数据的缓冲数组指针
+ * @param _tFATFS-文件系统结构体
+ * @param _cpFileName-文件路径指针
+ * @param _cpData-需要写入数据的缓冲数组指针
  * @param _lLen-写入数据的长度
  * @param _ulByteVal-写入的有效字节数
- * @retval 1-成功；其它-失败
+ * @retval uint8_t-1-成功；其它-失败
  */
 uint8_t OCD_FATFS_Write_SpecifyIndex(tagFATFS_T *_tFATFS, char *_cpFileName, char *_cpData, int _lLen, unsigned int _ulIndex, uint32_t _ulByteVal)
 {
@@ -204,12 +195,12 @@ uint8_t OCD_FATFS_Write_SpecifyIndex(tagFATFS_T *_tFATFS, char *_cpFileName, cha
 
 /**
  * @brief FATFS文件系统对应路径下文件的尾部写入数据
- * @param *_tFATFS-文件系统结构体
- * @param *_cpFileName-文件路径指针
- * @param *_cpData-需要写入数据的缓冲数组指针
+ * @param _tFATFS-文件系统结构体
+ * @param _cpFileName-文件路径指针
+ * @param _cpData-需要写入数据的缓冲数组指针
  * @param _lLen-写入数据的长度
  * @param _ulByteVal-写入的有效字节数
- * @retval 1-成功；其它-失败
+ * @retval uint8_t-1-成功；其它-失败
  */
 uint8_t OCD_FATFS_Write_End(tagFATFS_T *_tFATFS, char *_cpFileName, char *_cpData, int _lLen, uint32_t _ulByteVal)
 {
@@ -257,12 +248,12 @@ uint8_t OCD_FATFS_Write_End(tagFATFS_T *_tFATFS, char *_cpFileName, char *_cpDat
 
 /**
  * @brief FATFS文件系统对应路径下文件写入数据
- * @param *_tFATFS-文件系统结构体
- * @param *_cpFileName-文件路径指针
- * @param *_cpData-需要写入数据的缓冲数组指针
+ * @param _tFATFS-文件系统结构体
+ * @param _cpFileName-文件路径指针
+ * @param _cpData-需要写入数据的缓冲数组指针
  * @param _lLen-写入数据的长度
  * @param _ulByteVal-写入的有效字节数
- * @retval 1-成功；其它-失败
+ * @retval uint8_t-1-成功；其它-失败
  */
 uint8_t OCD_FATFS_Write(tagFATFS_T *_tFATFS, char *_cpFileName,char *_cpData,int _lLen, uint32_t _ulByteVal)
 {
@@ -296,9 +287,9 @@ uint8_t OCD_FATFS_Write(tagFATFS_T *_tFATFS, char *_cpFileName,char *_cpData,int
 
 /**
  * @brief FATFS文件系统读取文件信息
- * @param *_tFATFS-文件系统结构体
- * @param *_cpFileName-文件路径指针
- * @retval 1-成功；其它-失败
+ * @param _tFATFS-文件系统结构体
+ * @param _cpFileName-文件路径指针
+ * @retval uint8_t-1-成功；其它-失败
  */
 uint8_t OCD_FATFS_GetFileInfo(tagFATFS_T *_tFATFS, char *_cpFileName)
 {
@@ -315,3 +306,14 @@ uint8_t OCD_FATFS_GetFileInfo(tagFATFS_T *_tFATFS, char *_cpFileName)
 	
 	return 1;
 }
+
+/**
+ * @brief FATFS文件系统初始化
+ * @param _tFATFS-FATFS结构体指针
+ * @retval uint8_t
+ */
+uint8_t OCD_FATFS_Init(tagFATFS_T *_tFATFS)
+{
+	return OCD_SDCard_SPIInit(_tFATFS->tSPI);
+}
+

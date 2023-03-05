@@ -1,6 +1,6 @@
 #include "task_conf.h"
 
-#include "bsp_io.h"
+#include "config.h"
 
 void Task_Sys_Init(void)
 {

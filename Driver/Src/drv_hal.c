@@ -15,57 +15,57 @@
 ****************************************************************************/
 #include "drv_hal_conf.h"
 
+static char s_cpOutput[256]={0};
 #ifdef DRV_HAL_ENABLE
 /**
  * @brief Debug输出
- * @param *_cpMsg
- * @param *_cpFunc-对应函数指针
+ * @param _cpMsg
+ * @param _cpFunc-对应函数指针
  * @param _iLine-对应行号
- * @param *_cpFmt
+ * @param _cpFmt
  * @retval Null
 */
-static char s_cpOutput[256]={0};
 void Drv_HAL_PrintLog(const char *_cpMsg,
             const char *_cpFunc,   
             const int   _iLine,
             const char *_cpFmt,...)
 {
-        va_list vaArglst;
+    va_list vaArglst;
 
-        va_start(vaArglst,_cpFmt);
-        vsnprintf(s_cpOutput,sizeof(s_cpOutput),_cpFmt,vaArglst);
-        printf("[%s][%s():%04d] %s\r\n",_cpMsg, _cpFunc, _iLine, s_cpOutput);
-        va_end(vaArglst);
+    va_start(vaArglst,_cpFmt);
+    vsnprintf(s_cpOutput,sizeof(s_cpOutput),_cpFmt,vaArglst);
+    printf("[%s][%s():%04d] %s\r\n",_cpMsg, _cpFunc, _iLine, s_cpOutput);
+    va_end(vaArglst);
 }
 
 /**
  * @brief Debug输出
- * @param *_cpMsg
+ * @param _cpMsg
  * @retval Null
 */
 void Drv_HAL_PrintBuf(const char *_cpMsg, ...)
 {
-        uint16_t i;
-        uint8_t* ucpBuf;
-        uint32_t ulCnt;
-        va_list vaArglst;
+    uint16_t i;
+    uint8_t* ucpBuf;
+    uint32_t ulCnt;
+    va_list vaArglst;
 	
-        va_start(vaArglst, _cpMsg);
-        ucpBuf = va_arg( vaArglst, uint8_t*);        
-        ulCnt = va_arg( vaArglst, uint32_t);
+    va_start(vaArglst, _cpMsg);
+    ucpBuf = va_arg( vaArglst, uint8_t*);        
+    ulCnt = va_arg( vaArglst, uint32_t);
 
-        printf("[%s][L:%d] ", _cpMsg,ulCnt);
-        for(i = 0; i < ulCnt; i++)
-        {
-                printf("0x%02X,",ucpBuf[i]);
-        }
-        printf("\n");
-        va_end(vaArglst);
+    printf("[%s][L:%d] ", _cpMsg,ulCnt);
+    for(i = 0; i < ulCnt; i++)
+    {
+        printf("0x%02X,",ucpBuf[i]);
+    }
+    printf("\n");
+    va_end(vaArglst);
 }
 
 /**
  * @brief 程序信息输出
- * @param NULL
+ * @param Null
  * @retval Null
 */
 void Drv_HAL_ProgramInfoOutput(void)
@@ -76,8 +76,8 @@ void Drv_HAL_ProgramInfoOutput(void)
 
 /**
  * @brief 系统报错函数
- * @param *file-文件名指针
- * @param *_line-行号
+ * @param _cpFile-文件名指针
+ * @param _ulLine-行号
  * @retval Null
 */
 void Drv_HAL_Error(char *_cpFile, uint32_t _ulLine)
@@ -89,7 +89,7 @@ void Drv_HAL_Error(char *_cpFile, uint32_t _ulLine)
 
 /**
  * @brief 系统时钟初始化函数
- * @param null
+ * @param Null
  * @retval Null
 */
 static void S_HAL_CLKConfig(void)
@@ -174,23 +174,9 @@ static void S_HAL_RTTCLKInit(void)
 #endif
 
 /**
- * @brief SGA库初始化函数
- * @param null
- * @retval null
-*/
-void Drv_HAL_Init(void)
-{
-	HAL_Init();			/* HAL库初始化 */
-	S_HAL_CLKConfig();	/* 系统时钟初始化 */
-#ifdef RTT_ENABLE
-	S_HAL_RTTCLKInit();
-#endif
-}
-
-/**
  * @brief 滴答时钟使能
- * @param null
- * @retval null
+ * @param Null
+ * @retval Null
 */
 void Drv_HAL_SysTickEnable(void)
 {
@@ -199,8 +185,8 @@ void Drv_HAL_SysTickEnable(void)
 
 /**
  * @brief 滴答时钟失能
- * @param null
- * @retval null
+ * @param Null
+ * @retval Null
 */
 void Drv_HAL_SysTickDisable(void)
 {
@@ -208,96 +194,8 @@ void Drv_HAL_SysTickDisable(void)
 }
 
 /**
-  * @brief This function handles Non maskable interrupt.
-  */
-void NMI_Handler(void)
-{
-  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
-
-  /* USER CODE END NonMaskableInt_IRQn 0 */
-  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
-  while (1)
-  {
-  }
-  /* USER CODE END NonMaskableInt_IRQn 1 */
-}
-
-/**
-  * @brief This function handles Memory management fault.
-  */
-void MemManage_Handler(void)
-{
-  /* USER CODE BEGIN MemoryManagement_IRQn 0 */
-
-  /* USER CODE END MemoryManagement_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
-    /* USER CODE END W1_MemoryManagement_IRQn 0 */
-  }
-}
-
-/**
-  * @brief This function handles Prefetch fault, memory access fault.
-  */
-void BusFault_Handler(void)
-{
-  /* USER CODE BEGIN BusFault_IRQn 0 */
-
-  /* USER CODE END BusFault_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_BusFault_IRQn 0 */
-    /* USER CODE END W1_BusFault_IRQn 0 */
-  }
-}
-
-/**
-  * @brief This function handles Undefined instruction or illegal state.
-  */
-void UsageFault_Handler(void)
-{
-  /* USER CODE BEGIN UsageFault_IRQn 0 */
-
-  /* USER CODE END UsageFault_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
-    /* USER CODE END W1_UsageFault_IRQn 0 */
-  }
-}
-
-/**
-  * @brief This function handles System service call via SWI instruction.
-  */
-void SVC_Handler(void)
-{
-  /* USER CODE BEGIN SVCall_IRQn 0 */
-
-  /* USER CODE END SVCall_IRQn 0 */
-  /* USER CODE BEGIN SVCall_IRQn 1 */
-
-  /* USER CODE END SVCall_IRQn 1 */
-}
-
-/**
-  * @brief This function handles Debug monitor.
-  */
-void DebugMon_Handler(void)
-{
-  /* USER CODE BEGIN DebugMonitor_IRQn 0 */
-
-  /* USER CODE END DebugMonitor_IRQn 0 */
-  /* USER CODE BEGIN DebugMonitor_IRQn 1 */
-
-  /* USER CODE END DebugMonitor_IRQn 1 */
-}
-
-
-
-/**
-  * @brief This function handles System tick timer.
-  */
+ * @brief This function handles System tick timer.
+*/
 void Drv_HAL_IncTick(void)
 {
 	/* USER CODE BEGIN SysTick_IRQn 0 */
@@ -311,8 +209,108 @@ void Drv_HAL_IncTick(void)
 }
 
 /**
+ * @brief SGA库初始化函数
+ * @param Null
+ * @retval Null
+*/
+void Drv_HAL_Init(void)
+{
+	HAL_Init();			/* HAL库初始化 */
+	S_HAL_CLKConfig();	/* 系统时钟初始化 */
+#ifdef RTT_ENABLE
+	S_HAL_RTTCLKInit();
+#endif
+}
+
+/**
+ * @brief This function handles Non maskable interrupt.
+*/
+void NMI_Handler(void)
+{
+  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
+
+  /* USER CODE END NonMaskableInt_IRQn 0 */
+  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
+  while (1)
+  {
+  }
+  /* USER CODE END NonMaskableInt_IRQn 1 */
+}
+
+/**
+ * @brief This function handles Memory management fault.
+*/
+void MemManage_Handler(void)
+{
+  /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+
+  /* USER CODE END MemoryManagement_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
+    /* USER CODE END W1_MemoryManagement_IRQn 0 */
+  }
+}
+
+/**
+ * @brief This function handles Prefetch fault, memory access fault.
+*/
+void BusFault_Handler(void)
+{
+  /* USER CODE BEGIN BusFault_IRQn 0 */
+
+  /* USER CODE END BusFault_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_BusFault_IRQn 0 */
+    /* USER CODE END W1_BusFault_IRQn 0 */
+  }
+}
+
+/**
+ * @brief This function handles Undefined instruction or illegal state.
+*/
+void UsageFault_Handler(void)
+{
+  /* USER CODE BEGIN UsageFault_IRQn 0 */
+
+  /* USER CODE END UsageFault_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
+    /* USER CODE END W1_UsageFault_IRQn 0 */
+  }
+}
+
+/**
+ * @brief This function handles System service call via SWI instruction.
+*/
+void SVC_Handler(void)
+{
+  /* USER CODE BEGIN SVCall_IRQn 0 */
+
+  /* USER CODE END SVCall_IRQn 0 */
+  /* USER CODE BEGIN SVCall_IRQn 1 */
+
+  /* USER CODE END SVCall_IRQn 1 */
+}
+
+/**
+ * @brief This function handles Debug monitor.
+*/
+void DebugMon_Handler(void)
+{
+  /* USER CODE BEGIN DebugMonitor_IRQn 0 */
+
+  /* USER CODE END DebugMonitor_IRQn 0 */
+  /* USER CODE BEGIN DebugMonitor_IRQn 1 */
+
+  /* USER CODE END DebugMonitor_IRQn 1 */
+}
+
+/**
  * @brief hal库用户自定义初始化函数
- * @param null
+ * @param Null
  * @retval Null
 */
 void HAL_MspInit(void)
@@ -325,43 +323,53 @@ void HAL_MspInit(void)
 #endif
 	
 #ifdef STM32F1_SGA_ENABLE
-    /* 优先级分组，主优先级4位，副优先级4位 */
-	  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+    /* 优先级分组，主优先级4位，副优先级0位 */
+	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+
     /* System interrupt init*/
     __HAL_RCC_AFIO_CLK_ENABLE();
+
     /* MemoryManagement_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
+
     /* BusFault_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(BusFault_IRQn, 0, 0);
+
     /* UsageFault_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
+
     /* SVCall_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0);
+
     /* DebugMonitor_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
+
     /* PendSV_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+
     /* SysTick_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
+
     /** JTAG-DP Disabled and SW-DP Enabled**/
     __HAL_AFIO_REMAP_SWJ_NOJTAG();
+
 #endif
 }
 
 /**
  * @brief SGA库printf重定义
- * @param null
- * @retval null
+ * @param Null
+ * @retval Null
 */
-#pragma import(__use_no_semihosting)                   
+#pragma import(__use_no_semihosting)          
 struct __FILE 
 { 
 	int handle; 
 }; 
 
-FILE __stdout;       
+FILE __stdout;
 	   
-void _sys_exit(int x) 
+void _sys_exit(int x)
 { 
 	x = x; 
 } 
@@ -372,13 +380,16 @@ int fputc(int ch, FILE *f)
 
 #if	defined (STM32F1_SGA_ENABLE)
 	/* F1系列 */
-	while((PRINTF_UART->SR&0X40)==0)//循环发送,直到发送完毕  
+	while((PRINTF_UART->SR&0X40)==0)	/* 循环发送,直到发送完毕 */  
+
 #else
 	/* L4系列 */
-	while((PRINTF_UART->ISR&0X40)==0)//循环发送,直到发送完毕  
+	while((PRINTF_UART->ISR&0X40)==0)	/* 循环发送,直到发送完毕 */
+
 #endif
     {
-        if((usCnt++)>60000)//防止异常超时退出
+		/* 防止异常超时退出 */
+        if((usCnt++)>60000)
         {
             break;
         }          
@@ -386,9 +397,11 @@ int fputc(int ch, FILE *f)
 #if	defined (STM32F1_SGA_ENABLE)	
 	/* F1系列 */
     PRINTF_UART->DR = (uint8_t) ch; 
+
 #else
 	/* L4系列 */
 	PRINTF_UART->TDR = (uint8_t) ch; 
+
 #endif
         
 	return ch;

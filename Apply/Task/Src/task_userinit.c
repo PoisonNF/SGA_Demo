@@ -1,7 +1,6 @@
 #include "task_conf.h"
 #include "ocd_conf.h"
-
-#include "bsp_io.h"
+#include "config.h"
 
 void Task_UserInit(void)
 {

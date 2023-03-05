@@ -392,6 +392,11 @@
               <FileType>1</FileType>
               <FilePath>..\Apply\Logic\Src\usercode.c</FilePath>
             </File>
+            <File>
+              <FileName>config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Apply\Logic\Src\config.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -411,16 +416,6 @@
               <FileName>task_userinit.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Apply\Task\Src\task_userinit.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Bsp/Bsp</GroupName>
-          <Files>
-            <File>
-              <FileName>bsp_io.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Bsp\Bsp\Src\bsp_io.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -477,6 +472,11 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\OCD\Src\ocd_ps2.c</FilePath>
             </File>
+            <File>
+              <FileName>ocd_func.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\OCD\Src\ocd_func.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -491,16 +491,6 @@
               <FileName>diskio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\FatFs\Src\diskio.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Bsp/SGA</GroupName>
-          <Files>
-            <File>
-              <FileName>sga_func.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Bsp\Third\SGA\src\sga_func.c</FilePath>
             </File>
           </Files>
         </Group>

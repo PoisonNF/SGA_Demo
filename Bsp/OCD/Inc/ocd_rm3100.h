@@ -6,18 +6,18 @@
 
 /* 寄存器地址*/
 #define RM3100_ADDRESS      0x20
-#define M3D_3100_POLL 	    0			  //0X00
-#define M3D_3100_CMM		    1			  //0X00
-#define M3D_3100_CCX		    4			  //0X00C8
-#define M3D_3100_CCY		    6			  //0X00C8
-#define M3D_3100_CCZ		    8			  //0X00C8
-#define M3D_3100_TMRC	      0x0B		//0X96
+#define M3D_3100_POLL 	    0			  /* 0X00 */
+#define M3D_3100_CMM		    1			  /* 0X00 */
+#define M3D_3100_CCX		    4			  /* 0X00C8 */
+#define M3D_3100_CCY		    6			  /* 0X00C8 */
+#define M3D_3100_CCZ		    8			  /* 0X00C8 */
+#define M3D_3100_TMRC	      0x0B		/* 0X96 */
 #define M3D_3100_MX		      0x24
 #define M3D_3100_MY		      0x27
 #define M3D_3100_MZ		      0x2A
 #define M3D_3100_BIST	      0x33
 #define M3D_3100_STATUS	    0x34
-#define M3D_3100_HSHAKE	    0x35		//0X1B
+#define M3D_3100_HSHAKE	    0x35		//0X1B */
 #define M3D_3100_REVID      0x36
 
 
@@ -60,19 +60,28 @@ typedef struct {
   int32_t MAG_Z;
 } MagData_t;
 
+/* RM3100初始化数据结构体 */
+struct config {
+    unsigned int cycle_count;
+    float sample_rate;
+    float max_data_rate;
+    float gain;
+};
+/* RM3100初始化数据 */
+struct config rm = {
+    .cycle_count   = 200,
+    .sample_rate   = 37,
+    .max_data_rate = 440,
+    .gain          = 75
+};
 
+void OCD_SingleModeConfig_Soft(tagSPISoft_T *_tSPI,uint8_t _ucConf);
+void OCD_SingleModeConfig(tagSPI_T *_tSPI,uint8_t _ucConf);
 
-void OCD_singlemeasure_soft(tagSPISoft_T *_tSPI,uint8_t conf );
-void OCD_singlemeasure(tagSPI_T *_tSPI,uint8_t conf);
+void OCD_ThreeD3100_Magic_Init(tagSPI_T *_tSPI);
+void OCD_ThreeD3100_Magic_Init_Soft(tagSPISoft_T *_tSPI);
 
-void OCD_ThreeD3100_magic_init(tagSPI_T *_tSPI);
-void OCD_ThreeD3100_magic_init_soft(tagSPISoft_T *_tSPI);
+void OCD_ThreeD3100_Magic_GetData(tagSPI_T *_tSPI,MagData_t* buff);
+void OCD_ThreeD3100_Magic_GetData_Soft(tagSPISoft_T *_tSPI,MagData_t* buff);
 
-
-void OCD_ThreeD3100_magic_GetData(tagSPI_T *_tSPI,MagData_t* buff);
-void OCD_ThreeD3100_magic_GetData_soft(tagSPISoft_T *_tSPI,MagData_t* buff);
-
-
-void OCD_SPI_Write_M3D3100(tagSPI_T *_tSPI,uint8_t reg_addr,uint8_t *datain,uint8_t lenth);
-void OCD_SPI_Read_M3D3100(tagSPI_T *_tSPI,uint8_t reg_addr,uint8_t *dataout,uint8_t lenth);
 #endif

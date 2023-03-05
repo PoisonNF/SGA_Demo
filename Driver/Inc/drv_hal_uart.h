@@ -3,6 +3,8 @@
 
 #include "drv_hal_conf.h"
 
+#define UART_TIME_OUT	0xff
+
 /* 串口接收信息结构体 */
 typedef struct
 {
@@ -26,17 +28,17 @@ typedef struct
 	DMA_HandleTypeDef	tDMATx;				/* DMA发送句柄 */
 	DMA_HandleTypeDef	tDMARx;				/* DMA接收句柄 */
 
-	uint8_t				DMARxCplt;			/* DMA接收完成标志*/
-	uint8_t 			DMATxCplt;			/* DMA发送完成标志*/
+	uint8_t				ucDMARxCplt;			/* DMA接收完成标志*/
+	uint8_t 			ucDMATxCplt;			/* DMA发送完成标志*/
 
 	bool 				bTxEnable;			/* 发送使能符号 */
 	bool				bRxEnable;			/* 接收使能符号 */
 
-	uint8_t				ulDMARxPriority;		/* DMA接收中断优先级，0-15 */
-	uint8_t 			ulDMARxSubPriority;		/* DMA接收中断子优先级，0-15 */
+	uint8_t				ucDMARxPriority;		/* DMA接收中断优先级，0-15 */
+	uint8_t 			ucDMARxSubPriority;		/* DMA接收中断子优先级，0-15 */
 
-	uint8_t				ulDMATxPriority;		/* DMA发送中断优先级，0-15 */
-	uint8_t 			ulDMATxSubPriority;		/* DMA发送中断子优先级，0-15 */
+	uint8_t				ucDMATxPriority;		/* DMA发送中断优先级，0-15 */
+	uint8_t 			ucDMATxSubPriority;		/* DMA发送中断子优先级，0-15 */
 }tagDMAUart_T;
 
 /* 串口设备结构体 */
@@ -47,8 +49,8 @@ typedef struct
 	tagUartRxInfo_T		tRxInfo;		/* 串口接收信息 */
 	tagUartTxInfo_T		tTxInfo;		/* 串口发送信息 */
 	tagGPIO_T			tGPIO[2];		/* GPIO句柄 */
-	uint8_t				ulPriority;		/* 中断优先级，0-15 */
-	uint8_t 			ulSubPriority;	/* 中断子优先级，0-15 */
+	uint8_t				ucPriority;		/* 中断优先级，0-15 */
+	uint8_t 			ucSubPriority;	/* 中断子优先级，0-15 */
 }tagUART_T;
 
 /* 串口重映射表

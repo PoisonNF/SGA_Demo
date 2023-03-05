@@ -67,32 +67,32 @@ static void S_TIM_NVICConfig(tagTIM_T *_tTimer)
 {
 	if(_tTimer->tTimerHandle.Instance == TIM2)
 	{
-		HAL_NVIC_SetPriority(TIM2_IRQn, _tTimer->ulPriority, _tTimer->ulSubPriority);
+		HAL_NVIC_SetPriority(TIM2_IRQn, _tTimer->ucPriority, _tTimer->ucSubPriority);
 		HAL_NVIC_EnableIRQ(TIM2_IRQn);
 	}
 	else if(_tTimer->tTimerHandle.Instance == TIM3)
 	{			
-		HAL_NVIC_SetPriority(TIM3_IRQn, _tTimer->ulPriority, _tTimer->ulSubPriority);
+		HAL_NVIC_SetPriority(TIM3_IRQn, _tTimer->ucPriority, _tTimer->ucSubPriority);
 		HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	}
 	else if(_tTimer->tTimerHandle.Instance == TIM4)
 	{			
-		HAL_NVIC_SetPriority(TIM4_IRQn, _tTimer->ulPriority, _tTimer->ulSubPriority);
+		HAL_NVIC_SetPriority(TIM4_IRQn, _tTimer->ucPriority, _tTimer->ucSubPriority);
 		HAL_NVIC_EnableIRQ(TIM4_IRQn);
 	}
 	else if(_tTimer->tTimerHandle.Instance == TIM5)
 	{			
-		HAL_NVIC_SetPriority(TIM5_IRQn, _tTimer->ulPriority, _tTimer->ulSubPriority);
+		HAL_NVIC_SetPriority(TIM5_IRQn, _tTimer->ucPriority, _tTimer->ucSubPriority);
 		HAL_NVIC_EnableIRQ(TIM5_IRQn);
 	}
 	else if(_tTimer->tTimerHandle.Instance == TIM6)
 	{			
-		HAL_NVIC_SetPriority(TIM6_IRQn, _tTimer->ulPriority, _tTimer->ulSubPriority);
+		HAL_NVIC_SetPriority(TIM6_IRQn, _tTimer->ucPriority, _tTimer->ucSubPriority);
 		HAL_NVIC_EnableIRQ(TIM6_IRQn);
 	}
 	else if(_tTimer->tTimerHandle.Instance == TIM7)
 	{			
-		HAL_NVIC_SetPriority(TIM7_IRQn, _tTimer->ulPriority, _tTimer->ulSubPriority);
+		HAL_NVIC_SetPriority(TIM7_IRQn, _tTimer->ucPriority, _tTimer->ucSubPriority);
 		HAL_NVIC_EnableIRQ(TIM7_IRQn);
 	}
 }
@@ -115,7 +115,7 @@ static void S_TIM_PramConfig(tagTIM_T *_tTimer)
 /**
  * @brief 定时器重置
  * @param _tTimer-Timer结构体指针
- * @retval null
+ * @retval Null
 */
 void Drv_Timer_Reset(tagTIM_T *_tTimer)
 {
@@ -125,7 +125,7 @@ void Drv_Timer_Reset(tagTIM_T *_tTimer)
 /**
  * @brief 定时器使能
  * @param _tTimer-Timer结构体指针
- * @retval null
+ * @retval Null
 */
 void Drv_Timer_Enable(tagTIM_T *_tTimer)
 {
@@ -135,7 +135,7 @@ void Drv_Timer_Enable(tagTIM_T *_tTimer)
 /**
  * @brief 定时器失能
  * @param _tTimer-Timer结构体指针
- * @retval null
+ * @retval Null
 */
 void Drv_Timer_Disable(tagTIM_T *_tTimer)
 {
@@ -146,7 +146,7 @@ void Drv_Timer_Disable(tagTIM_T *_tTimer)
  * @brief 定时器初始化
  * @param _tTimer-Timer结构体指针
  * @param _num-定时器数量
- * @retval null
+ * @retval Null
 */
 void Drv_Timer_Init(tagTIM_T *_tTimer)
 {
@@ -157,7 +157,7 @@ void Drv_Timer_Init(tagTIM_T *_tTimer)
 /**
  * @brief 定时器中断
  * @param _tTimer-Timer结构体指针
- * @retval null
+ * @retval Null
 */
 void Drv_Timer_IRQHandler(tagTIM_T *_tTimer)
 {

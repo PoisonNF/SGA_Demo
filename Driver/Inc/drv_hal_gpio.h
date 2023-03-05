@@ -3,17 +3,7 @@
 
 #include "drv_hal.h"
 
-typedef struct
-{
-	GPIO_InitTypeDef 	tGPIOInit;
-	GPIO_TypeDef* 		tGPIOPort;
-	uint8_t				ulPriority;		/* 中断优先级，0-15 */
-	uint8_t 			ulSubPriority;	/* 中断子优先级，0-15 */
-
-	uint8_t				AFMode;			/* 重映射设置参数 @ref AFMode_define*/
-}tagGPIO_T;
-
-/** @defgroup AFMode_define remap
+/** @defgroup ucAFMode_define remap
   * @brief GPIO remap
   * @{
   */
@@ -22,9 +12,18 @@ typedef struct
 #define PARTIAL_REMAP2 	2	/*部分重映射2 仅TIM2独有*/
 #define FULL_REMAP 		3	/*完全重映射*/
 
+typedef struct
+{
+	GPIO_InitTypeDef 	tGPIOInit;
+	GPIO_TypeDef* 		tGPIOPort;
+	uint8_t				ucPriority;		/* 中断优先级，0-15 */
+	uint8_t 			ucSubPriority;	/* 中断子优先级，0-15 */
+	uint8_t				ucAFMode;		/* 重映射设置参数 @ref ucAFMode_define*/
+}tagGPIO_T;
+
 void Drv_GPIO_Set(tagGPIO_T *_tGPIO);
 void Drv_GPIO_Reset(tagGPIO_T *_tGPIO);
-void Drv_GPIO_Write(tagGPIO_T *_tGPIO, GPIO_PinState _tGPIOPin);
+void Drv_GPIO_Write(tagGPIO_T *_tGPIO, GPIO_PinState _PinStatus);
 GPIO_PinState Drv_GPIO_Read(tagGPIO_T *_tGPIO);
 void Drv_GPIO_Init(tagGPIO_T *_tGPIO, uint8_t _ucNum);
 void Drv_GPIO_DeInit(tagGPIO_T *_tGPIO);

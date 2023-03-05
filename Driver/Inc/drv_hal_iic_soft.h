@@ -3,7 +3,11 @@
 
 #include "drv_hal_conf.h"
 
-typedef struct{
+#define TYPE_NUM		8	/* 字节位数 */
+#define IIC_GPIO_NUM	2	/* IIC所需的GPIO数量 */
+
+typedef struct
+{
 	tagGPIO_T tIICSoft[2];
 }tagIICSoft_T;
 

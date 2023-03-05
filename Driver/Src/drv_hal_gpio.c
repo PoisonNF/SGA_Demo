@@ -8,9 +8,11 @@
 
 * 文件历史：
 
-* 版本号	日期		作者		说明
+* 版本号	   日期		  作者		  说明
+*  2.0	 	2023-03-03	鲍程璐		IO初始化中增加对外部中断的支持，减少嵌套
 
 * 1.0.0a 	2020-02-22	李环宇		创建该文件
+
 * 1.0.1a 	2020-03-16	李环宇		新增Drv_GPIO_NVICDisable函数
 
 ****************************************************************************/
@@ -18,51 +20,9 @@
 
 #ifdef DRV_HAL_GPIO_ENABLE
 
-#define NULL 0
-
-/**
- * @brief 写入GPIO状态
- * @param _tGPIO---GPIO句柄
- * @retval Null
-*/
-void Drv_GPIO_Write(tagGPIO_T *_tGPIO, GPIO_PinState _pin)
-{
-	HAL_GPIO_WritePin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin, _pin);
-}
-
-/**
- * @brief GPIO拉高
- * @param _tGPIO---GPIO句柄
- * @retval Null
-*/
-void Drv_GPIO_Set(tagGPIO_T *_tGPIO)
-{
-	HAL_GPIO_WritePin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin, GPIO_PIN_SET);
-}
-
-/**
- * @brief GPIO拉低
- * @param _tGPIO---GPIO句柄
- * @retval Null
-*/
-void Drv_GPIO_Reset(tagGPIO_T *_tGPIO)
-{
-	HAL_GPIO_WritePin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin, GPIO_PIN_RESET);
-}
-
-/**
- * @brief 读取GPIO状态
- * @param _tGPIO---GPIO句柄
- * @retval Null
-*/
-GPIO_PinState Drv_GPIO_Read(tagGPIO_T *_tGPIO)
-{
-	return HAL_GPIO_ReadPin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin);
-}
-
 /**
  * @brief GPIO时钟初始化函数
- * @param _tGPIO---GPIO句柄
+ * @param _tGPIO-GPIO句柄
  * @retval Null 
 */
 static void S_GPIO_CLKEnable(tagGPIO_T *_tGPIO) 
@@ -91,7 +51,7 @@ static void S_GPIO_CLKEnable(tagGPIO_T *_tGPIO)
 
 /**
  * @brief GPIO参数配置函数
- * @param _tGPIO---GPIO句柄
+ * @param _tGPIO-GPIO句柄
  * @retval Null
 */
 static void S_GPIO_ParamConfig(tagGPIO_T *_tGPIO)
@@ -100,35 +60,9 @@ static void S_GPIO_ParamConfig(tagGPIO_T *_tGPIO)
 }
 
 /**
- * @brief GPIO初始化函数
- * @param _tGPIO---GPIO句柄
- * @retval Null
-*/
-void Drv_GPIO_Init(tagGPIO_T *_tGPIO, uint8_t _ucNum)
-{
-	uint8_t index;
-	
-	for(index = 0;index < _ucNum;index++)
-	{
-		S_GPIO_CLKEnable(&_tGPIO[index]);
-		S_GPIO_ParamConfig(&_tGPIO[index]);
-	}	 
-}
-
-/**
- * @brief GPIO默认重置函数
- * @param _tGPIO---GPIO句柄
- * @retval Null
-*/
-void Drv_GPIO_DeInit(tagGPIO_T *_tGPIO)
-{
-	HAL_GPIO_DeInit(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin);
-}
-
-/**
  * @brief GPIO中断线选择函数
- * @param _tGPIO---GPIO句柄
- * @retval IO对应的中断线
+ * @param _tGPIO-GPIO句柄
+ * @retval uint8_t-IO对应的中断线
 */
 static uint8_t S_GPIO_NVICIRQnSelect(tagGPIO_T *_tGPIO)
 {
@@ -170,59 +104,101 @@ static uint8_t S_GPIO_NVICIRQnSelect(tagGPIO_T *_tGPIO)
 
 /**
  * @brief GPIO中断参数设置
- * @param _tGPIO---GPIO句柄
+ * @param _tGPIO-GPIO句柄
  * @retval Null
 */
 static void S_GPIO_NVICParamConfig(tagGPIO_T *_tGPIO)
 {
-	switch(S_GPIO_NVICIRQnSelect(_tGPIO))
+	if(_tGPIO->tGPIOInit.Pin == GPIO_PIN_0)
 	{
-		case EXTI0_IRQn:
-			HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 2);
-			HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-			break;
-		case EXTI1_IRQn:
-			HAL_NVIC_SetPriority(EXTI1_IRQn, 2, 2);
-			HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-			break;
-		case EXTI2_IRQn:
-			HAL_NVIC_SetPriority(EXTI2_IRQn, 2, 2);
-			HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-			break;
-		case EXTI3_IRQn:
-			HAL_NVIC_SetPriority(EXTI3_IRQn, 2, 2);
-			HAL_NVIC_EnableIRQ(EXTI3_IRQn);
-			break;
-		case EXTI4_IRQn:
-			HAL_NVIC_SetPriority(EXTI4_IRQn, 2, 2);
-			HAL_NVIC_EnableIRQ(EXTI4_IRQn);
-			break;
-		case EXTI9_5_IRQn:
-			HAL_NVIC_SetPriority(EXTI9_5_IRQn, 2, 2);
-			HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-			break;
-		case EXTI15_10_IRQn:
-			HAL_NVIC_SetPriority(EXTI15_10_IRQn, 2, 2);
-			HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-			break;
-		default:
-			break;
+		HAL_NVIC_SetPriority(EXTI0_IRQn,_tGPIO->ucPriority,_tGPIO->ucSubPriority);
+		HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	}
+	else if(_tGPIO->tGPIOInit.Pin == GPIO_PIN_1)
+	{
+		HAL_NVIC_SetPriority(EXTI1_IRQn,_tGPIO->ucPriority,_tGPIO->ucSubPriority);
+		HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+	}
+	else if(_tGPIO->tGPIOInit.Pin == GPIO_PIN_2)
+	{
+		HAL_NVIC_SetPriority(EXTI2_IRQn,_tGPIO->ucPriority,_tGPIO->ucSubPriority);
+		HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+	}
+	else if(_tGPIO->tGPIOInit.Pin == GPIO_PIN_3)
+	{
+		HAL_NVIC_SetPriority(EXTI3_IRQn,_tGPIO->ucPriority,_tGPIO->ucSubPriority);
+		HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+	}
+	else if(_tGPIO->tGPIOInit.Pin == GPIO_PIN_4)
+	{
+		HAL_NVIC_SetPriority(EXTI4_IRQn,_tGPIO->ucPriority,_tGPIO->ucSubPriority);
+		HAL_NVIC_EnableIRQ(EXTI4_IRQn);	
+	}
+	else if(_tGPIO->tGPIOInit.Pin ==  GPIO_PIN_5|
+									  GPIO_PIN_6|
+									  GPIO_PIN_7|
+									  GPIO_PIN_8|
+									  GPIO_PIN_9)
+	{
+		HAL_NVIC_SetPriority(EXTI9_5_IRQn,_tGPIO->ucPriority,_tGPIO->ucSubPriority);
+		HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);	
+	}
+	else if(_tGPIO->tGPIOInit.Pin ==  GPIO_PIN_10|
+									  GPIO_PIN_11|
+									  GPIO_PIN_12|
+									  GPIO_PIN_13|
+									  GPIO_PIN_14|
+									  GPIO_PIN_15)
+	{
+		HAL_NVIC_SetPriority(EXTI15_10_IRQn,_tGPIO->ucPriority,_tGPIO->ucSubPriority);
+		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);	
 	}
 }
 
 /**
- * @brief GPIO中断函数
- * @param _tGPIO---GPIO句柄
+ * @brief 写入GPIO状态
+ * @param _tGPIO-GPIO句柄
+ * @param _PinStatus-写入状态
  * @retval Null
 */
-void Drv_GPIO_EXTI_IRQHandler(tagGPIO_T *_tGPIO)
+void Drv_GPIO_Write(tagGPIO_T *_tGPIO, GPIO_PinState _PinStatus)
 {
-	HAL_GPIO_EXTI_IRQHandler(_tGPIO->tGPIOInit.Pin);
+	HAL_GPIO_WritePin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin, _PinStatus);
+}
+
+/**
+ * @brief GPIO拉高
+ * @param _tGPIO-GPIO句柄
+ * @retval Null
+*/
+void Drv_GPIO_Set(tagGPIO_T *_tGPIO)
+{
+	HAL_GPIO_WritePin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin, GPIO_PIN_SET);
+}
+
+/**
+ * @brief GPIO拉低
+ * @param _tGPIO-GPIO句柄
+ * @retval Null
+*/
+void Drv_GPIO_Reset(tagGPIO_T *_tGPIO)
+{
+	HAL_GPIO_WritePin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin, GPIO_PIN_RESET);
+}
+
+/**
+ * @brief 读取GPIO状态
+ * @param _tGPIO-GPIO句柄
+ * @retval Null
+*/
+GPIO_PinState Drv_GPIO_Read(tagGPIO_T *_tGPIO)
+{
+	return HAL_GPIO_ReadPin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin);
 }
 
 /**
  * @brief GPIO中断失能函数
- * @param _tGPIO---GPIO句柄
+ * @param _tGPIO-GPIO句柄
  * @retval Null
 */
 void Drv_GPIO_NVICDisable(tagGPIO_T *_tGPIO)
@@ -233,7 +209,7 @@ void Drv_GPIO_NVICDisable(tagGPIO_T *_tGPIO)
 
 /**
  * @brief GPIO中断初始化函数
- * @param _tGPIO---GPIO句柄
+ * @param _tGPIO-GPIO句柄
  * @retval Null
 */
 void Drv_GPIO_NVICConfig(tagGPIO_T *_tGPIO)
@@ -241,3 +217,46 @@ void Drv_GPIO_NVICConfig(tagGPIO_T *_tGPIO)
 	S_GPIO_NVICParamConfig(_tGPIO);
 }
 #endif
+
+/**
+ * @brief GPIO初始化函数
+ * @param _tGPIO-GPIO句柄
+ * @param _ucNum-初始化IO个数
+ * @retval Null
+*/
+void Drv_GPIO_Init(tagGPIO_T *_tGPIO, uint8_t _ucNum)
+{
+	uint8_t index;
+	
+	for(index = 0;index < _ucNum;index++)
+	{
+		S_GPIO_CLKEnable(&_tGPIO[index]);
+		S_GPIO_ParamConfig(&_tGPIO[index]);
+		
+		/* 如果IO配置为中断模式 */
+		if(_tGPIO[index].tGPIOInit.Mode ==  GPIO_MODE_IT_FALLING | 
+											GPIO_MODE_IT_RISING | 
+											GPIO_MODE_IT_RISING_FALLING)
+			S_GPIO_NVICParamConfig(&_tGPIO[index]);
+	}
+}
+
+/**
+ * @brief GPIO默认重置函数
+ * @param _tGPIO-GPIO句柄
+ * @retval Null
+*/
+void Drv_GPIO_DeInit(tagGPIO_T *_tGPIO)
+{
+	HAL_GPIO_DeInit(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin);
+}
+
+/**
+ * @brief GPIO中断函数
+ * @param _tGPIO-GPIO句柄
+ * @retval Null
+*/
+void Drv_GPIO_EXTI_IRQHandler(tagGPIO_T *_tGPIO)
+{
+	HAL_GPIO_EXTI_IRQHandler(_tGPIO->tGPIOInit.Pin);
+}

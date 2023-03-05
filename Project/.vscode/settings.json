@@ -30,6 +30,22 @@
         "ocd_conf.h": "c",
         "drv_hal_spi_soft.h": "c",
         "ocd_rm3100.h": "c",
-        "ocd_ps2.h": "c"
+        "ocd_ps2.h": "c",
+        "ocd_ads4111.h": "c",
+        "ocd_at24cxx.h": "c",
+        "ocd_ds3231.h": "c",
+        "ocd_fatfs.h": "c",
+        "functional": "c",
+        "optional": "c",
+        "istream": "c",
+        "ostream": "c",
+        "system_error": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "config.h": "c",
+        "usercode.h": "c",
+        "fstream": "c",
+        "new": "c",
+        "typeinfo": "c"
     }
 }

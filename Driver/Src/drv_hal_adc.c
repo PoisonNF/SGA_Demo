@@ -17,11 +17,9 @@
 
 #ifdef DRV_HAL_ADC_ENABLE
 
-#define POLL_NUM	10		/* 轮询次数 */
-
 /**
  * @brief ADC时钟配置函数
- * @param NULL
+ * @param Null
  * @retval Null
 */
 static void S_ADC_CLKConfig(void)
@@ -40,34 +38,32 @@ static void S_ADC_CLKConfig(void)
 
 /**
  * @brief ADC时钟使能函数
- * @param *_tADC-ADC结构体指针
+ * @param _tADC-ADC结构体指针
  * @retval Null
 */
 static void S_ADC_CLKEnable(tagADC_T *_tADC)
 {
+#ifdef STM32F1_SGA_ENABLE
+
 	if(_tADC->tADCHandle.Instance == ADC1)
 	{
-#ifdef STM32F1_SGA_ENABLE
 		__HAL_RCC_ADC1_CLK_ENABLE();
-#endif
 	}
 	else if(_tADC->tADCHandle.Instance == ADC2)
 	{
-#ifdef STM32F1_SGA_ENABLE
 		__HAL_RCC_ADC2_CLK_ENABLE();
-#endif
 	}
 	else if(_tADC->tADCHandle.Instance == ADC3)
 	{
-#ifdef STM32F1_SGA_ENABLE
 		__HAL_RCC_ADC3_CLK_ENABLE();
-#endif
 	}
+
+#endif
 }
 
 /**
  * @brief ADC参数配置函数
- * @param *_adcHandle-ADC句柄指针
+ * @param _tADC-ADC结构体指针
  * @retval Null
 */
 static void S_ADC_GPIOConfig(tagADC_T *_tADC)
@@ -77,7 +73,7 @@ static void S_ADC_GPIOConfig(tagADC_T *_tADC)
 
 /**
  * @brief ADC参数配置函数
- * @param *_adcHandle-ADC句柄指针
+ * @param _tADC-ADC结构体指针
  * @retval Null
 */
 static void S_ADC_ParamConfig(tagADC_T *_tADC)
@@ -99,7 +95,8 @@ static void S_ADC_ParamConfig(tagADC_T *_tADC)
 
 /**
  * @brief ADC初始化函数
- * @param *_adcHandle-ADC句柄指针
+ * @param _tADC-ADC结构体指针
+ * @param _ucNum-初始化ADC个数
  * @retval Null
 */
 void Drv_ADC_Init(tagADC_T *_tADC, uint8_t _ucNum)
@@ -117,7 +114,7 @@ void Drv_ADC_Init(tagADC_T *_tADC, uint8_t _ucNum)
 
 /**
  * @brief ADC轮询读取函数
- * @param *_tADC-ADC句柄指针
+ * @param _tADC-ADC结构体指针
  * @retval uint16_t-读取到的ADC直接值
 */
 uint16_t Drv_ADC_PollGetData(tagADC_T *_tADC)
@@ -135,7 +132,7 @@ uint16_t Drv_ADC_PollGetData(tagADC_T *_tADC)
 
 /**
  * @brief ADC轮询读取函数
- * @param *_tADC-ADC句柄指针
+ * @param _tADC-ADC结构体指针
  * @retval float-读取到的ADC转换后的实际值
 */
 float Drv_ADC_PollGetValue(tagADC_T *_tADC)
@@ -151,7 +148,7 @@ float Drv_ADC_PollGetValue(tagADC_T *_tADC)
 		Drv_Delay_Ms(5);
 	}
 	
-	ulADCData /= _tADC->ucAverageNum;	/* 取平均值 */
+	ulADCData /= _tADC->ucAverageNum;			/* 取平均值 */
 	fADCVal = (float)ulADCData * (3.3 / 4096);	/* 算式换算 */
 	
 	return fADCVal;

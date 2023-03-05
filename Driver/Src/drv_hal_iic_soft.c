@@ -16,15 +16,12 @@
 ****************************************************************************/
 #include "drv_hal_conf.h"
 
-#define TYPE_NUM		8	/* 字节位数 */
-#define IIC_GPIO_NUM	2	/* IIC所需的GPIO数量 */
-
 /**
  * @brief IIC的微秒延时函数
  * @param _ucUs 需要延时的数值
  * @retval Null
 */
-static void S_IIC_DelayUs(uint8_t _ucUs)
+static void S_IICSoft_DelayUs(uint8_t _ucUs)
 {
 	Drv_Delay_Us(_ucUs);
 }
@@ -72,7 +69,7 @@ static void S_IICSoft_SDA_L(tagIICSoft_T *_tIIC)
 /**
  * @brief IIC的SDA线读取
  * @param _tIIC-IIC结构体指针
- * @retval Null
+ * @retval GPIO_PinState
 */
 static GPIO_PinState S_IICSoft_READ_SDA(tagIICSoft_T *_tIIC)
 {
@@ -84,7 +81,7 @@ static GPIO_PinState S_IICSoft_READ_SDA(tagIICSoft_T *_tIIC)
  * @param _tIIC-IIC结构体指针
  * @retval Null
 */
-static void IICSoft_SDA_OutputMode(tagIICSoft_T *_tIIC)
+static void S_IICSoft_SDA_OutputMode(tagIICSoft_T *_tIIC)
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	
@@ -100,7 +97,7 @@ static void IICSoft_SDA_OutputMode(tagIICSoft_T *_tIIC)
  * @param _tIIC-IIC结构体指针
  * @retval Null
 */
-static void IICSoft_SDA_InputMode(tagIICSoft_T *_tIIC)
+static void S_IICSoft_SDA_InputMode(tagIICSoft_T *_tIIC)
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	
@@ -112,56 +109,96 @@ static void IICSoft_SDA_InputMode(tagIICSoft_T *_tIIC)
 }
 
 /**
+ * @brief 模拟IIC产生应答
+ * @param _tIIC-IIC结构体指针
+ * @retval Null 
+*/
+static void S_IICSoft_SendAck(tagIICSoft_T *_tIIC)
+{
+	S_IICSoft_SCL_L(_tIIC);
+	
+	S_IICSoft_SDA_OutputMode(_tIIC);
+	
+	S_IICSoft_SDA_L(_tIIC);
+	S_IICSoft_DelayUs(2);
+	
+	S_IICSoft_SCL_H(_tIIC);
+	S_IICSoft_DelayUs(2);
+
+	S_IICSoft_SCL_L(_tIIC);
+}
+
+/**
+ * @brief 模拟IIC不产生应答
+ * @param _tIIC-IIC结构体指针
+ * @retval Null 
+*/
+static void S_IICSoft_SendNAck(tagIICSoft_T *_tIIC)
+{
+	S_IICSoft_SCL_L(_tIIC);
+	
+	S_IICSoft_SDA_OutputMode(_tIIC);
+
+	S_IICSoft_SDA_H(_tIIC);
+	S_IICSoft_DelayUs(2);
+
+	S_IICSoft_SCL_H(_tIIC);
+	S_IICSoft_DelayUs(2);
+
+	S_IICSoft_SCL_L(_tIIC);
+}	
+
+/**
  * @brief 模拟IIC产生起始信号
- * @param _tIIC---IIC结构体指针
+ * @param _tIIC-IIC结构体指针
  * @retval Null 
 */
 void Drv_IICSoft_Start(tagIICSoft_T *_tIIC)
 {
-	IICSoft_SDA_OutputMode(_tIIC);	/* sda线输出 */
+	S_IICSoft_SDA_OutputMode(_tIIC);	/* sda线输出 */
 	
 	S_IICSoft_SDA_H(_tIIC);	  	  
 	S_IICSoft_SCL_H(_tIIC);
-	S_IIC_DelayUs(4);
+	S_IICSoft_DelayUs(4);
 	
  	S_IICSoft_SDA_L(_tIIC);
-	S_IIC_DelayUs(4);
+	S_IICSoft_DelayUs(4);
 	S_IICSoft_SCL_L(_tIIC);
 }	
 
 /**
  * @brief 模拟IIC产生停止信号
- * @param _tIIC---IIC结构体指针
+ * @param _tIIC-IIC结构体指针
  * @retval Null 
 */
 void Drv_IICSoft_Stop(tagIICSoft_T *_tIIC)
 {
-	IICSoft_SDA_OutputMode(_tIIC);
+	S_IICSoft_SDA_OutputMode(_tIIC);
 	
 	S_IICSoft_SCL_L(_tIIC);
 	S_IICSoft_SDA_L(_tIIC);
- 	S_IIC_DelayUs(4);
+ 	S_IICSoft_DelayUs(4);
 	
 	S_IICSoft_SCL_H(_tIIC); 
 	S_IICSoft_SDA_H(_tIIC);
-	S_IIC_DelayUs(4);							   	
+	S_IICSoft_DelayUs(4);							   	
 }
 
 /**
  * @brief 模拟IIC等待应答
- * @param _tIIC---IIC结构体指针
+ * @param _tIIC-IIC结构体指针
  * @retval Null 
 */
 uint8_t Drv_IICSoft_WaitAck(tagIICSoft_T *_tIIC)
 {
 	uint8_t ucErrTime=0;
 
-	IICSoft_SDA_InputMode(_tIIC);              //SDA设置为输入  
+	S_IICSoft_SDA_InputMode(_tIIC);   /* SDA设置为输入 */  
 	
 	S_IICSoft_SDA_H(_tIIC);
-	S_IIC_DelayUs(1);	
+	S_IICSoft_DelayUs(1);	
 	S_IICSoft_SCL_H(_tIIC);
-	S_IIC_DelayUs(1);	 /*SCL为高 进行读取操作 */  
+	S_IICSoft_DelayUs(1);	 			/*SCL为高 进行读取操作 */  
 
 	while(S_IICSoft_READ_SDA(_tIIC))
 	{
@@ -173,58 +210,23 @@ uint8_t Drv_IICSoft_WaitAck(tagIICSoft_T *_tIIC)
 		}
 	}
 
-	S_IICSoft_SCL_L(_tIIC);//时钟输出0 	  	
+	S_IICSoft_SCL_L(_tIIC);			/* 时钟输出0 */ 	  	
 	return 0;  
-} 
-
-
-/**
- * @brief 模拟IIC产生应答
- * @param _tIIC---IIC结构体指针
- * @retval Null 
-*/
-static void IICSoft_SendAck(tagIICSoft_T *_tIIC)
-{
-	S_IICSoft_SCL_L(_tIIC);
-	
-	IICSoft_SDA_OutputMode(_tIIC);
-	
-	S_IICSoft_SDA_L(_tIIC);
-	S_IIC_DelayUs(2);
-	
-	S_IICSoft_SCL_H(_tIIC);
-	S_IIC_DelayUs(2);
-	S_IICSoft_SCL_L(_tIIC);
-}
-
-/**
- * @brief 模拟IIC不产生应答
- * @param _tIIC---IIC结构体指针
- * @retval Null 
-*/
-static void IICSoft_SendNAck(tagIICSoft_T *_tIIC)
-{
-	S_IICSoft_SCL_L(_tIIC);
-	
-	IICSoft_SDA_OutputMode(_tIIC);
-	S_IICSoft_SDA_H(_tIIC);
-	S_IIC_DelayUs(2);
-	S_IICSoft_SCL_H(_tIIC);
-	S_IIC_DelayUs(2);
-	S_IICSoft_SCL_L(_tIIC);
-}					 				     
+} 				 				     
 
 /**
  * @brief 模拟IIC发送一个字节
- * @param _tIIC---IIC结构体指针
- * @param txdata---发送得到字节数据
+ * @param _tIIC-IIC结构体指针
+ * @param _ucTxData-发送得到字节数据
  * @retval Null 
 */
 void Drv_IICSoft_SendByte(tagIICSoft_T *_tIIC, uint8_t _ucTxData)
 {                        
     uint8_t index;   
-	IICSoft_SDA_OutputMode(_tIIC); 	    
-    S_IICSoft_SCL_L(_tIIC);//拉低时钟开始数据传输
+
+	S_IICSoft_SDA_OutputMode(_tIIC); 	
+
+    S_IICSoft_SCL_L(_tIIC);/* 拉低时钟开始数据传输 */
 	
     for(index = 0;index < TYPE_NUM;index++)
     {     
@@ -233,31 +235,33 @@ void Drv_IICSoft_SendByte(tagIICSoft_T *_tIIC, uint8_t _ucTxData)
 		else
 			S_IICSoft_SDA_L(_tIIC);
 			
-		_ucTxData <<= 1; 	  
-		S_IIC_DelayUs(2);   //对TEA5767这三个延时都是必须的
-			
+		_ucTxData <<= 1;
+
+		/* 对TEA5767这三个延时都是必须的 */
+		S_IICSoft_DelayUs(2);   
 		S_IICSoft_SCL_H(_tIIC);
-		S_IIC_DelayUs(2); 
+		S_IICSoft_DelayUs(2); 
 		S_IICSoft_SCL_L(_tIIC);	
-		S_IIC_DelayUs(2);
+		S_IICSoft_DelayUs(2);
     }	 
 } 	    
 
 /**
  * @brief 模拟IIC读取一个字节
- * @param _tIIC---IIC结构体指针
- * @param ack---ack=1时，发送NACK，ack=0，发送ACK
+ * @param _tIIC-IIC结构体指针
+ * @param _ucAck-ack=1时，发送NACK，ack=0，发送ACK
  * @retval Null 
 */
 uint8_t Drv_IICSoft_ReadByte(tagIICSoft_T *_tIIC, uint8_t _ucAck)
 {
 	uint8_t index,ucRxData=0;
-	IICSoft_SDA_InputMode(_tIIC);//SDA设置为输入
+
+	S_IICSoft_SDA_InputMode(_tIIC);		/* SDA设置为输入 */
    
 	for(index = 0;index < TYPE_NUM;index++ )
 	{
 		S_IICSoft_SCL_L(_tIIC); 
-		S_IIC_DelayUs(2);
+		S_IICSoft_DelayUs(2);
 		S_IICSoft_SCL_H(_tIIC);
 		
 		ucRxData <<= 1;
@@ -267,20 +271,20 @@ uint8_t Drv_IICSoft_ReadByte(tagIICSoft_T *_tIIC, uint8_t _ucAck)
 //		else
 //			receive=receive&0xFE;
 		
-		S_IIC_DelayUs(1); 
+		S_IICSoft_DelayUs(1); 
     }	
 
     if (_ucAck)
-        IICSoft_SendAck(_tIIC); //发送ACK  
+        S_IICSoft_SendAck(_tIIC); 		/* 发送ACK */
     else
-		IICSoft_SendNAck(_tIIC);//发送nACK
+		S_IICSoft_SendNAck(_tIIC);		/* 发送nACK */
 
     return ucRxData;
 }
 
 /**
  * @brief 模拟IIC初始化
- * @param _tIIC---IIC结构体指针
+ * @param _tIIC-IIC结构体指针
  * @retval Null 
 */
 void Drv_IICSoft_Init(tagIICSoft_T *_tIIC)

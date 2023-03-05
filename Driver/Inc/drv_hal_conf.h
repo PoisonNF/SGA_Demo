@@ -1,13 +1,13 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2022/10/25 V1.1.8"
+#define DRIVER_VERSION	"2023/3/5 V2.0"
 
 /* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
 //#define RTT_ENABLE               
 #ifdef RTT_ENABLE
-#include <rtthread.h>
-#endif // RTT相关头文件
+#include <rtthread.h>	/* RTT相关头文件 */ 
+#endif
 
 #define PRINTF_UART	USART1				/* printf使用的串口 */
 
