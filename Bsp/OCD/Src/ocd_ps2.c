@@ -14,6 +14,39 @@
 ****************************************************************************/
 #include "ocd_ps2.h"
 
+uint16_t usHandkey;	            	/* 按键值读取，零时存储 */ 
+uint8_t ucaCMD[2] = {0x01,0x42};	/* 开始命令。请求数据 */
+uint8_t ucaPS2Data[9] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}; /* 数据存储数组 */
+                    /*ucaPS2Data[0]    空 
+                      ucaPS2Data[1]    0x73 红灯模式 0x41 灭灯模式
+                      ucaPS2Data[2]    0x5A 返回数据预告
+                      ucaPS2Data[3]    低8位按键状态 0按下
+                      ucaPS2Data[4]    高8位按键状态 0按下
+                      ucaPS2Data[5]    PSS_RX
+                      ucaPS2Data[6]    PSS_RY
+                      ucaPS2Data[7]    PSS_LX
+                      ucaPS2Data[8]    PSS_LY
+                    */
+uint16_t usaMASK[] =
+{
+    PSB_SELECT,
+    PSB_L3,
+    PSB_R3,
+    PSB_START,
+    PSB_PAD_UP,
+    PSB_PAD_RIGHT,
+    PSB_PAD_DOWN,
+    PSB_PAD_LEFT,
+    PSB_L2,
+    PSB_R2,
+    PSB_L1,
+    PSB_R1 ,
+    PSB_GREEN,
+    PSB_RED,
+    PSB_BLUE,
+    PSB_PINK
+};
+
 /**
  * @brief 向手柄发送指令函数
  * @param _tPS2-PS2句柄指针
@@ -23,7 +56,7 @@
 static void S_PS2_Cmd(tagPS2_T *_tPS2,uint8_t _ucCMD)
 {
 	volatile uint16_t ref=0x01;
-	PS2Data[1] = 0;
+	ucaPS2Data[1] = 0;
 
 	for(ref=0x01;ref<0x0100;ref<<=1)
 	{
@@ -39,7 +72,7 @@ static void S_PS2_Cmd(tagPS2_T *_tPS2,uint8_t _ucCMD)
 		DELAY_TIME;
 		CLK_H;
 		if(DI)
-			PS2Data[1] = ref|PS2Data[1];
+			ucaPS2Data[1] = ref|ucaPS2Data[1];
 	}
 	Drv_Delay_Us(16);
 }
@@ -53,8 +86,8 @@ static void S_PS2_ShortPoll(tagPS2_T *_tPS2)
 {
 	CS_L;
 	Drv_Delay_Us(16);
-	S_PS2_Cmd(_tPS2,Comd[0]);  
-	S_PS2_Cmd(_tPS2,Comd[1]);  
+	S_PS2_Cmd(_tPS2,ucaCMD[0]);  
+	S_PS2_Cmd(_tPS2,ucaCMD[1]);  
 	S_PS2_Cmd(_tPS2,0X00);
 	S_PS2_Cmd(_tPS2,0x00);
 	S_PS2_Cmd(_tPS2,0x00);
@@ -141,8 +174,8 @@ void OCD_PS2_ReadData(tagPS2_T *_tPS2)
 	volatile uint16_t ref=0x01;
 
 	CS_L;
-	S_PS2_Cmd(_tPS2,Comd[0]);  		/* 开始命令 */
-	S_PS2_Cmd(_tPS2,Comd[1]);  		/* 请求数据 */
+	S_PS2_Cmd(_tPS2,ucaCMD[0]);  		/* 开始命令 */
+	S_PS2_Cmd(_tPS2,ucaCMD[1]);  		/* 请求数据 */
 
 	/* 开始接收数据 */
 	for(byte=2;byte<9;byte++)    
@@ -155,7 +188,7 @@ void OCD_PS2_ReadData(tagPS2_T *_tPS2)
 			DELAY_TIME;
 			CLK_H;
 		    if(DI)
-		    PS2Data[byte] = ref|PS2Data[byte];
+		    ucaPS2Data[byte] = ref|ucaPS2Data[byte];
 		}
         Drv_Delay_Us(16);
 	}
@@ -172,7 +205,7 @@ void OCD_PS2_ClearData(void)
 	uint8_t a;
 
 	for(a=0;a<9;a++)
-		PS2Data[a]=0x00;
+		ucaPS2Data[a]=0x00;
 }
 
 /**
@@ -187,10 +220,10 @@ uint8_t OCD_PS2_DataKey(tagPS2_T *_tPS2)
 	OCD_PS2_ClearData();
 	OCD_PS2_ReadData(_tPS2);
 
-	Handkey = (PS2Data[4]<<8)|PS2Data[3];     /* 这是16个按键  按下为0，未按下为1 */
+	usHandkey = (ucaPS2Data[4]<<8)|ucaPS2Data[3];     /* 这是16个按键  按下为0，未按下为1 */
 	for(index = 0;index < 16;index++)
 	{	    
-		if((Handkey&(1<<(MASK[index]-1)))==0)
+		if((usHandkey&(1<<(usaMASK[index]-1)))==0)
 		return index+1;		/* 按键的序号 */
 	}
 	return 0;           	/* 没有任何按键按下 */
@@ -207,7 +240,7 @@ uint8_t OCD_PS2_DataKey(tagPS2_T *_tPS2)
 */
 uint8_t OCD_PS2_AnologData(uint8_t _ucButton)
 {
-	return PS2Data[_ucButton];
+	return ucaPS2Data[_ucButton];
 }
 
 /**
@@ -218,10 +251,10 @@ uint8_t OCD_PS2_AnologData(uint8_t _ucButton)
 uint8_t OCD_PS2_RedLight(tagPS2_T *_tPS2)
 {
 	CS_L;
-	S_PS2_Cmd(_tPS2,Comd[0]);  /* 开始命令 */
-	S_PS2_Cmd(_tPS2,Comd[1]);  /* 请求数据 */
+	S_PS2_Cmd(_tPS2,ucaCMD[0]);  /* 开始命令 */
+	S_PS2_Cmd(_tPS2,ucaCMD[1]);  /* 请求数据 */
 	CS_H;
-	if( PS2Data[1] == 0X73)   return 0 ;
+	if(ucaPS2Data[1] == 0X73)   return 0 ;
 	else return 1;
 }
 
@@ -236,8 +269,8 @@ void OCD_PS2_Vibration(tagPS2_T *_tPS2,uint8_t _ucMotor1, uint8_t _ucMotor2)
 {
 	CS_L;
 	Drv_Delay_Us(16);
-    S_PS2_Cmd(_tPS2,Comd[0]);  /* 开始命令 */
-	S_PS2_Cmd(_tPS2,Comd[1]);  /* 请求数据 */
+    S_PS2_Cmd(_tPS2,ucaCMD[0]);  /* 开始命令 */
+	S_PS2_Cmd(_tPS2,ucaCMD[1]);  /* 请求数据 */
 	S_PS2_Cmd(_tPS2,0X00);
 	S_PS2_Cmd(_tPS2,_ucMotor1);
 	S_PS2_Cmd(_tPS2,_ucMotor2);

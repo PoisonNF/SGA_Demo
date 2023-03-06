@@ -14,6 +14,15 @@
 ****************************************************************************/
 #include "ocd_rm3100.h"
 
+/* RM3100初始化数据 */
+struct config tRM3100 = 
+{
+    .ucCycle_Count   = 200,
+    .fSample_Rate   = 37,
+    .fMax_Data_Rate = 440,
+    .fGain          = 75
+};
+
 //*********************************RM3100--spi***************************************************//
 
 /**
@@ -152,7 +161,7 @@ uint8_t OCD_SetCMMdatarate(tagSPI_T *_tSPI,uint8_t _ucConf)
             case CMM_UPDATERATE_0_075: temp=0.075;
                                     break;
         }
-        if (temp > rm.max_data_rate)				
+        if (temp > tRM3100.fMax_Data_Rate)				
             return 0;
 
         ptr = &_ucConf;
@@ -417,7 +426,7 @@ uint8_t OCD_SetCMMdatarate_Soft(tagSPISoft_T *_tSPI,uint8_t _ucConf)
 			case CMM_UPDATERATE_0_075: temp=0.075;
 									break;
         }
-		if (temp > rm.max_data_rate)				
+		if (temp > tRM3100.fMax_Data_Rate)				
         return 0;
 
       	ptr = &_ucConf;

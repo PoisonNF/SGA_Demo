@@ -4,5 +4,5 @@
 
 void Task_Sys_Init(void)
 {
-	Drv_HAL_Init();		/* Sigma库驱动，必需 */
+	Drv_HAL_Init();		/* SGA库启动必需 */
 }

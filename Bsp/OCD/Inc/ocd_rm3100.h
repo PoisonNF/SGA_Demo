@@ -54,25 +54,20 @@
 /* 状态寄存器中第7位为数据是否可以读取标志*/
 #define STATUS_MASK    0x80 
 
-typedef struct {
-  int32_t MAG_X;
-  int32_t MAG_Y;
-  int32_t MAG_Z;
+typedef struct 
+{
+	int32_t MAG_X;
+	int32_t MAG_Y;
+	int32_t MAG_Z;
 } MagData_t;
 
 /* RM3100初始化数据结构体 */
-struct config {
-    unsigned int cycle_count;
-    float sample_rate;
-    float max_data_rate;
-    float gain;
-};
-/* RM3100初始化数据 */
-struct config rm = {
-    .cycle_count   = 200,
-    .sample_rate   = 37,
-    .max_data_rate = 440,
-    .gain          = 75
+struct config
+{
+    unsigned int ucCycle_Count;
+    float fSample_Rate;
+    float fMax_Data_Rate;
+    float fGain;
 };
 
 void OCD_SingleModeConfig_Soft(tagSPISoft_T *_tSPI,uint8_t _ucConf);

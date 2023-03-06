@@ -46,38 +46,6 @@
 
 #define DELAY_TIME  Drv_Delay_Us(5); 
 
-uint16_t Handkey;	            /* 按键值读取，零时存储 */ 
-uint8_t Comd[2]={0x01,0x42};	/* 开始命令。请求数据 */
-uint8_t PS2Data[9]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}; /* 数据存储数组 */
-                    /*PS2Data[0]    空 
-                      PS2Data[1]    0x73 红灯模式 0x41 灭灯模式
-                      PS2Data[2]    0x5A 返回数据预告
-                      PS2Data[3]    低8位按键状态 0按下
-                      PS2Data[4]    高8位按键状态 0按下
-                      PS2Data[5]    PSS_RX
-                      PS2Data[6]    PSS_RY
-                      PS2Data[7]    PSS_LX
-                      PS2Data[8]    PSS_LY
-                    */
-uint16_t MASK[]={
-    PSB_SELECT,
-    PSB_L3,
-    PSB_R3 ,
-    PSB_START,
-    PSB_PAD_UP,
-    PSB_PAD_RIGHT,
-    PSB_PAD_DOWN,
-    PSB_PAD_LEFT,
-    PSB_L2,
-    PSB_R2,
-    PSB_L1,
-    PSB_R1 ,
-    PSB_GREEN,
-    PSB_RED,
-    PSB_BLUE,
-    PSB_PINK
-};
-
 typedef struct 
 {
 	tagGPIO_T tGPIO[4];     /* 按照[0]DI/DAT [1]DO/CMD [2]CS [3]CLK顺序 */
