@@ -111,8 +111,8 @@
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
           <SimDllArguments> -REMAP</SimDllArguments>
-          <SimDlgDll>DCM.DLL</SimDlgDll>
-          <SimDlgDllArguments>-pCM3</SimDlgDllArguments>
+          <SimDlgDll>DRAMSTM.DLL</SimDlgDll>
+          <SimDlgDllArguments>-pSTM32F103ZE</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
           <TargetDllArguments></TargetDllArguments>
           <TargetDlgDll>TCM.DLL</TargetDlgDll>
@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE,STM32F1_SGA_ENABLE</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Apply\Logic\Inc;..\Apply\Task\Inc;..\Bsp\Bsp\Inc;..\Bsp\OCD\Inc;..\Bsp\FatFs\Inc;..\Bsp\Third\SGA\inc;..\Driver\Inc;..\Hardware\STM32F1XX\CMSIS\Include;..\Hardware\STM32F1XX\CMSIS\Device\ST\STM32F1xx\Include;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc\Legacy;..\Bsp\Third\RT-Thread\include</IncludePath>
+              <IncludePath>..\Apply\Logic\Inc;..\Apply\Task\Inc;..\Bsp\OCD\Inc;..\Bsp\FatFs\Inc;..\Bsp\Algo\Inc;..\Bsp\Dev\Inc;..\Bsp\RTOS\RT-Thread\include;..\Driver\Inc;..\Hardware\STM32F1XX\CMSIS\Include;..\Hardware\STM32F1XX\CMSIS\Device\ST\STM32F1xx\Include;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc\Legacy</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -428,11 +428,6 @@
               <FilePath>..\Bsp\OCD\Src\ocd_ads1256.c</FilePath>
             </File>
             <File>
-              <FileName>ocd_ads4111.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Bsp\OCD\Src\ocd_ads4111.c</FilePath>
-            </File>
-            <File>
               <FileName>ocd_at24cxx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\OCD\Src\ocd_at24cxx.c</FilePath>
@@ -467,15 +462,25 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\OCD\Src\ocd_rm3100.c</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Bsp/Dev</GroupName>
+          <Files>
             <File>
-              <FileName>ocd_ps2.c</FileName>
+              <FileName>dev_ps2.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Bsp\OCD\Src\ocd_ps2.c</FilePath>
+              <FilePath>..\Bsp\Dev\Src\dev_ps2.c</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Bsp/Algo</GroupName>
+          <Files>
             <File>
-              <FileName>ocd_func.c</FileName>
+              <FileName>algo_func.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Bsp\OCD\Src\ocd_func.c</FilePath>
+              <FilePath>..\Bsp\Algo\Src\algo_func.c</FilePath>
             </File>
           </Files>
         </Group>

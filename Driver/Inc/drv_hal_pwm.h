@@ -9,8 +9,8 @@ typedef struct
 {
 	TIM_HandleTypeDef 	tPWMHandle;		/* STM32内部PWM设备句柄 */
 	TIM_OC_InitTypeDef	tPWMChannel;	/* STM32内部PWM通道句柄 */
-	uint32_t			ulFreq;			/* 频率 */
-	float				fDuty;			/* 占空比 */
+	uint32_t			ulFreq;			/* 频率(Hz) */
+	float				fDuty;			/* 占空比(%) */
 	uint8_t				ucChannel;		/* 通道 */
 	tagGPIO_T			tGPIO;			/* GPIO设置 */
 }tagPWM_T;

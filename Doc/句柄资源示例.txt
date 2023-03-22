@@ -443,11 +443,11 @@ tagPWM_T tPWMDemo[] =
 	[0] =
 	{
 		.tPWMHandle.Instance	= TIM3,         	/* 定时器3 */
-		.fDuty					= 7.5,				/* 初始占空比 */
-		.ulFreq					= 50,				/* 频率 */
+		.fDuty					= 7.5,				/* 初始占空比（%） */
+		.ulFreq					= 50,				/* 频率（Hz） */
 		.ucChannel				= TIM_CHANNEL_1,	/* 通道 */
 		.tGPIO.tGPIOInit.Pin	= GPIO_PIN_6,		/* IO映射 */
-		.tGPIO.tGPIOPort		= GPIOC,			/* IO组映射 */
+		.tGPIO.tGPIOPort		= GPIOA,			/* IO组映射 */
 		.tGPIO.ucAFMode			= NO_REMAP,			/* IO重映射模式 */
 	},
 };

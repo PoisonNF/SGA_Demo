@@ -46,6 +46,11 @@
         "usercode.h": "c",
         "fstream": "c",
         "new": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "dev_ps2.h": "c",
+        "algo_func.h": "c",
+        "dev_conf.h": "c",
+        "drv_hal.h": "c",
+        "algo_conf.h": "c"
     }
 }
