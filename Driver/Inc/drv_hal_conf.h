@@ -1,12 +1,20 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2023/3/5 V2.0"
+#define DRIVER_VERSION	"2023/3/29 V2.2"
 
 /* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
 //#define RTT_ENABLE               
 #ifdef RTT_ENABLE
-#include <rtthread.h>	/* RTT相关头文件 */ 
+#include <rtthread.h>		/* RTT相关头文件 */
+#include "threadpool.h"		/* threadpool头文件 */ 
+#endif
+
+/* FreeRTOS开关 使用时需解除注释，且在工程中导入FreeRTOS相关内核 */ 
+//#define FREERTOS_ENABLE
+#ifdef FREERTOS_ENABLE
+#include "cmsis_os.h"		/* FreeRTOS相关头文件 */
+#include "threadpool.h"		/* threadpool头文件 */
 #endif
 
 #define PRINTF_UART	USART1				/* printf使用的串口 */
@@ -14,18 +22,10 @@
 /* STM32芯片选择 */
 #ifdef STM32F1_SGA_ENABLE
 	#define SYSTEM_CLOCK 	72			/* 系统主频时钟：72，单位：M */
-	
-	/* rtt相关 */
-	#define STM32_SRAM_SIZE 64
-	#define STM32F10X_PIN_NUMBERS 100
 #endif
 
 #ifdef STM32L4_SGA_ENABLE
 	#define SYSTEM_CLOCK 	80			/* 系统主频时钟：80，单位：M */
-	
-	/* rtt相关 */
-	#define STM32_SRAM_SIZE 64
-	#define STM32L4X_PIN_NUMBERS 64
 #endif
 
 /* 启动模块 */

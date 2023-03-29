@@ -51,6 +51,7 @@
         "algo_func.h": "c",
         "dev_conf.h": "c",
         "drv_hal.h": "c",
-        "algo_conf.h": "c"
+        "algo_conf.h": "c",
+        "task_sysinit.h": "c"
     }
 }

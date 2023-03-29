@@ -16,27 +16,27 @@
 
 **Apply** : 应用层
 
-- Logic : 逻辑层——用户逻辑源代码（抽象执行逻辑）
-- Task : 业务层——用户业务源代码（具体执行实现）
+- **Logic** : 逻辑层——用户逻辑源代码（抽象执行逻辑）
+- **Task** : 业务层——用户业务源代码（具体执行实现）
 
 **Bsp**: 板级层
 
-- Algo : 算法库——常用函数与控制算法
-- Dev : 设备驱动——遥感以及电机驱动
-- OCD : 片外外设——需要使用的片外外设驱动
-- FatFs : 文件系统——开源文件系统
-- RTOS : 实时操作系统——各第三方支持RTOS系统
+- **Algo** : 算法库——常用函数与控制算法
+- **Dev** : 设备驱动——遥感以及电机驱动
+- **OCD** : 片外外设——需要使用的片外外设驱动
+- **FatFs** : 文件系统——开源文件系统
+- **RTOS** : 实时操作系统——各第三方支持RTOS系统
 
 **Driver** : 驱动层（非架构开发者不要轻易修改）
 
 **Hardware**: 硬件抽象层
 
-- STM32F1XX
+- **STM32F1XX**
     CMSIS : 
     - core版本: V5.6.0_cm4
     - device F1版本：V4.3.2 
     - STM32F1XX系列MCU的HAL固件库源代码、驱动程序版本: V1.1.7
-- STM32L4XX
+- **STM32L4XX**
     CMSIS : 
     - core版本: V5.4.0_cm4
     - device L4版本：V1.5.1
@@ -86,7 +86,7 @@
 
 存放第三方芯片的驱动代码
 
-目前已有的芯片驱动：ADS1256、ADS4111、AT24xx、DS3231、JY901、RM3100
+目前已有的芯片驱动：ADS1256、AT24xx、DS3231、JY901、RM3100
 
 目前已有的外设驱动：OLED、SDcard
 
@@ -100,7 +100,8 @@
 
 ## RTOS支持
 
-- 目前库中已经移植了RT-Thread操作系统。使用时须在**drv_hal_conf.h**中解开`#define RTT_ENABLE`注释，同时在工程中加入kernel文件
+- **RT-Thread** —— 使用时须在**drv_hal_conf.h**中解开`#define RTT_ENABLE`注释，同时在工程中加入kernel文件
+- **FreeRTOS** —— 使用时须在**drv_hal_conf.h**中解开`#define FREERTOS_ENABLE`注释，同时在工程中加入kernel文件
 - 其他操作系统等待后续使用后加入
 
 ## 库函数维护

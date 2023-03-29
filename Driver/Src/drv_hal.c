@@ -8,9 +8,10 @@
 
 * 文件历史：
 
-* 版本号	日期		作者		说明
+* 版本号	  日期		  作者		   说明
+*  2.2 	  2023-03-29	鲍程璐		收纳task_irq.c下底层中断函数
 
-* 1.0.0a 	2020-02-22	李环宇		创建该文件
+* 1.0.0a  2020-02-22	李环宇		创建该文件
 
 ****************************************************************************/
 #include "drv_hal_conf.h"
@@ -217,8 +218,13 @@ void Drv_HAL_Init(void)
 {
 	HAL_Init();			/* HAL库初始化 */
 	S_HAL_CLKConfig();	/* 系统时钟初始化 */
+	
 #ifdef RTT_ENABLE
 	S_HAL_RTTCLKInit();
+#endif
+
+#ifdef FREERTOS_ENABLE
+	osKernelInitialize();
 #endif
 }
 
@@ -282,6 +288,7 @@ void UsageFault_Handler(void)
   }
 }
 
+#ifndef FREERTOS_ENABLE
 /**
  * @brief This function handles System service call via SWI instruction.
 */
@@ -294,6 +301,67 @@ void SVC_Handler(void)
 
   /* USER CODE END SVCall_IRQn 1 */
 }
+#endif
+
+#if !defined(FREERTOS_ENABLE) && !defined(RTT_ENABLE)
+/**
+  * @brief This function handles Pendable request for system service.
+  */
+void PendSV_Handler(void)
+{
+  /* USER CODE BEGIN PendSV_IRQn 0 */
+
+  /* USER CODE END PendSV_IRQn 0 */
+  /* USER CODE BEGIN PendSV_IRQn 1 */
+
+  /* USER CODE END PendSV_IRQn 1 */
+}
+
+/**
+ * @brief 系统滴答中断
+ * @param Null
+ * @retval Null
+*/
+void SysTick_Handler(void)
+{
+    Drv_HAL_IncTick();
+}
+
+/**
+ * @brief HAL库系统报错中断
+ * @param Null
+ * @retval Null
+*/
+void HardFault_Handler(void)
+{
+	while(1)
+	{
+		/* USER CODE BEGIN W1_HardFault_IRQn 0 */
+		/* USER CODE END W1_HardFault_IRQn 0 */
+	}
+}
+#endif
+
+#ifdef FREERTOS_ENABLE
+#include "task.h"
+/**
+ * @brief 应用于FreeRTOS的系统滴答中断
+ * @param Null
+ * @retval Null
+*/
+void SysTick_Handler(void)
+{
+	HAL_IncTick();
+#if (INCLUDE_xTaskGetSchedulerState == 1 )
+	if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+	{
+#endif /* INCLUDE_xTaskGetSchedulerState */
+	xPortSysTickHandler();
+#if (INCLUDE_xTaskGetSchedulerState == 1 )
+	}
+#endif /* INCLUDE_xTaskGetSchedulerState */
+}
+#endif
 
 /**
  * @brief This function handles Debug monitor.
@@ -328,6 +396,7 @@ void HAL_MspInit(void)
 
     /* System interrupt init*/
     __HAL_RCC_AFIO_CLK_ENABLE();
+	__HAL_RCC_PWR_CLK_ENABLE();
 
     /* MemoryManagement_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);

@@ -8,7 +8,7 @@
 #define DBG_INFO(...) 
 #define DBG_BUF(...) 
 #endif
-#define DBG_ERROR(...) dbg_print_log("ERROR", __FUNCTION__, __LINE__, __VA_ARGS__)
+#define DBG_ERROR(...) Drv_HAL_PrintLog("ERROR", __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Hal¿â°üº¬ */
 #ifdef STM32F1_SGA_ENABLE

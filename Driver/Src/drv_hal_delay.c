@@ -8,7 +8,9 @@
 
 * 文件历史：
 
-* 版本号	日期		作者		说明
+* 版本号	    日期	  作者		     说明
+*  2.2		2023-03-29	鲍程璐		适配FreeRTOS,调用其API
+
 * 1.1.8		2022-10-22	鲍程璐		适配RTT避免使用hal延时函数造成阻塞,新增us延时函数
 
 * 1.0.0a 	2020-02-22	李环宇		创建该文件
@@ -24,11 +26,20 @@
 */
 void Drv_Delay_Ms(uint32_t _ulVal)
 {
+	/* RT-Thread 延时函数 */
 	#ifdef RTT_ENABLE
 	rt_thread_mdelay(_ulVal);
-	#else
+	#endif
+
+	/* FreeRTOS 延时函数 */
+	#ifdef FREERTOS_ENABLE
+	osDelay(_ulVal);
+	#endif
+
+	/* 裸机 延时函数 */
+	#if !defined(FREERTOS_ENABLE) && !defined(RTT_ENABLE)
 	HAL_Delay(_ulVal);
-	#endif 
+	#endif
 }
 
 /**

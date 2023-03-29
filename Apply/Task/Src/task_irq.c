@@ -188,43 +188,5 @@ void TIM7_IRQHandler(void)
 //    Drv_Timer_IRQHandler(&demoTIM);
 }
 
-#ifndef RTT_ENABLE
-/**
-  * @brief This function handles Pendable request for system service.
-  */
-void PendSV_Handler(void)
-{
-  /* USER CODE BEGIN PendSV_IRQn 0 */
 
-  /* USER CODE END PendSV_IRQn 0 */
-  /* USER CODE BEGIN PendSV_IRQn 1 */
-
-  /* USER CODE END PendSV_IRQn 1 */
-}
-
-/**
- * @brief 系统滴答中断
- * @param Null
- * @retval Null
-*/
-void SysTick_Handler(void)
-{
-    Drv_HAL_IncTick();
-}
-
-/**
- * @brief HAL库系统报错中断
- * @param Null
- * @retval Null
-*/
-void HardFault_Handler(void)
-{
-	while(1)
-	{
-		/* USER CODE BEGIN W1_HardFault_IRQn 0 */
-		/* USER CODE END W1_HardFault_IRQn 0 */
-	}
-}
-
-#endif
 
