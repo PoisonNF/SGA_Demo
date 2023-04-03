@@ -8,7 +8,9 @@
 
 * 文件历史：
 
-* 版本号	日期		作者		说明
+* 版本号		日期	  作者			说明
+* 2.2.1		2023-04-03  鲍程璐		跟随drv_hal_uart进行修改
+
 * 1.1.8		2022-10-22	鲍程璐		对结构体进行了整合，提供IT模式和DMA模式
 									提供jy901数据的处理、转换、打印函数
 
@@ -243,36 +245,36 @@ void OCD_JY901_DMAInit(tagJY901_T *_tJY901)
 void OCD_JY901_DataProcess(tagJY901_T *_tJY901)
 {
 	/* 判断标志位 */
-	if(_tJY901->tUART.tUartDMA.ucDMARxCplt)
+	if(_tJY901->tUART.tRxInfo.ucDMARxCplt)
 	{
 		/* 遍历数组 */
-		for (int i = 0; i < _tJY901->tUART.tRxInfo.usRxLenth; i++)
+		for (int i = 0; i < _tJY901->tUART.tRxInfo.usDMARxLength; i++)
 		{
-			if(_tJY901->tUART.tRxInfo.ucpRxCache[i] == JY901_HEAD) /* 如果数据头为0x55 */
+			if(_tJY901->tUART.tRxInfo.ucpDMARxCache[i] == JY901_HEAD) /* 如果数据头为0x55 */
 			{
 				/* 和校验 */
 				uint8_t ucSum = 0;
 				for(int j = 0;j<10;j++)
 				{
-					ucSum += _tJY901->tUART.tRxInfo.ucpRxCache[i+j];
+					ucSum += _tJY901->tUART.tRxInfo.ucpDMARxCache[i+j];
 				}
 				/* 和校验成功，为需要的数据组 */
-				if(ucSum == _tJY901->tUART.tRxInfo.ucpRxCache[i+10])
+				if(ucSum == _tJY901->tUART.tRxInfo.ucpDMARxCache[i+10])
 				{
 					/* 根据type拷贝到对应的结构体中 */
-					switch (_tJY901->tUART.tRxInfo.ucpRxCache[i+1])
+					switch (_tJY901->tUART.tRxInfo.ucpDMARxCache[i+1])
 					{
-						case JY901_TIME:	memcpy(&_tJY901->stcTime,&_tJY901->tUART.tRxInfo.ucpRxCache[i+2],8);
+						case JY901_TIME:	memcpy(&_tJY901->stcTime,&_tJY901->tUART.tRxInfo.ucpDMARxCache[i+2],8);
 											break;
-						case JY901_ACCEL:	memcpy(&_tJY901->stcAcc,&_tJY901->tUART.tRxInfo.ucpRxCache[i+2],8);
+						case JY901_ACCEL:	memcpy(&_tJY901->stcAcc,&_tJY901->tUART.tRxInfo.ucpDMARxCache[i+2],8);
 											break;
-						case JY901_GYRO:	memcpy(&_tJY901->stcGyro,&_tJY901->tUART.tRxInfo.ucpRxCache[i+2],8);
+						case JY901_GYRO:	memcpy(&_tJY901->stcGyro,&_tJY901->tUART.tRxInfo.ucpDMARxCache[i+2],8);
 											break;
-						case JY901_ANGLE:	memcpy(&_tJY901->stcAngle,&_tJY901->tUART.tRxInfo.ucpRxCache[i+2],8);
+						case JY901_ANGLE:	memcpy(&_tJY901->stcAngle,&_tJY901->tUART.tRxInfo.ucpDMARxCache[i+2],8);
 											break;
-						case JY901_MAG:		memcpy(&_tJY901->stcMag,&_tJY901->tUART.tRxInfo.ucpRxCache[i+2],8);
+						case JY901_MAG:		memcpy(&_tJY901->stcMag,&_tJY901->tUART.tRxInfo.ucpDMARxCache[i+2],8);
 											break;
-						case JY901_QUATER:  memcpy(&_tJY901->stcQuater,&_tJY901->tUART.tRxInfo.ucpRxCache[i+2],8);
+						case JY901_QUATER:  memcpy(&_tJY901->stcQuater,&_tJY901->tUART.tRxInfo.ucpDMARxCache[i+2],8);
 											break;
 						default:	
 											break;
@@ -281,7 +283,7 @@ void OCD_JY901_DataProcess(tagJY901_T *_tJY901)
 				else continue;
 			}
 		}
-		_tJY901->tUART.tUartDMA.ucDMARxCplt = 0;	/* 标志位清零 */
+		_tJY901->tUART.tRxInfo.ucDMARxCplt = 0;	/* 标志位清零 */
 	}
 }
 

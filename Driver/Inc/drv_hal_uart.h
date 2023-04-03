@@ -4,35 +4,47 @@
 #include "drv_hal_conf.h"
 
 #define UART_TIME_OUT	0xff
+#define UART_IT_RXCACHA_SIZE 100
 
 /* 串口接收信息结构体 */
 typedef struct
 {
-	uint16_t			usRxCnt;			/* 接收数据计数器 */
-	uint16_t			usRxLenth;			/* 接收数据长度 */
-	uint16_t			usRxMAXLenth;		/* 接收数据最大长度 */
-	uint8_t				ucpRxBuffer[1];		/* 接收Buffer */
-	uint8_t				*ucpRxCache;		/* 接收缓冲区 */
+	/* 中断相关信息 */
+	uint16_t			usRxCnt;				/* 接收数据计数器(中断使用) */
+	uint8_t				ucpRxBuffer[1];			/* 中断接收Buffer(中断使用) */
+	uint8_t				*ucpITRxCache;			/* 中断接收缓冲区(中断使用) */
+
+	/* DMA相关信息 */
+	uint16_t			usDMARxLength;			/* DMA总接收数据长度(DMA使用) */
+	uint16_t			usDMARxMAXSize;			/* DMA接收缓冲区大小(DMA使用) */
+	uint8_t				*ucpDMARxCache;			/* DMA接收缓冲区(DMA使用) */
+
+	/* 标志位信息 */
+	uint8_t 			ucRxCplt;				/* 接收完成标志(中断使用) */
+	uint8_t				ucDMARxCplt;			/* DMA接收完成标志(DMA使用) */
 }tagUartRxInfo_T;
 
 /* 串口发送信息结构体 */
 typedef struct 
 {
-	uint16_t			usTxMAXLenth;		/* 发送数据最大长度 */
-	uint8_t				*ucpTxCache;		/* 发送缓冲区 */
+	/* DMA相关信息 */
+	uint16_t			usDMATxLength;			/* 总发送数据长度(DMA使用) */
+	uint16_t			usDMATxMAXSize;			/* DMA发送缓冲区大小(DMA使用) */
+	uint8_t				*ucpDMATxCache;			/* DMA发送缓冲区(DMA使用) */
+
+	/* 标志位信息 */
+	uint8_t 			ucTxCplt;				/* 发送完成标志(中断使用) */
+	uint8_t 			ucDMATxCplt;			/* DMA发送完成标志(DMA使用) */
 }tagUartTxInfo_T;
 
 /* 串口DMA配置 */
 typedef struct
 {
-	DMA_HandleTypeDef	tDMATx;				/* DMA发送句柄 */
-	DMA_HandleTypeDef	tDMARx;				/* DMA接收句柄 */
+	DMA_HandleTypeDef	tDMATx;					/* DMA发送句柄 */
+	DMA_HandleTypeDef	tDMARx;					/* DMA接收句柄 */
 
-	uint8_t				ucDMARxCplt;			/* DMA接收完成标志*/
-	uint8_t 			ucDMATxCplt;			/* DMA发送完成标志*/
-
-	bool 				bTxEnable;			/* 发送使能符号 */
-	bool				bRxEnable;			/* 接收使能符号 */
+	bool 				bTxEnable;				/* 发送使能符号 */
+	bool				bRxEnable;				/* 接收使能符号 */
 
 	uint8_t				ucDMARxPriority;		/* DMA接收中断优先级，0-15 */
 	uint8_t 			ucDMARxSubPriority;		/* DMA接收中断子优先级，0-15 */
@@ -68,6 +80,7 @@ void Drv_Uart_DMAInit(tagUART_T *_tUART);
 void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize);
 void Drv_Uart_Transmit_IT(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize);
 void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize);
+uint16_t Drv_Uart_Receive_DMA(tagUART_T *_tUART, uint8_t *_ucpRxData);
 void Drv_Uart_ReceIT_Enable(tagUART_T *_tUART, uint8_t *_ucpBuffer, uint16_t _uspSize);
 void Drv_Uart_IRQHandler(tagUART_T *_tUART);
 void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART);

@@ -2,7 +2,7 @@
 #define __ALGO_CONF_H_
 
 
-/* Dev层头文件包含区 */
+/* Algo层头文件包含区 */
 
 
 

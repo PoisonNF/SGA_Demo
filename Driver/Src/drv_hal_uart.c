@@ -9,7 +9,9 @@
 * 文件历史：
 
 * 版本号	  日期		  作者				说明
-*  1.2		2023-2-26    鲍程璐		新增串口DMA发送相关函数，优化注释
+* 2.2.1		2023-04-03   鲍程璐		串口信息结构体成员更改，新增串口DMA数据接收函数
+
+*  1.2		2023-02-26   鲍程璐		新增串口DMA发送相关函数，优化注释
 
 * 1.1.7 	2022-10-11   鲍程璐		新增串口DMA接收相关函数
 
@@ -312,6 +314,39 @@ void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _usp
 }
 
 /**
+ * @brief 串口DMA接收数据函数
+ * @param _tUART-串口实例指针
+ * @param _ucpRxData-接收数据地址指针
+ * @retval uint16_t usRxNum 接收到的长度
+*/
+uint16_t Drv_Uart_Receive_DMA(tagUART_T *_tUART, uint8_t *_ucpRxData)
+{
+	uint16_t usRxNum;
+    
+	/* 判断是否接收完成 */
+	if(_tUART->tRxInfo.ucDMARxCplt != 1)
+	{
+		return 0;
+	}
+	else
+	{
+		/* 将接收数据的长度保存 */
+		usRxNum = _tUART->tRxInfo.usDMARxLength;
+
+		/* 清空接收数据地址指针 */
+        memset(_ucpRxData,0,usRxNum+1);
+
+		/* 数据拷贝 */
+		memcpy(_ucpRxData,_tUART->tRxInfo.ucpDMARxCache,usRxNum);
+
+		/* 清理标志位 */
+		_tUART->tRxInfo.ucDMARxCplt = 0;
+
+		return usRxNum;
+	}
+}
+
+/**
  * @brief 串口接收中断重置函数
  * @param _tUART-串口实例指针
  * @param _ucpBuffer-发送数据指针
@@ -335,6 +370,9 @@ void Drv_Uart_ITInit(tagUART_T *_tUART)
 	S_UART_GPIOConfig(_tUART);
 	S_Uart_ParamConfig(_tUART);		/* 设置串口参数 */
 	S_Uart_NVICConfig(_tUART);		/* 设置中断优先级 */
+
+	/* 为cache申请一段长度的动态内存 */
+	_tUART->tRxInfo.ucpITRxCache = (uint8_t *)malloc(UART_IT_RXCACHA_SIZE);
 
 	/* 往一级缓冲区中接收一个字符 */
 	HAL_UART_Receive_IT(&_tUART->tUARTHandle, _tUART->tRxInfo.ucpRxBuffer, 1);
@@ -367,23 +405,23 @@ void Drv_Uart_DMAInit(tagUART_T *_tUART)
 		__HAL_LINKDMA(&_tUART->tUARTHandle,hdmarx,_tUART->tUartDMA.tDMARx);
 
 		/* 为cache申请一段长度的动态内存 */
-		_tUART->tRxInfo.ucpRxCache = (uint8_t *)malloc(_tUART->tRxInfo.usRxMAXLenth);
+		_tUART->tRxInfo.ucpDMARxCache = (uint8_t *)malloc(_tUART->tRxInfo.usDMARxMAXSize);
 
 		/*	打开空闲中断 */
 		__HAL_UART_ENABLE_IT(&_tUART->tUARTHandle,UART_IT_IDLE);
 
 		/* 开启DMA接收 */
-		HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpRxCache,_tUART->tRxInfo.usRxMAXLenth);
+		HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpDMARxCache,_tUART->tRxInfo.usDMARxMAXSize);
 	}
 
-	/* 如果使能DMA接收 */
+	/* 如果使能DMA发送 */
 	if(_tUART->tUartDMA.bTxEnable == true)
 	{
 		/* 关联串口和DMA发送 */
 		__HAL_LINKDMA(&_tUART->tUARTHandle,hdmatx,_tUART->tUartDMA.tDMATx);
 
 		/* 为cache申请一段长度的动态内存 */
-		_tUART->tTxInfo.ucpTxCache = (uint8_t *)malloc(_tUART->tTxInfo.usTxMAXLenth);
+		_tUART->tTxInfo.ucpDMATxCache = (uint8_t *)malloc(_tUART->tTxInfo.usDMATxMAXSize);
 	}
 }
 
@@ -414,13 +452,13 @@ void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART)
 		HAL_UART_DMAStop(&_tUART->tUARTHandle);
 
 		/* 总数据量减去未接收到的数据量为已经接收到的数据量 */
-		_tUART->tRxInfo.usRxLenth = _tUART->tRxInfo.usRxMAXLenth - __HAL_DMA_GET_COUNTER(_tUART->tUARTHandle.hdmarx);
+		_tUART->tRxInfo.usDMARxLength = _tUART->tRxInfo.usDMARxMAXSize - __HAL_DMA_GET_COUNTER(_tUART->tUARTHandle.hdmarx);
 
 		/* 接收标志位置1 */
-        _tUART->tUartDMA.ucDMARxCplt = 1;
+        _tUART->tRxInfo.ucDMARxCplt = 1;
 
 		/* 重新启动DMA接收 */
-        HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpRxCache,_tUART->tRxInfo.usRxMAXLenth);
+        HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpDMARxCache,_tUART->tRxInfo.usDMARxMAXSize);
 	}
 }
 
@@ -453,7 +491,7 @@ void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART)
 		__HAL_DMA_CLEAR_FLAG(&_tUART->tUartDMA.tDMATx,FLAG);
 
 		/* 重载CNDTR寄存器，数量为最大传递数组大小 */
-		_tUART->tUartDMA.tDMATx.Instance->CNDTR = _tUART->tTxInfo.usTxMAXLenth;
+		_tUART->tUartDMA.tDMATx.Instance->CNDTR = _tUART->tTxInfo.usDMATxMAXSize;
 
 		/* 开启DMA发送 */
 		__HAL_DMA_ENABLE(&_tUART->tUartDMA.tDMATx);
