@@ -182,7 +182,7 @@ typedef struct
 	float Conq3;
 }tagJY901Quater;
 
-/*JY901参数配置结构体*/
+/* JY901参数配置结构体 */
 typedef struct 
 {
 	uint8_t 	ucBaud;	/* 波特率设置 */
@@ -190,7 +190,7 @@ typedef struct
 	uint16_t 	usType; /* 输出类型设置 */
 }tagJY901config;
 
-/*JY901结构体*/
+/* JY901结构体 */
 typedef struct
 {
 	tagUART_T 			tUART;

@@ -5,20 +5,20 @@
 #define RM3100_SINGLE
 
 /* 寄存器地址*/
-#define RM3100_ADDRESS      0x20
-#define M3D_3100_POLL 	    0			  /* 0X00 */
+#define RM3100_ADDRESS          0x20
+#define M3D_3100_POLL 	        0			  /* 0X00 */
 #define M3D_3100_CMM		    1			  /* 0X00 */
 #define M3D_3100_CCX		    4			  /* 0X00C8 */
 #define M3D_3100_CCY		    6			  /* 0X00C8 */
 #define M3D_3100_CCZ		    8			  /* 0X00C8 */
-#define M3D_3100_TMRC	      0x0B		/* 0X96 */
-#define M3D_3100_MX		      0x24
-#define M3D_3100_MY		      0x27
-#define M3D_3100_MZ		      0x2A
-#define M3D_3100_BIST	      0x33
-#define M3D_3100_STATUS	    0x34
-#define M3D_3100_HSHAKE	    0x35		//0X1B */
-#define M3D_3100_REVID      0x36
+#define M3D_3100_TMRC	        0x0B		  /* 0X96 */
+#define M3D_3100_MX		        0x24
+#define M3D_3100_MY		        0x27
+#define M3D_3100_MZ		        0x2A
+#define M3D_3100_BIST	        0x33
+#define M3D_3100_STATUS	        0x34
+#define M3D_3100_HSHAKE	        0x35		  /* 0X1B */
+#define M3D_3100_REVID          0x36
 
 
 /*  初始化时测量 */
@@ -59,7 +59,7 @@ typedef struct
 	int32_t MAG_X;
 	int32_t MAG_Y;
 	int32_t MAG_Z;
-} MagData_t;
+}MagData_t;
 
 /* RM3100初始化数据结构体 */
 struct config
@@ -70,13 +70,28 @@ struct config
     float fGain;
 };
 
-void OCD_SingleModeConfig_Soft(tagSPISoft_T *_tSPI,uint8_t _ucConf);
-void OCD_SingleModeConfig(tagSPI_T *_tSPI,uint8_t _ucConf);
+/* RM3100结构体 */
+typedef struct
+{
+    /* 使用硬件SPI */
+    bool            bSPIEnable;
+    tagSPI_T        tSPI;
 
-void OCD_ThreeD3100_Magic_Init(tagSPI_T *_tSPI);
-void OCD_ThreeD3100_Magic_Init_Soft(tagSPISoft_T *_tSPI);
+    /* 使用软件SPI */
+    bool            bSPISoftEnable;
+    tagSPISoft_T    tSoftSPI;
 
-void OCD_ThreeD3100_Magic_GetData(tagSPI_T *_tSPI,MagData_t* buff);
-void OCD_ThreeD3100_Magic_GetData_Soft(tagSPISoft_T *_tSPI,MagData_t* buff);
+    /* 数据储存 */
+    MagData_t       tMagData;
+}tagRM3100_T;
+
+uint8_t OCD_RM3100_SetCycleCount(tagRM3100_T *_tRM3100, uint16_t _usValue);
+uint8_t OCD_RM3100_SetCMM_DataRate(tagRM3100_T *_tRM3100, uint8_t _ucConf);
+void OCD_RM3100_ContinuousModeConfig(tagRM3100_T *_tRM3100, uint8_t _ucConf);
+void OCD_RM3100_SingleModeConfig(tagRM3100_T *_tRM3100, uint8_t _ucConf);
+void OCD_RM3100_ModeConfig(tagRM3100_T *_tRM3100);
+void OCD_RM3100_GetData(tagRM3100_T *_tRM3100);
+void OCD_RM3100_Init(tagRM3100_T *_tRM3100, uint8_t _ucNum);
 
 #endif
+

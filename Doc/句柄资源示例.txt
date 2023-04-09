@@ -509,96 +509,93 @@ tagJY901_T JY901S =
 };
 
 /* RM3100示例 */
-/* 使用硬件SPI驱动RM3100 */
-tagSPI_T SPI[3] =
+tagRM3100_T RM3100[4] = 
 {
-	[0]=
+	[0]=		/* 使用硬件SPI驱动RM3100 */
 	{
-	.tSPIHandle.Instance 				= SPI1,
-	.tSPIHandle.Init.Mode 				= SPI_MODE_MASTER,
-	.tSPIHandle.Init.Direction 			= SPI_DIRECTION_2LINES,
-	.tSPIHandle.Init.DataSize 			= SPI_DATASIZE_8BIT,
-	.tSPIHandle.Init.CLKPolarity 		= SPI_POLARITY_LOW,
-	.tSPIHandle.Init.CLKPhase 			= SPI_PHASE_1EDGE,
-	.tSPIHandle.Init.NSS 				= SPI_NSS_SOFT,
-	.tSPIHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_64,
-	.tSPIHandle.Init.FirstBit 			= SPI_FIRSTBIT_MSB,
-	.tSPIHandle.Init.TIMode 			= SPI_TIMODE_DISABLE,
-	.tSPIHandle.Init.CRCCalculation 	= SPI_CRCCALCULATION_DISABLE,
-	.tSPIHandle.Init.CRCPolynomial 		= 10,	
+		.bSPIEnable								= true,
+		.tSPI.tSPIHandle.Instance 				= SPI1,
+		.tSPI.tSPIHandle.Init.Mode 				= SPI_MODE_MASTER,
+		.tSPI.tSPIHandle.Init.Direction 		= SPI_DIRECTION_2LINES,
+		.tSPI.tSPIHandle.Init.DataSize 			= SPI_DATASIZE_8BIT,
+		.tSPI.tSPIHandle.Init.CLKPolarity 		= SPI_POLARITY_LOW,
+		.tSPI.tSPIHandle.Init.CLKPhase 			= SPI_PHASE_1EDGE,
+		.tSPI.tSPIHandle.Init.NSS 				= SPI_NSS_SOFT,
+		.tSPI.tSPIHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64,
+		.tSPI.tSPIHandle.Init.FirstBit 			= SPI_FIRSTBIT_MSB,
+		.tSPI.tSPIHandle.Init.TIMode 			= SPI_TIMODE_DISABLE,
+		.tSPI.tSPIHandle.Init.CRCCalculation 	= SPI_CRCCALCULATION_DISABLE,
+		.tSPI.tSPIHandle.Init.CRCPolynomial 	= 10,	
 #if defined (STM32L4_SGA_ENABLE)
-	.tSPIHandle.Init.CRCLength 			= SPI_CRC_LENGTH_DATASIZE,
-	.tSPIHandle.Init.NSSPMode 			= SPI_NSS_PULSE_ENABLE,	
+		.tSPI.tSPIHandle.Init.CRCLength 		= SPI_CRC_LENGTH_DATASIZE,
+		.tSPI.tSPIHandle.Init.NSSPMode 			= SPI_NSS_PULSE_ENABLE,	
 #endif
-    /**SPI1 GPIO Configuration
-    PA5     ------> SPI1_SCK
-    PA6     ------> SPI1_MISO
-    PA7     ------> SPI1_MOSI
-	PC5     ------> SPI1_NSS
-    */
-    .tGPIO[0].tGPIOInit.Pin				= GPIO_PIN_5,
-	.tGPIO[0].tGPIOInit.Mode 			= GPIO_MODE_AF_PP,
-	.tGPIO[0].tGPIOInit.Speed 			= GPIO_SPEED_FREQ_HIGH,
-	.tGPIO[0].tGPIOPort					= GPIOA,
-	.tGPIO[0].ucAFMode					= NO_REMAP,
+		/**SPI1 GPIO Configuration
+		PA5     ------> SPI1_SCK
+		PA6     ------> SPI1_MISO
+		PA7     ------> SPI1_MOSI
+		PC5     ------> SPI1_NSS
+		*/
+		.tSPI.tGPIO[0].tGPIOInit.Pin	= GPIO_PIN_5,
+		.tSPI.tGPIO[0].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,
+		.tSPI.tGPIO[0].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
+		.tSPI.tGPIO[0].tGPIOPort		= GPIOA,
+		.tSPI.tGPIO[0].ucAFMode			= NO_REMAP,
 
-	.tGPIO[1].tGPIOInit.Pin 			= GPIO_PIN_6,
-	.tGPIO[1].tGPIOInit.Mode 			= GPIO_MODE_AF_PP,
-	.tGPIO[1].tGPIOInit.Pull 			= GPIO_NOPULL,
-	.tGPIO[1].tGPIOPort					= GPIOA,
-	.tGPIO[1].ucAFMode					= NO_REMAP,
+		.tSPI.tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_6,
+		.tSPI.tGPIO[1].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,
+		.tSPI.tGPIO[1].tGPIOInit.Pull 	= GPIO_NOPULL,
+		.tSPI.tGPIO[1].tGPIOPort		= GPIOA,
+		.tSPI.tGPIO[1].ucAFMode			= NO_REMAP,
 
-	.tGPIO[2].tGPIOInit.Pin				= GPIO_PIN_7,
-	.tGPIO[2].tGPIOInit.Mode 			= GPIO_MODE_AF_PP,
-	.tGPIO[2].tGPIOInit.Speed 			= GPIO_SPEED_FREQ_HIGH,
-	.tGPIO[2].tGPIOPort					= GPIOA,
-	.tGPIO[2].ucAFMode					= NO_REMAP,
-	
-	.tGPIO[3].tGPIOInit.Pin				= GPIO_PIN_5,
-	.tGPIO[3].tGPIOInit.Mode 			= GPIO_MODE_OUTPUT_PP,
-	.tGPIO[3].tGPIOInit.Speed 			= GPIO_SPEED_FREQ_HIGH,
-	.tGPIO[3].tGPIOPort					= GPIOC,
-	.tGPIO[3].ucAFMode					= NO_REMAP,
+		.tSPI.tGPIO[2].tGPIOInit.Pin	= GPIO_PIN_7,
+		.tSPI.tGPIO[2].tGPIOInit.Mode 	= GPIO_MODE_AF_PP,
+		.tSPI.tGPIO[2].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
+		.tSPI.tGPIO[2].tGPIOPort		= GPIOA,
+		.tSPI.tGPIO[2].ucAFMode			= NO_REMAP,
+		
+		.tSPI.tGPIO[3].tGPIOInit.Pin	= GPIO_PIN_5,
+		.tSPI.tGPIO[3].tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,
+		.tSPI.tGPIO[3].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
+		.tSPI.tGPIO[3].tGPIOPort		= GPIOC,
+		.tSPI.tGPIO[3].ucAFMode			= NO_REMAP,
 	
 	},
-}
-/* 使用软件SPI驱动RM3100 */
-tagSPISoft_T SPI_soft[2] =
-{
-	[0]=
+	[1]=		/* 使用软件SPI驱动RM3100 */
 	{
-	/**SPI Soft GPIO Configuration
-    PE2     ------> SPI_SCK
-	PE4     ------> SPI_MISO
-    PE3     ------> SPI_MOSI
-	PE1     ------> SPI_NSS 
-    */
-	.tSPISoft[0].tGPIOInit.Pin			= GPIO_PIN_2,
-	.tSPISoft[0].tGPIOInit.Mode 		= GPIO_MODE_OUTPUT_PP,
-	.tSPISoft[0].tGPIOInit.Pull 		= GPIO_PULLUP,
-	.tSPISoft[0].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,
-	.tSPISoft[0].tGPIOPort				= GPIOE,
-	.tSPISoft[0].ucAFMode				= NO_REMAP,
-	
-	.tSPISoft[1].tGPIOInit.Pin			= GPIO_PIN_4,
-	.tSPISoft[1].tGPIOInit.Mode 		= GPIO_MODE_INPUT,
-	.tSPISoft[1].tGPIOInit.Pull 		= GPIO_PULLUP,
-	.tSPISoft[1].tGPIOPort				= GPIOE,
-	.tSPISoft[1].ucAFMode				= NO_REMAP,
-	
-	.tSPISoft[2].tGPIOInit.Pin			= GPIO_PIN_3,
-	.tSPISoft[2].tGPIOInit.Mode 		= GPIO_MODE_OUTPUT_PP,
-	.tSPISoft[2].tGPIOInit.Pull 		= GPIO_PULLUP,
-	.tSPISoft[2].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,
-	.tSPISoft[2].tGPIOPort				= GPIOE,
-	.tSPISoft[2].ucAFMode				= NO_REMAP,
-	
-	.tSPISoft[3].tGPIOInit.Pin			= GPIO_PIN_1,
-	.tSPISoft[3].tGPIOInit.Mode 		= GPIO_MODE_OUTPUT_PP,
-	.tSPISoft[3].tGPIOInit.Pull 		= GPIO_PULLUP,
-	.tSPISoft[3].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,
-	.tSPISoft[3].tGPIOPort				= GPIOE,
-	.tSPISoft[3].ucAFMode				= NO_REMAP,
+		/**SPI Soft GPIO Configuration
+		PE2     ------> SPI_SCK
+		PE4     ------> SPI_MISO
+		PE3     ------> SPI_MOSI
+		PE1     ------> SPI_NSS 
+		*/
+		.bSPISoftEnable							= true,
+		.tSoftSPI.tSPISoft[0].tGPIOInit.Pin		= GPIO_PIN_2,
+		.tSoftSPI.tSPISoft[0].tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,
+		.tSoftSPI.tSPISoft[0].tGPIOInit.Pull 	= GPIO_PULLUP,
+		.tSoftSPI.tSPISoft[0].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
+		.tSoftSPI.tSPISoft[0].tGPIOPort			= GPIOE,
+		.tSoftSPI.tSPISoft[0].ucAFMode			= NO_REMAP,
+		
+		.tSoftSPI.tSPISoft[1].tGPIOInit.Pin		= GPIO_PIN_4,
+		.tSoftSPI.tSPISoft[1].tGPIOInit.Mode 	= GPIO_MODE_INPUT,
+		.tSoftSPI.tSPISoft[1].tGPIOInit.Pull 	= GPIO_PULLUP,
+		.tSoftSPI.tSPISoft[1].tGPIOPort			= GPIOE,
+		.tSoftSPI.tSPISoft[1].ucAFMode			= NO_REMAP,
+		
+		.tSoftSPI.tSPISoft[2].tGPIOInit.Pin		= GPIO_PIN_3,
+		.tSoftSPI.tSPISoft[2].tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,
+		.tSoftSPI.tSPISoft[2].tGPIOInit.Pull 	= GPIO_PULLUP,
+		.tSoftSPI.tSPISoft[2].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
+		.tSoftSPI.tSPISoft[2].tGPIOPort			= GPIOE,
+		.tSoftSPI.tSPISoft[2].ucAFMode			= NO_REMAP,
+		
+		.tSoftSPI.tSPISoft[3].tGPIOInit.Pin		= GPIO_PIN_1,
+		.tSoftSPI.tSPISoft[3].tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,
+		.tSoftSPI.tSPISoft[3].tGPIOInit.Pull 	= GPIO_PULLUP,
+		.tSoftSPI.tSPISoft[3].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,
+		.tSoftSPI.tSPISoft[3].tGPIOPort			= GPIOE,
+		.tSoftSPI.tSPISoft[3].ucAFMode			= NO_REMAP,
 	},
 };
 
