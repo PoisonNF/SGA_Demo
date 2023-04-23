@@ -52,6 +52,11 @@
         "dev_conf.h": "c",
         "drv_hal.h": "c",
         "algo_conf.h": "c",
-        "task_sysinit.h": "c"
+        "task_sysinit.h": "c",
+        "cmsis_os.h": "c",
+        "freertos.h": "c",
+        "croutine.h": "c",
+        "event_groups.h": "c",
+        "stream_buffer.h": "c"
     }
 }

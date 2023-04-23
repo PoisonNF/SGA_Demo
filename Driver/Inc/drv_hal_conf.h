@@ -1,7 +1,7 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2023/4/9 V2.2.2"
+#define DRIVER_VERSION	"2023/4/23 V2.3"
 
 /* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
 //#define RTT_ENABLE               
@@ -14,6 +14,9 @@
 //#define FREERTOS_ENABLE
 #ifdef FREERTOS_ENABLE
 #include "cmsis_os.h"		/* FreeRTOS相关头文件 */
+#include "croutine.h"
+#include "event_groups.h"
+#include "stream_buffer.h"
 #include "threadpool.h"		/* threadpool头文件 */
 #endif
 
