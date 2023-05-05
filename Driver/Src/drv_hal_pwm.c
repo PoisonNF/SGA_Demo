@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	   日期		  	作者		  说明
+* 2.3.1 	2023-05-05   鲍程璐		格式优化
+
 * 1.1.7 	2022-10-11   鲍程璐		优化执行顺序
 
 * 1.1.2 	2022-08-08	 鲍程璐		新增定时器引脚重映射代码
@@ -27,27 +29,27 @@
 */
 static void S_PWM_CLKEnable(tagPWM_T *_tPWM)
 {
-	if(_tPWM->tPWMHandle.Instance==TIM1)
+	if(_tPWM->tPWMHandle.Instance == TIM1)
 	{
 		__HAL_RCC_TIM1_CLK_ENABLE();	/* 使能定时器1 */
 	}
-	else if(_tPWM->tPWMHandle.Instance==TIM2)
+	else if(_tPWM->tPWMHandle.Instance == TIM2)
 	{
 		__HAL_RCC_TIM2_CLK_ENABLE();	/* 使能定时器2 */
 	}
-	else if(_tPWM->tPWMHandle.Instance==TIM3)
+	else if(_tPWM->tPWMHandle.Instance == TIM3)
 	{
 		__HAL_RCC_TIM3_CLK_ENABLE();	/* 使能定时器3 */
 	}
-	else if(_tPWM->tPWMHandle.Instance==TIM4)
+	else if(_tPWM->tPWMHandle.Instance == TIM4)
 	{
 		__HAL_RCC_TIM4_CLK_ENABLE();	/* 使能定时器4 */
 	}
-	else if(_tPWM->tPWMHandle.Instance==TIM5)
+	else if(_tPWM->tPWMHandle.Instance == TIM5)
 	{
 		__HAL_RCC_TIM5_CLK_ENABLE();	/* 使能定时器5 */
 	}
-	else if(_tPWM->tPWMHandle.Instance==TIM8)
+	else if(_tPWM->tPWMHandle.Instance == TIM8)
 	{
 		__HAL_RCC_TIM8_CLK_ENABLE();	/* 使能定时器8 */
 	}
@@ -61,7 +63,7 @@ static void S_PWM_CLKEnable(tagPWM_T *_tPWM)
 static void S_PWM_PramConfig(tagPWM_T *_tPWM)
 {	
 	_tPWM->tPWMHandle.Init.Prescaler			= SYSTEM_CLOCK - 1;         		/* 定时器分频 */
-	_tPWM->tPWMHandle.Init.CounterMode			= TIM_COUNTERMODE_UP;			/* 向上计数模式 */
+	_tPWM->tPWMHandle.Init.CounterMode			= TIM_COUNTERMODE_UP;			    /* 向上计数模式 */
 	_tPWM->tPWMHandle.Init.Period				= MAX_RELOAD /_tPWM->ulFreq - 1;	/* 自动重装载值 */
 	_tPWM->tPWMHandle.Init.ClockDivision		= TIM_CLOCKDIVISION_DIV1;
 	_tPWM->tPWMHandle.Init.AutoReloadPreload 	= TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -69,10 +71,15 @@ static void S_PWM_PramConfig(tagPWM_T *_tPWM)
 	{
 		Drv_HAL_Error(__FILE__, __LINE__);
 	}
-	
-	_tPWM->tPWMChannel.OCMode		= TIM_OCMODE_PWM1; 			/* 模式选择PWM1 */
-	_tPWM->tPWMChannel.Pulse		= (MAX_RELOAD / _tPWM->ulFreq -1) * _tPWM->fDuty / 100; 		/* 设置比较值,此值用来确定占空比，默认比较值为自动重装载值的一半,即占空比为50% */
-	_tPWM->tPWMChannel.OCPolarity	= TIM_OCPOLARITY_HIGH; 		/* 输出比较极性为低 */
+    
+	/* 模式选择PWM1 */
+	_tPWM->tPWMChannel.OCMode		= TIM_OCMODE_PWM1;
+    
+ 	/* 设置比较值,此值用来确定占空比，默认比较值为自动重装载值的一半,即占空比为50% */    
+	_tPWM->tPWMChannel.Pulse		= (MAX_RELOAD / _tPWM->ulFreq -1) * _tPWM->fDuty / 100;
+    
+    /* 输出比较极性为高 */
+	_tPWM->tPWMChannel.OCPolarity	= TIM_OCPOLARITY_HIGH;
 	
 	if(HAL_TIM_PWM_ConfigChannel(&_tPWM->tPWMHandle,&_tPWM->tPWMChannel,_tPWM->ucChannel))	/* 配置通道 */
 	{
@@ -103,28 +110,28 @@ static void S_PWM_GPIOConfig(tagPWM_T *_tPWM)
 	if(_tPWM->tPWMHandle.Instance == TIM1)
 	{
 		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM1_DISABLE();
-		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM1_PARTIAL();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	    __HAL_AFIO_REMAP_TIM1_PARTIAL();
 		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP2)	while(1);
 		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM1_ENABLE();
 	}
 	else if(_tPWM->tPWMHandle.Instance == TIM2)
 	{
 		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM2_DISABLE();
-		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM2_PARTIAL_1();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	    __HAL_AFIO_REMAP_TIM2_PARTIAL_1();
 		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP2)	__HAL_AFIO_REMAP_TIM2_PARTIAL_2();
 		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM2_ENABLE();
 	}
 	else if(_tPWM->tPWMHandle.Instance == TIM3)
 	{
 		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM3_DISABLE();
-		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_TIM3_PARTIAL();
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	    __HAL_AFIO_REMAP_TIM3_PARTIAL();
 		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP2)	while(1);
 		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM3_ENABLE();
 	}
 	else if(_tPWM->tPWMHandle.Instance == TIM4)
 	{
 		if(_tPWM->tGPIO.ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_TIM4_DISABLE();
-		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	while(1);
+		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP)	    while(1);
 		else if(_tPWM->tGPIO.ucAFMode == PARTIAL_REMAP2)	while(1);
 		else if(_tPWM->tGPIO.ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_TIM4_ENABLE();
 	}
@@ -176,7 +183,7 @@ void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM, float _fDuty)
  * @param _ulFreq -频率(单位：Hz)
  * @retval Null
 */
-void Drv_PMW_FreqSet(tagPWM_T *_tPWM, uint32_t _ulFreq)
+void Drv_PWM_FreqSet(tagPWM_T *_tPWM, uint32_t _ulFreq)
 {
 	if(_tPWM->ulFreq == 50)
 	{

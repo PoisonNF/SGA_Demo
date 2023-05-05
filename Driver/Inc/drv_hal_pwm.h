@@ -38,7 +38,7 @@ typedef struct
 */
 
 void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM,float _fDuty);
-void Drv_PMW_FreqSet(tagPWM_T *_tPWM, uint32_t _ulFreq);
+void Drv_PWM_FreqSet(tagPWM_T *_tPWM, uint32_t _ulFreq);
 void Drv_PWM_Init(tagPWM_T *_tPWM, uint8_t _ucNum);
 
 #endif

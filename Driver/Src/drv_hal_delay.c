@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	    日期	  作者		     说明
+* 2.3.1		2023-05-05	鲍程璐		毫秒延时函数回退
+
 *  2.3		2023-04-23	鲍程璐		提供更加精准的延时函数
 
 *  2.2		2023-03-29	鲍程璐		适配FreeRTOS,调用其API
@@ -40,7 +42,7 @@ void Drv_Delay_Ms(uint32_t _ulVal)
 
 	/* 裸机 延时函数 */
 	#if !defined(FREERTOS_ENABLE) && !defined(RTT_ENABLE)
-	Drv_Delay_Us(_ulVal * 1000);
+	HAL_Delay(_ulVal);
 	#endif
 }
 
@@ -60,7 +62,7 @@ void Drv_Delay_Us(uint32_t _ulVal)
 		for(i = 0; i < _ulVal; i++)
 			for(j = 0; j < 8; j++);
 	}
-	else if(_ulVal < 1000)		/* 大于50us使用查询法较为精准 */
+	else	/* 大于50us使用查询法较为精准 */
 	{
 		uint32_t ulTemp;
 		
