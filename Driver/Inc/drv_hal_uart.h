@@ -3,14 +3,18 @@
 
 #include "drv_hal_conf.h"
 
+/* 串口超时时间 */
 #define UART_TIME_OUT	0xff
-#define UART_IT_RXCACHA_SIZE 100
+
+/* 串口中断接收长度 */
+#define UART_IT_RX_CACHE_SIZE 100
 
 /* 串口接收信息结构体 */
 typedef struct
 {
 	/* 中断相关信息 */
 	uint16_t			usRxCnt;				/* 接收数据计数器(中断使用) */
+	uint16_t			usRxLength;			    /* 总接收数据长度(中断使用) */
 	uint8_t				ucpRxBuffer[1];			/* 中断接收Buffer(中断使用) */
 	uint8_t				*ucpITRxCache;			/* 中断接收缓冲区(中断使用) */
 
@@ -80,9 +84,11 @@ void Drv_Uart_DMAInit(tagUART_T *_tUART);
 void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize);
 void Drv_Uart_Transmit_IT(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize);
 void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize);
+uint16_t Drv_Uart_Receive_IT(tagUART_T *_tUART, uint8_t *_ucpRxData);
 uint16_t Drv_Uart_Receive_DMA(tagUART_T *_tUART, uint8_t *_ucpRxData);
 void Drv_Uart_ReceIT_Enable(tagUART_T *_tUART, uint8_t *_ucpBuffer, uint16_t _uspSize);
 void Drv_Uart_IRQHandler(tagUART_T *_tUART);
+void Drv_Uart_IT_RxHandler(tagUART_T *_tUART);
 void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART);
 void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART);
 

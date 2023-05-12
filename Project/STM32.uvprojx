@@ -487,6 +487,11 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\Algo\Src\algo_func.c</FilePath>
             </File>
+            <File>
+              <FileName>algo_pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\Algo\Src\algo_pid.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

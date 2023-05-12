@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	    日期	  作者		     说明
+*  2.4		2023-05-12	鲍程璐		解决FreeRTOS开始调度器前无法使用延时的问题
+
 * 2.3.1		2023-05-05	鲍程璐		毫秒延时函数回退
 
 *  2.3		2023-04-23	鲍程璐		提供更加精准的延时函数
@@ -37,7 +39,11 @@ void Drv_Delay_Ms(uint32_t _ulVal)
 
 	/* FreeRTOS 延时函数 */
 	#ifdef FREERTOS_ENABLE
-	osDelay(_ulVal);
+    /* 如果未开启调度器，使用HAL库延时函数 */
+    if(xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED)
+        HAL_Delay(_ulVal);
+    else
+        osDelay(_ulVal);
 	#endif
 
 	/* 裸机 延时函数 */

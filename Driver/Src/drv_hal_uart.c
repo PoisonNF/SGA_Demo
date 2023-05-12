@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	  日期		  作者				说明
+*  2.4		2023-05-12   鲍程璐		新增串口中断接收相关函数，格式优化
+
 * 2.2.1		2023-04-03   鲍程璐		串口信息结构体成员更改，新增串口DMA数据接收函数
 
 *  1.2		2023-02-26   鲍程璐		新增串口DMA发送相关函数，优化注释
@@ -95,6 +97,7 @@ static void S_Uart_DMA_NVICConfig(tagUART_T *_tUART)
 			HAL_NVIC_EnableIRQ(DMA2_Channel3_IRQn);
 		}
 	}
+	
 	/* DMA发送使能 */
 	if(_tUART->tUartDMA.bTxEnable == true)
 	{
@@ -151,6 +154,7 @@ static void S_Uart_DMAParamConfig(tagUART_T *_tUART)
 	{
 		if(HAL_DMA_Init(&_tUART->tUartDMA.tDMARx) != HAL_OK)	Drv_HAL_Error(__FILE__,__LINE__);
 	}
+
 	/* 如果使能DMA发送 */
 	if(_tUART->tUartDMA.bTxEnable == true)
 	{
@@ -252,20 +256,20 @@ static void S_UART_GPIOConfig(tagUART_T *_tUART)
 	{
 		if(_tUART->tGPIO->ucAFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART1_DISABLE();
 		else if(_tUART->tGPIO->ucAFMode == FULL_REMAP) 	    __HAL_AFIO_REMAP_USART1_ENABLE();
-		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	    while(1);
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	while(1);
 		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP2)	while(1);
 	}
 	else if(_tUART->tUARTHandle.Instance == USART2)
 	{
 		if(_tUART->tGPIO->ucAFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART2_DISABLE();
-		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	    while(1);
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	while(1);
 		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP2)	while(1);
 		else if(_tUART->tGPIO->ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART2_ENABLE();
 	}	
 	else if(_tUART->tUARTHandle.Instance == USART3)
 	{
 		if(_tUART->tGPIO->ucAFMode == NO_REMAP)		    	__HAL_AFIO_REMAP_USART3_DISABLE();
-		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	    __HAL_AFIO_REMAP_USART3_PARTIAL();
+		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP)	__HAL_AFIO_REMAP_USART3_PARTIAL();
 		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP2)	while(1);
 		else if(_tUART->tGPIO->ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART3_ENABLE();
 	}
@@ -281,7 +285,7 @@ static void S_UART_GPIOConfig(tagUART_T *_tUART)
  * @retval Null
 */
 void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
-{	
+{
 	HAL_UART_Transmit(&_tUART->tUARTHandle, _ucpTxData, _uspSize, UART_TIME_OUT);
 }
 
@@ -293,8 +297,30 @@ void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize
  * @retval Null
 */
 void Drv_Uart_Transmit_IT(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
-{	
+{
 	HAL_UART_Transmit_IT(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
+}
+
+/**
+ * @brief 串口中断接收数据函数
+ * @param _tUART-串口实例指针
+ * @param _ucpRxData-接收数据地址指针
+ * @retval uint16_t 接收到的长度
+*/
+uint16_t Drv_Uart_Receive_IT(tagUART_T *_tUART, uint8_t *_ucpRxData)
+{
+	if(_tUART->tRxInfo.ucRxCplt)
+	{
+		/* 数据拷贝 */
+		memcpy(_ucpRxData,_tUART->tRxInfo.ucpITRxCache,_tUART->tRxInfo.usRxLength);
+
+		/* 标志位清零 */
+		_tUART->tRxInfo.ucRxCplt = 0;
+
+		return _tUART->tRxInfo.usRxLength;
+	}
+	
+	return 0;
 }
 
 /**
@@ -372,7 +398,7 @@ void Drv_Uart_ITInit(tagUART_T *_tUART)
 	S_Uart_NVICConfig(_tUART);		/* 设置中断优先级 */
 
 	/* 为cache申请一段长度的动态内存 */
-	_tUART->tRxInfo.ucpITRxCache = (uint8_t *)malloc(UART_IT_RXCACHA_SIZE);
+	_tUART->tRxInfo.ucpITRxCache = (uint8_t *)malloc(UART_IT_RX_CACHE_SIZE);
 
 	/* 往一级缓冲区中接收一个字符 */
 	HAL_UART_Receive_IT(&_tUART->tUARTHandle, _tUART->tRxInfo.ucpRxBuffer, 1);
@@ -436,8 +462,60 @@ void Drv_Uart_IRQHandler(tagUART_T *_tUART)
 }
 
 /**
+ * @brief 串口中断接收处理子函数(用于串口中断接收完成回调函数中)
+ * @param _tUART-串口结构体指针
+ * @note 默认检测换行符。数据保存的起始地址为ucpITRxCache,接收到的长度为usRxLength。
+ * @retval Null
+*/
+void Drv_Uart_IT_RxHandler(tagUART_T *_tUART)
+{
+	/* 默认检测到换行符'\n'代表接收结束 */
+	if(_tUART->tRxInfo.ucpRxBuffer[0] == '\n')
+	{
+		/* 替换为'\0'表示字符串结尾 */
+		_tUART->tRxInfo.ucpITRxCache[_tUART->tRxInfo.usRxCnt] = '\0';
+
+		/* 保存接收到的长度 */
+		_tUART->tRxInfo.usRxLength = _tUART->tRxInfo.usRxCnt;
+
+		/* 接收计数器清零 */
+		_tUART->tRxInfo.usRxCnt = 0;
+
+		/* 接收完成标志位置1 */
+		_tUART->tRxInfo.ucRxCplt = 1;
+	}
+
+	/* 未到结尾继续接收 */
+	else
+	{
+		/* 未到接收数量上限继续接收 */
+		if(_tUART->tRxInfo.usRxCnt < UART_IT_RX_CACHE_SIZE)
+		{
+			/* 存储1字节数据，同时接收计数器加一 */
+			_tUART->tRxInfo.ucpITRxCache[_tUART->tRxInfo.usRxCnt] = _tUART->tRxInfo.ucpRxBuffer[0];
+			_tUART->tRxInfo.usRxCnt++;
+		}
+		else	/* 若超过cache大小立即告知接收完成，计数器归零接收多余字节 */
+		{
+			/* 保存接收到的长度 */
+			_tUART->tRxInfo.usRxLength = UART_IT_RX_CACHE_SIZE;
+
+			/* 接收计数器清零 */
+			_tUART->tRxInfo.usRxCnt = 0;
+
+			/* 接收完成标志位置1 */
+			_tUART->tRxInfo.ucRxCplt = 1;			
+		}
+	}
+
+	/* 等待下一个字节接收完成 */
+	while(HAL_UART_Receive_IT(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpRxBuffer,1) != HAL_OK);
+}
+
+/**
  * @brief 串口DMA中断接收处理子函数(用于串口中断处理函数中)
  * @param _tUART-串口结构体指针
+ * @note 数据保存的起始地址为ucpDMARxCache，接收到的长度为usDMARxLength
  * @retval Null
 */
 void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART)
@@ -470,25 +548,28 @@ void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART)
 */
 void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART)
 {
-	uint32_t FLAG;
+	uint32_t ulDMAFlag;
 
 	/* UART1发送通道 */
-	if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel4)		FLAG = DMA_FLAG_TC4;
+	if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel4)		ulDMAFlag = DMA_FLAG_TC4;
+
 	/* UART2发送通道 */
-	else if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel7)	FLAG = DMA_FLAG_TC7;
+	else if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel7)	ulDMAFlag = DMA_FLAG_TC7;
+
 	/* UART3发送通道 */
-	else if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel2) 	FLAG = DMA_FLAG_TC2;
+	else if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel2) 	ulDMAFlag = DMA_FLAG_TC2;
+
 	/* UART4发送通道 */
-	else if(_tUART->tUartDMA.tDMATx.Instance == DMA2_Channel5)	FLAG = DMA_FLAG_TC5;
+	else if(_tUART->tUartDMA.tDMATx.Instance == DMA2_Channel5)	ulDMAFlag = DMA_FLAG_TC5;
 
 	/* 判断对应通道是否完成发送 */
-	if(__HAL_DMA_GET_TC_FLAG_INDEX(&_tUART->tUartDMA.tDMATx) == FLAG)
+	if(__HAL_DMA_GET_TC_FLAG_INDEX(&_tUART->tUartDMA.tDMATx) == ulDMAFlag)
 	{
 		/* 关闭串口DMA */
 		HAL_UART_DMAStop(&_tUART->tUARTHandle);
 
 		/* 清除发送完成标志位 */
-		__HAL_DMA_CLEAR_FLAG(&_tUART->tUartDMA.tDMATx,FLAG);
+		__HAL_DMA_CLEAR_FLAG(&_tUART->tUartDMA.tDMATx,ulDMAFlag);
 
 		/* 重载CNDTR寄存器，数量为最大传递数组大小 */
 		_tUART->tUartDMA.tDMATx.Instance->CNDTR = _tUART->tTxInfo.usDMATxMAXSize;

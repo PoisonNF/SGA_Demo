@@ -57,6 +57,7 @@
         "freertos.h": "c",
         "croutine.h": "c",
         "event_groups.h": "c",
-        "stream_buffer.h": "c"
+        "stream_buffer.h": "c",
+        "algo_pid.h": "c"
     }
 }
