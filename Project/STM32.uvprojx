@@ -443,14 +443,14 @@
               <FilePath>..\Bsp\OCD\Src\ocd_ds3231.c</FilePath>
             </File>
             <File>
-              <FileName>ocd_fatfs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Bsp\OCD\Src\ocd_fatfs.c</FilePath>
-            </File>
-            <File>
               <FileName>ocd_jy901.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\OCD\Src\ocd_jy901.c</FilePath>
+            </File>
+            <File>
+              <FileName>ocd_fatfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\OCD\Src\ocd_fatfs.c</FilePath>
             </File>
             <File>
               <FileName>ocd_sdcard.c</FileName>

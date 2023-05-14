@@ -355,8 +355,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Bsp\OCD\Src\ocd_fatfs.c</PathWithFileName>
-      <FilenameWithoutPath>ocd_fatfs.c</FilenameWithoutPath>
+      <PathWithFileName>..\Bsp\OCD\Src\ocd_jy901.c</PathWithFileName>
+      <FilenameWithoutPath>ocd_jy901.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -367,8 +367,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Bsp\OCD\Src\ocd_jy901.c</PathWithFileName>
-      <FilenameWithoutPath>ocd_jy901.c</FilenameWithoutPath>
+      <PathWithFileName>..\Bsp\OCD\Src\ocd_fatfs.c</PathWithFileName>
+      <FilenameWithoutPath>ocd_fatfs.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
