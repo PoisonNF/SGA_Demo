@@ -212,7 +212,7 @@ void OCD_JY901_GyroAutoCorrect(tagJY901_T *_tJY901, uint8_t _ucMode);
 void OCD_JY901_Sleep(tagJY901_T *_tJY901);
 void OCD_JY901_Correct(tagJY901_T *_tJY901, uint8_t _ucMode);
 void OCD_JY901_OutputOnce(tagJY901_T *_tJY901);
-void OCD_JY901_DataProcess(tagJY901_T *_tJY901);
+uint8_t OCD_JY901_DataProcess(tagJY901_T *_tJY901);
 void OCD_JY901_DataConversion(tagJY901_T *_tJY901);
 void OCD_JY901_Printf(tagJY901_T *_tJY901);
 

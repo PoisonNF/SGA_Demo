@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期	  作者			说明
+*   		2023-05-17  鲍程璐		数据处理函数增加返回值
+
 * 2.2.1		2023-04-03  鲍程璐		跟随drv_hal_uart进行修改
 
 * 1.1.8		2022-10-22	鲍程璐		对结构体进行了整合，提供IT模式和DMA模式
@@ -240,9 +242,9 @@ void OCD_JY901_DMAInit(tagJY901_T *_tJY901)
 /**
  * @brief JY901数据处理函数,按照数据类型放入相对应的结构体成员中
  * @param _tJY901-JY901句柄指针
- * @retval Null
+* @retval uint8_t 1:处理成功 0:未收到数据
 */
-void OCD_JY901_DataProcess(tagJY901_T *_tJY901)
+uint8_t OCD_JY901_DataProcess(tagJY901_T *_tJY901)
 {
 	/* 判断标志位 */
 	if(_tJY901->tUART.tRxInfo.ucDMARxCplt)
@@ -284,7 +286,9 @@ void OCD_JY901_DataProcess(tagJY901_T *_tJY901)
 			}
 		}
 		_tJY901->tUART.tRxInfo.ucDMARxCplt = 0;	/* 标志位清零 */
+        return 1;
 	}
+    return 0;
 }
 
 /**
