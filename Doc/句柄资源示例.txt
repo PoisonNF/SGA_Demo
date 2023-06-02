@@ -266,6 +266,25 @@ tagADC_T demoADC[1] =
 	},
 };
 
+/* DAC句柄示例 */
+tagDAC_T demoDAC[] = 
+{
+	/* 通道1配置，PA4 */
+	[0] =
+	{
+		.ulDACChannelSelect 			= DAC_CHANNEL_1,
+		.tDACChannel.DAC_Trigger 		= DAC_TRIGGER_NONE,
+		.tDACChannel.DAC_OutputBuffer 	= DAC_OUTPUTBUFFER_DISABLE,
+	},
+	/* 通道2配置，PA5 */
+	[1] =
+	{
+		.ulDACChannelSelect 			= DAC_CHANNEL_2,
+		.tDACChannel.DAC_Trigger 		= DAC_TRIGGER_NONE,
+		.tDACChannel.DAC_OutputBuffer 	= DAC_OUTPUTBUFFER_DISABLE,
+	},
+};
+
 
 /**************************  BSP层相关句柄初始化示例  **************************/
 

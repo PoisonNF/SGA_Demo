@@ -82,6 +82,7 @@
 #define HAL_IWDG_MODULE_ENABLED
 #define HAL_WWDG_MODULE_ENABLED
 #define HAL_SPI_MODULE_ENABLED
+#define HAL_DAC_MODULE_ENABLED
 
 /* ########################## Oscillator Values adaptation ####################*/
 /**

@@ -58,6 +58,8 @@
         "croutine.h": "c",
         "event_groups.h": "c",
         "stream_buffer.h": "c",
-        "algo_pid.h": "c"
+        "algo_pid.h": "c",
+        "stm32f1xx_hal.h": "c",
+        "stm32f1xx_hal_conf.h": "c"
     }
 }
