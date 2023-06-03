@@ -217,10 +217,10 @@ tagSPISoft_T SPI_soft[2] =
 	},
 };
 
-/* 看门狗示例 */
-tagIWDG_T tIWDG = 
+/* 独立看门狗示例 */
+tagIWDG_T demoIWDG = 
 {
-	.usTime = 1000,			/* 1S喂狗时间 */
+	.usResetTime = 1000,			/* 1S喂狗溢出时间 */
 };
 
 /* PWM示例 */

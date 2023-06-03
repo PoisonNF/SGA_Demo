@@ -567,6 +567,11 @@
               <FileType>1</FileType>
               <FilePath>..\Driver\Src\drv_hal_uart.c</FilePath>
             </File>
+            <File>
+              <FileName>drv_hal_wdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Driver\Src\drv_hal_wdg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
