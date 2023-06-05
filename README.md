@@ -74,7 +74,7 @@
 
 存放常用函数与控制算法
 
-目前已有常用函数驱动：func
+目前已有常用函数驱动：func、增量式PID
 
 ## BSP/Dev层
 
@@ -96,7 +96,7 @@
 
 ## Driver层
 
-- 目前驱动层已有adc、gpio、iic_soft、pwm、spi_soft、spi、timer、uart相关驱动可以直接使用，不排除有隐藏BUG的可能
+- 目前驱动层已有adc、dac、gpio、iic_soft、pwm、pwr、spi_soft、spi、timer、uart、wdg相关驱动可以直接使用，不排除有隐藏BUG的可能
 
 ## RTOS支持
 

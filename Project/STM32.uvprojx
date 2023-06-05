@@ -548,6 +548,11 @@
               <FilePath>..\Driver\Src\drv_hal_pwm.c</FilePath>
             </File>
             <File>
+              <FileName>drv_hal_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Driver\Src\drv_hal_pwr.c</FilePath>
+            </File>
+            <File>
               <FileName>drv_hal_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Driver\Src\drv_hal_spi.c</FilePath>

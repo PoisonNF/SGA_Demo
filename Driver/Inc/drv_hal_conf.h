@@ -45,6 +45,7 @@
 #define	DRV_HAL_ADC_ENABLE
 #define DRV_HAL_DAC_ENABLE
 #define DRV_HAL_WDG_ENABLE
+#define DRV_HAL_PWR_ENABLE
 
 #include "drv_hal.h"
 
@@ -90,6 +91,10 @@
 
 #ifdef DRV_HAL_WDG_ENABLE
 #include "drv_hal_wdg.h"
+#endif
+
+#ifdef DRV_HAL_PWR_ENABLE
+#include "drv_hal_pwr.h"
 #endif
 
 /* CÓïÑÔ±ê×¼¿â */
