@@ -327,21 +327,21 @@ tagADS1256_T demoADS1256 =
 	.tSPI.tGPIO[0].tGPIOInit.Pull 			= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tSPI.tGPIO[0].tGPIOInit.Speed 			= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tSPI.tGPIO[0].tGPIOPort 				= GPIOB,					/* GPIO分组 */
-	.tGPIO[0].ucAFMode						= NO_REMAP,					/* GPIO重映射 */
+	.tSPI.tGPIO[0].ucAFMode					= NO_REMAP,					/* GPIO重映射 */
 	
 	.tSPI.tGPIO[1].tGPIOInit.Pin 			= GPIO_PIN_15,				/* GPIO引脚 */
 	.tSPI.tGPIO[1].tGPIOInit.Mode 			= GPIO_MODE_AF_PP,			/* GPIO模式 */
 	.tSPI.tGPIO[1].tGPIOInit.Pull 			= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tSPI.tGPIO[1].tGPIOInit.Speed 			= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tSPI.tGPIO[1].tGPIOPort 				= GPIOB,					/* GPIO分组 */
-	.tGPIO[1].ucAFMode						= NO_REMAP,					/* GPIO重映射 */
+	.tSPI.tGPIO[1].ucAFMode					= NO_REMAP,					/* GPIO重映射 */
 	
 	.tSPI.tGPIO[2].tGPIOInit.Pin 			= GPIO_PIN_14,				/* GPIO引脚 */
 	.tSPI.tGPIO[2].tGPIOInit.Mode 			= GPIO_MODE_AF_PP,			/* GPIO模式 */
 	.tSPI.tGPIO[2].tGPIOInit.Pull 			= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tSPI.tGPIO[2].tGPIOInit.Speed 			= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tSPI.tGPIO[2].tGPIOPort 				= GPIOB,					/* GPIO分组 */
-	.tGPIO[2].ucAFMode						= NO_REMAP,					/* GPIO重映射 */
+	.tSPI.tGPIO[2].ucAFMode					= NO_REMAP,					/* GPIO重映射 */
 };
 
 /* DS3231示例 */

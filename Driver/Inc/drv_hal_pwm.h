@@ -37,8 +37,8 @@ typedef struct
 	TIM67DMA enable TIM6_DAC1 DMA request/DMA1 Channel3, TIM7_DAC2 DMA request/DMA1 Channel4 使用完全重映射ucMode
 */
 
-void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM,float _fDuty);
-void Drv_PWM_FreqSet(tagPWM_T *_tPWM, uint32_t _ulFreq);
+void Drv_PWM_DutyFactorSet(tagPWM_T *_tPWM,float _fDuty);
+void Drv_PWM_HighLvTimeSet(tagPWM_T *_tPWM, uint16_t _usTime);
 void Drv_PWM_Init(tagPWM_T *_tPWM, uint8_t _ucNum);
 
 #endif

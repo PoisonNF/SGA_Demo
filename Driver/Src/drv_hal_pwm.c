@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	   日期		  	作者		  说明
+*        	2023-06-07   鲍程璐		更改部分函数命名
+
 * 2.3.1 	2023-05-05   鲍程璐		格式优化
 
 * 1.1.7 	2022-10-11   鲍程璐		优化执行顺序
@@ -151,7 +153,7 @@ static void S_PWM_GPIOConfig(tagPWM_T *_tPWM)
  * @param _fDuty-占空比(单位：%)
  * @retval Null
 */
-void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM, float _fDuty)
+void Drv_PWM_DutyFactorSet(tagPWM_T *_tPWM, float _fDuty)
 {
 	switch(_tPWM->ucChannel)
 	{
@@ -178,31 +180,32 @@ void Drv_PWM_DutyfactorSet(tagPWM_T *_tPWM, float _fDuty)
 }
 
 /**
- * @brief PWM波频率设置
+ * @brief PWM波高电平时间设置
  * @param _tPWM-PWM结构体指针
- * @param _ulFreq -频率(单位：Hz)
+ * @param _ulTime -高电平时间(单位：us)
+ * @note 在PWM波频率为50HZ的前提下
  * @retval Null
 */
-void Drv_PWM_FreqSet(tagPWM_T *_tPWM, uint32_t _ulFreq)
+void Drv_PWM_HighLvTimeSet(tagPWM_T *_tPWM, uint16_t _usTime)
 {
 	if(_tPWM->ulFreq == 50)
 	{
 		switch(_tPWM->ucChannel)
 		{
 			case TIM_CHANNEL_1:
-				_tPWM->tPWMHandle.Instance->CCR1 = _ulFreq;
+				_tPWM->tPWMHandle.Instance->CCR1 = _usTime;
 			break;
 			
 			case TIM_CHANNEL_2:
-				_tPWM->tPWMHandle.Instance->CCR2 = _ulFreq;
+				_tPWM->tPWMHandle.Instance->CCR2 = _usTime;
 			break;
 			
 			case TIM_CHANNEL_3:
-				_tPWM->tPWMHandle.Instance->CCR3 = _ulFreq;
+				_tPWM->tPWMHandle.Instance->CCR3 = _usTime;
 			break;
 			
 			case TIM_CHANNEL_4:
-				_tPWM->tPWMHandle.Instance->CCR4 = _ulFreq;
+				_tPWM->tPWMHandle.Instance->CCR4 = _usTime;
 			break;
 			
 			default:
