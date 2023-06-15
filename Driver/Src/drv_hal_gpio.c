@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	   日期		  作者		  说明
+*   	 	2023-06-15	鲍程璐		新增GPIO状态翻转函数
+
 *  2.5	 	2023-05-29	鲍程璐		修复外部中断5-15无法使用的问题
 
 *  2.0	 	2023-03-03	鲍程璐		IO初始化中增加对外部中断的支持，减少嵌套
@@ -193,6 +195,16 @@ void Drv_GPIO_Reset(tagGPIO_T *_tGPIO)
 GPIO_PinState Drv_GPIO_Read(tagGPIO_T *_tGPIO)
 {
 	return HAL_GPIO_ReadPin(_tGPIO->tGPIOPort, _tGPIO->tGPIOInit.Pin);
+}
+
+/**
+ * @brief GPIO状态翻转
+ * @param _tGPIO-GPIO句柄
+ * @retval Null
+*/
+void Drv_GPIO_Toggle(tagGPIO_T *_tGPIO)
+{
+	HAL_GPIO_TogglePin(_tGPIO->tGPIOPort,_tGPIO->tGPIOInit.Pin);
 }
 
 /**

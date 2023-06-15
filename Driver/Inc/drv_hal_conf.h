@@ -1,10 +1,11 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2023/5/12 V2.4"
+#define DRIVER_VERSION	"2023/6/5 V2.5"
 
 /* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
-//#define RTT_ENABLE               
+//#define RTT_ENABLE   
+
 #ifdef RTT_ENABLE
 #include <rtthread.h>		/* RTT相关头文件 */
 #include "threadpool.h"		/* threadpool头文件 */ 
@@ -12,6 +13,7 @@
 
 /* FreeRTOS开关 使用时需解除注释，且在工程中导入FreeRTOS相关内核 */ 
 //#define FREERTOS_ENABLE
+
 #ifdef FREERTOS_ENABLE
 #include "cmsis_os.h"		/* FreeRTOS相关头文件 */
 #include "croutine.h"
