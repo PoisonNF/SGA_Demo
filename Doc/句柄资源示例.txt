@@ -73,32 +73,32 @@ tagUART_T demoUart =
 /* GPIO句柄示例 */
 tagGPIO_T demoGPIO[3] =
 {
-	/* ADS1256电源使能 */
+	/* LED红灯 */
 	[0]=
 	{ 
-		.tGPIOInit.Pin 		= GPIO_PIN_6,				/* GPIO引脚 */
+		.tGPIOInit.Pin 		= GPIO_PIN_13,				/* GPIO引脚 */
 		.tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
 		.tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 		.tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
-		.tGPIOPort 			= GPIOC,					/* GPIO分组 */
+		.tGPIOPort 			= GPIOD,					/* GPIO分组 */
 	},
-	/* 5V引脚使能 */
+	/* LED绿灯 */
 	[1]=
 	{ 
-		.tGPIOInit.Pin 		= GPIO_PIN_1,				/* GPIO引脚 */
+		.tGPIOInit.Pin 		= GPIO_PIN_14,				/* GPIO引脚 */
 		.tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
 		.tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 		.tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
-		.tGPIOPort 			= GPIOB,					/* GPIO分组 */
+		.tGPIOPort 			= GPIOD,					/* GPIO分组 */
 	},
-	/* SD卡使能 */
+	/* LED蓝灯 */
 	[2]=
 	{ 
-		.tGPIOInit.Pin 		= GPIO_PIN_4,				/* GPIO引脚 */
+		.tGPIOInit.Pin 		= GPIO_PIN_15,				/* GPIO引脚 */
 		.tGPIOInit.Mode 	= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
 		.tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 		.tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
-		.tGPIOPort 			= GPIOC,					/* GPIO分组 */
+		.tGPIOPort 			= GPIOD,					/* GPIO分组 */
 	},
 };
 
@@ -355,7 +355,7 @@ tagDS3231_T tDS3231 =
 	.tIICSoft.tIICSoft[0].tGPIOPort 		= GPIOE,					/* GPIO分组 */
 	
 	/* SDA线 */
-	.tIICSoft.tIICSoft[1].tGPIOInit.Pin 	= GPIO_PIN_3,				/* GPIO引脚 */
+	.tIICSoft.tIICSoft[1].tGPIOInit.Pin 	= GPIO_PIN_4,				/* GPIO引脚 */
 	.tIICSoft.tIICSoft[1].tGPIOInit.Mode 	= GPIO_MODE_INPUT,			/* GPIO模式 */
 	.tIICSoft.tIICSoft[1].tGPIOInit.Pull 	= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tIICSoft.tIICSoft[1].tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
