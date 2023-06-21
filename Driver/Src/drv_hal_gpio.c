@@ -227,7 +227,6 @@ void Drv_GPIO_NVICConfig(tagGPIO_T *_tGPIO)
 {	
 	S_GPIO_NVICParamConfig(_tGPIO);
 }
-#endif
 
 /**
  * @brief GPIO³õÊ¼»¯º¯Êý
@@ -271,3 +270,6 @@ void Drv_GPIO_EXTI_IRQHandler(tagGPIO_T *_tGPIO)
 {
 	HAL_GPIO_EXTI_IRQHandler(_tGPIO->tGPIOInit.Pin);
 }
+
+#endif
+

@@ -32,24 +32,24 @@
 */
 void Drv_Delay_Ms(uint32_t _ulVal)
 {
+	
+#ifdef RTT_ENABLE
 	/* RT-Thread 延时函数 */
-	#ifdef RTT_ENABLE
 	rt_thread_mdelay(_ulVal);
-	#endif
+#endif
 
+#ifdef FREERTOS_ENABLE
 	/* FreeRTOS 延时函数 */
-	#ifdef FREERTOS_ENABLE
-    /* 如果未开启调度器，使用HAL库延时函数 */
-    if(xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED)
+    if(xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED)	/* 如果未开启调度器，使用HAL库延时函数 */
         HAL_Delay(_ulVal);
     else
         osDelay(_ulVal);
-	#endif
+#endif
 
+#if !defined(FREERTOS_ENABLE) && !defined(RTT_ENABLE)
 	/* 裸机 延时函数 */
-	#if !defined(FREERTOS_ENABLE) && !defined(RTT_ENABLE)
 	HAL_Delay(_ulVal);
-	#endif
+#endif
 }
 
 /**

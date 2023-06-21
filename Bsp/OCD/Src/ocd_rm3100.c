@@ -261,13 +261,13 @@ void OCD_RM3100_SingleModeConfig(tagRM3100_T *_tRM3100,uint8_t _ucConf)
 */
 void OCD_RM3100_ModeConfig(tagRM3100_T *_tRM3100)
 {
-    #ifdef RM3100_SINGLE
+#ifdef RM3100_SINGLE
 	OCD_RM3100_SingleModeConfig(_tRM3100,CMM_ALL_AXIS_ON);     /* 单测模式 */
-	#else
+#else
   	OCD_RM3100_ContinuousModeConfig(_tRM3100,CMM_ALL_AXIS_ON|DRDY_WHEN_ALL_AXIS_MEASURED|CM_START); 			/* 设置测试轴,drdy 开启连续模式 */
   	OCD_RM3100_SetCycleCount(_tRM3100,200);												
   	OCD_RM3100_SetCMM_DataRate(_tRM3100,12);
-	#endif
+#endif
 }
 
 /**
@@ -318,24 +318,12 @@ void OCD_RM3100_Init(tagRM3100_T *_tRM3100,uint8_t _ucNum)
 		/* 如果是硬件SPI驱动 */
 		if(_tRM3100[index].bSPIEnable == true)
 		{
-			/* 如果传入空指针，报错 */
-			if(&_tRM3100[index].tSPI == NULL)
-			{
-				Drv_HAL_Error(__FILE__, __LINE__);
-				while(1);
-			}
 			Drv_SPI_Init(&_tRM3100[index].tSPI);
 		}
 
 		/* 如果是软件SPI驱动 */
 		else if(_tRM3100[index].bSPISoftEnable == true)
 		{
-			/* 如果传入空指针，报错 */
-			if(&_tRM3100[index].tSoftSPI == NULL)
-			{
-				Drv_HAL_Error(__FILE__, __LINE__);
-				while(1);
-			}
 			Drv_SPISoft_Init(&_tRM3100[index].tSoftSPI);
 		}
 

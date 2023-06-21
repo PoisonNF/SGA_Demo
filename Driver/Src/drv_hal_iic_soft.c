@@ -16,6 +16,8 @@
 ****************************************************************************/
 #include "drv_hal_conf.h"
 
+#ifdef DRV_HAL_IIC_SOFT_ENABLE
+
 /**
  * @brief IIC的微秒延时函数
  * @param _ucUs 需要延时的数值
@@ -291,3 +293,5 @@ void Drv_IICSoft_Init(tagIICSoft_T *_tIIC)
 {
 	Drv_GPIO_Init(_tIIC->tIICSoft, IIC_GPIO_NUM);
 }
+
+#endif

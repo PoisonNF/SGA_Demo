@@ -16,7 +16,7 @@
 ****************************************************************************/
 #include "drv_hal_conf.h"
 
-#ifdef DRV_HAL_SPI_ENABLE
+#ifdef DRV_HAL_SPI_SOFT_ENABLE
 
 /**
  * @brief SPICLK Êä³ö
