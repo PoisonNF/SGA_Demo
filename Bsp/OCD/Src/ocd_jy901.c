@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期	  作者			说明
+*    		2023-06-30  鲍程璐		删除IT初始化函数，增加安装方向和解算算法的接口
+
 *  2.5 		2023-05-17  鲍程璐		数据处理函数增加返回值
 
 * 2.2.1		2023-04-03  鲍程璐		跟随drv_hal_uart进行修改
@@ -174,6 +176,46 @@ void OCD_JY901_RxBaudConfig(tagJY901_T *_tJY901)
 }
 
 /**
+ * @brief JY901安装方向配置
+ * @param _tJY901-JY901句柄指针
+ * @retval Null
+*/
+void OCD_JY901_OrientConfig(tagJY901_T *_tJY901)
+{
+	uint8_t ucpWrite[] = {0xff, 0xaa, 0x23, 0x00, 0x00};
+	
+	ucpWrite[3] = _tJY901->tConfig.ucOrient;
+	
+	S_JY901_UnLock(_tJY901);
+	S_JY901_Delay();
+	
+	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
+	S_JY901_Delay();
+	
+	S_JY901_SaveConfig(_tJY901, SAVE_NOW);		
+}
+
+/**
+ * @brief JY901算法配置
+ * @param _tJY901-JY901句柄指针
+ * @retval Null
+*/
+void OCD_JY901_AxisConfig(tagJY901_T *_tJY901)
+{
+	uint8_t ucpWrite[] = {0xff, 0xaa, 0x24, 0x00, 0x00};
+	
+	ucpWrite[3] = _tJY901->tConfig.ucAxis;
+	
+	S_JY901_UnLock(_tJY901);
+	S_JY901_Delay();
+	
+	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
+	S_JY901_Delay();
+	
+	S_JY901_SaveConfig(_tJY901, SAVE_NOW);		
+}
+
+/**
  * @brief JY901陀螺仪自动校准函数
  * @param _tJY901-JY901句柄指针
  * @param _ucMode-1-禁用自动校准;0-启用自动校准
@@ -212,20 +254,6 @@ void OCD_JY901_OutputOnce(tagJY901_T *_tJY901)
 }
 
 /**
- * @brief JY901中断初始化函数
- * @param _tJY901-JY901句柄指针
- * @retval Null
-*/
-void OCD_JY901_ITInit(tagJY901_T *_tJY901)
-{
-	Drv_Uart_ITInit(&_tJY901->tUART);
-
-	OCD_JY901_RxBaudConfig(_tJY901);
-	OCD_JY901_RxSpeedConfig(_tJY901);
-	OCD_JY901_RxTypeConfig(_tJY901);
-}
-
-/**
  * @brief JY901DMA初始化函数
  * @param _tJY901-JY901句柄指针
  * @retval Null
@@ -234,9 +262,12 @@ void OCD_JY901_DMAInit(tagJY901_T *_tJY901)
 {
 	Drv_Uart_DMAInit(&_tJY901->tUART);
 
-	OCD_JY901_RxBaudConfig(_tJY901);
-	OCD_JY901_RxSpeedConfig(_tJY901);
-	OCD_JY901_RxTypeConfig(_tJY901);
+	OCD_JY901_RxBaudConfig(_tJY901);		/* 波特率设置 */
+	OCD_JY901_RxSpeedConfig(_tJY901);		/* 速率设置 */
+	OCD_JY901_RxTypeConfig(_tJY901);		/* 输出类型设置 */
+	OCD_JY901_OrientConfig(_tJY901);		/* 安装方向设置 */
+	OCD_JY901_AxisConfig(_tJY901);			/* 解算算法设置 */
+	OCD_JY901_GyroAutoCorrect(_tJY901,0);	/* 使用陀螺仪自动校准 */
 }
 
 /**
@@ -246,11 +277,11 @@ void OCD_JY901_DMAInit(tagJY901_T *_tJY901)
 */
 uint8_t OCD_JY901_DataProcess(tagJY901_T *_tJY901)
 {
-	/* 判断标志位 */
+    /* 判断标志位 */
 	if(_tJY901->tUART.tRxInfo.ucDMARxCplt)
 	{
 		/* 遍历数组 */
-		for (int i = 0; i < _tJY901->tUART.tRxInfo.usDMARxLength; i++)
+		for(int i = 0; i < _tJY901->tUART.tRxInfo.usDMARxLength; i++)
 		{
 			if(_tJY901->tUART.tRxInfo.ucpDMARxCache[i] == JY901_HEAD) /* 如果数据头为0x55 */
 			{
@@ -264,7 +295,7 @@ uint8_t OCD_JY901_DataProcess(tagJY901_T *_tJY901)
 				if(ucSum == _tJY901->tUART.tRxInfo.ucpDMARxCache[i+10])
 				{
 					/* 根据type拷贝到对应的结构体中 */
-					switch (_tJY901->tUART.tRxInfo.ucpDMARxCache[i+1])
+					switch(_tJY901->tUART.tRxInfo.ucpDMARxCache[i+1])
 					{
 						case JY901_TIME:	memcpy(&_tJY901->stcTime,&_tJY901->tUART.tRxInfo.ucpDMARxCache[i+2],8);
 											break;
