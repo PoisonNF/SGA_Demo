@@ -9,7 +9,8 @@
 * 文件历史：
 
 * 版本号		日期	  作者			说明
-*    		2023-06-30  鲍程璐		删除IT初始化函数，增加安装方向和解算算法的接口
+*  2.6 		2023-07-03  鲍程璐		删除IT初始化函数，增加安装方向和解算算法的接口
+                                    增加参数匹配函数，减少结构体长度，精简代码
 
 *  2.5 		2023-05-17  鲍程璐		数据处理函数增加返回值
 
@@ -77,6 +78,70 @@ static void S_JY901_SaveConfig(tagJY901_T *_tJY901, uint8_t _ucSet)
 }
 
 /**
+ * @brief JY901设置函数
+ * @param _tJY901-JY901句柄指针
+ * @param _ucpWrite-要写入的数组
+ * @retval Null
+*/
+static void S_JY901_Setting(tagJY901_T *_tJY901, uint8_t *_ucpWrite)
+{
+	S_JY901_UnLock(_tJY901);
+	S_JY901_Delay();
+	
+	Drv_Uart_Transmit(&_tJY901->tUART, _ucpWrite, sizeof(_ucpWrite));
+	S_JY901_Delay();
+	
+	S_JY901_SaveConfig(_tJY901, SAVE_NOW);	
+}
+
+/**
+ * @brief JY901参数匹配函数
+ * @param _tJY901-JY901句柄指针
+ * @note 根据JY901模块指定的波特率匹配串口的波特率
+ * @retval Null
+*/
+static void S_JY901_ParamMatch(tagJY901_T *_tJY901)
+{
+	/* 根据JY901的波特率配置选择串口的波特率 */
+    switch(_tJY901->tConfig.ucBaud)
+    {
+        case JY901_RXBAUD_2400:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 2400;
+            break;
+        case JY901_RXBAUD_4800:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 4800;
+            break;
+        case JY901_RXBAUD_9600:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 9600;
+            break;
+        case JY901_RXBAUD_19200:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 19200;
+            break;
+        case JY901_RXBAUD_38400:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 38400;
+            break;
+        case JY901_RXBAUD_57600:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 57600;
+            break;
+        case JY901_RXBAUD_115200:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 115200;
+            break;     
+        case JY901_RXBAUD_230400:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 230400;
+            break;
+        case JY901_RXBAUD_460800:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 460800;
+            break;   
+        case JY901_RXBAUD_921600:
+            _tJY901->tUART.tUARTHandle.Init.BaudRate = 921600;
+            break;           
+    }
+    
+    /* IM板默认JY901连接串口2 */
+    DEFAULT(_tJY901->tUART.tUARTHandle.Instance,USART2);
+}
+
+/**
  * @brief JY901回传内容配置
  * @param _tJY901-JY901句柄指针
  * @retval Null
@@ -88,13 +153,7 @@ void OCD_JY901_RxTypeConfig(tagJY901_T *_tJY901)
 	ucpWrite[3] = _tJY901->tConfig.usType >> 8;
 	ucpWrite[4] = _tJY901->tConfig.usType;
 	
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);		
+	S_JY901_Setting(_tJY901,ucpWrite);
 }
 
 /**
@@ -109,13 +168,7 @@ void OCD_JY901_Correct(tagJY901_T *_tJY901, uint8_t _ucMode)
 	
 	ucpWrite[3] = _ucMode;
 	
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);
+	S_JY901_Setting(_tJY901,ucpWrite);
 }
 
 const uint8_t ucpSleepCmd[] = {0xff, 0xaa, 0x22, 0x01, 0x00}; 
@@ -126,13 +179,7 @@ const uint8_t ucpSleepCmd[] = {0xff, 0xaa, 0x22, 0x01, 0x00};
 */
 void OCD_JY901_Sleep(tagJY901_T *_tJY901)
 {
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, (uint8_t*)ucpSleepCmd, sizeof(ucpSleepCmd));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);
+	S_JY901_Setting(_tJY901,(uint8_t *)ucpSleepCmd);
 }
 
 /**
@@ -146,13 +193,7 @@ void OCD_JY901_RxSpeedConfig(tagJY901_T *_tJY901)
 	
 	ucpWrite[3] = _tJY901->tConfig.ucRate;
 	
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);		
+	S_JY901_Setting(_tJY901,ucpWrite);
 }
 
 /**
@@ -166,13 +207,7 @@ void OCD_JY901_RxBaudConfig(tagJY901_T *_tJY901)
 	
 	ucpWrite[3] = _tJY901->tConfig.ucBaud;
 	
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);		
+	S_JY901_Setting(_tJY901,ucpWrite);	
 }
 
 /**
@@ -186,13 +221,7 @@ void OCD_JY901_OrientConfig(tagJY901_T *_tJY901)
 	
 	ucpWrite[3] = _tJY901->tConfig.ucOrient;
 	
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);		
+	S_JY901_Setting(_tJY901,ucpWrite);	
 }
 
 /**
@@ -206,13 +235,7 @@ void OCD_JY901_AxisConfig(tagJY901_T *_tJY901)
 	
 	ucpWrite[3] = _tJY901->tConfig.ucAxis;
 	
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);		
+	S_JY901_Setting(_tJY901,ucpWrite);	
 }
 
 /**
@@ -227,13 +250,7 @@ void OCD_JY901_GyroAutoCorrect(tagJY901_T *_tJY901, uint8_t _ucMode)
 	
 	ucpWrite[3] = _ucMode;
 	
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, ucpWrite, sizeof(ucpWrite));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);
+	S_JY901_Setting(_tJY901,ucpWrite);
 }
 
 const uint8_t ucpOutputOnceCmd[] = {0xff, 0xaa, 0x03, 0x0c, 0x00}; 
@@ -244,13 +261,7 @@ const uint8_t ucpOutputOnceCmd[] = {0xff, 0xaa, 0x03, 0x0c, 0x00};
 */
 void OCD_JY901_OutputOnce(tagJY901_T *_tJY901)
 {
-	S_JY901_UnLock(_tJY901);
-	S_JY901_Delay();
-	
-	Drv_Uart_Transmit(&_tJY901->tUART, (uint8_t*)ucpOutputOnceCmd, sizeof(ucpOutputOnceCmd));
-	S_JY901_Delay();
-	
-	S_JY901_SaveConfig(_tJY901, SAVE_NOW);
+	S_JY901_Setting(_tJY901,(uint8_t *)ucpOutputOnceCmd);
 }
 
 /**
@@ -260,6 +271,8 @@ void OCD_JY901_OutputOnce(tagJY901_T *_tJY901)
 */
 void OCD_JY901_DMAInit(tagJY901_T *_tJY901)
 {
+    S_JY901_ParamMatch(_tJY901);
+    
 	Drv_Uart_DMAInit(&_tJY901->tUART);
 
 	OCD_JY901_RxBaudConfig(_tJY901);		/* 波特率设置 */
