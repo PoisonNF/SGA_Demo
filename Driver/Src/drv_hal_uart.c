@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	  日期		  作者				说明
+*   		2023-07-06   鲍程璐		串口初始化结构体增加默认值，串口中断接收处理子函数增加结尾符检测参数
+
 *  2.4		2023-05-12   鲍程璐		新增串口中断接收相关函数，格式优化
 
 * 2.2.1		2023-04-03   鲍程璐		串口信息结构体成员更改，新增串口DMA数据接收函数
@@ -198,7 +200,7 @@ static void S_Uart_CLKConfig(void)
  * @param _tUART-串口结构体指针
  * @retval Null
 */
-static void S_UART_CLKEnable(tagUART_T *_tUART)
+static void S_Uart_CLKEnable(tagUART_T *_tUART)
 {
 	if(_tUART->tUARTHandle.Instance == USART1)
 	{
@@ -227,7 +229,7 @@ static void S_UART_CLKEnable(tagUART_T *_tUART)
  * @param _tUART-串口结构体指针
  * @retval Null
 */
-static void S_UART_DMA_CLKEnable(tagUART_T *_tUART)
+static void S_Uart_DMA_CLKEnable(tagUART_T *_tUART)
 {
 	if(_tUART->tUARTHandle.Instance == USART1)			__HAL_RCC_DMA1_CLK_ENABLE();
 	else if(_tUART->tUARTHandle.Instance == USART2)		__HAL_RCC_DMA1_CLK_ENABLE();
@@ -246,7 +248,7 @@ static void S_UART_DMA_CLKEnable(tagUART_T *_tUART)
  * @param _tUART-串口句柄指针
  * @retval Null
 */
-static void S_UART_GPIOConfig(tagUART_T *_tUART)
+static void S_Uart_GPIOConfig(tagUART_T *_tUART)
 {
 	/* 开启复用模式时钟 */
 	__HAL_RCC_AFIO_CLK_ENABLE();
@@ -275,6 +277,138 @@ static void S_UART_GPIOConfig(tagUART_T *_tUART)
 	}
 	
 	Drv_GPIO_Init(_tUART->tGPIO, 2); 	/* GPIO初始化 */
+}
+
+/**
+ * @brief UART参数匹配函数
+ * @param _tUART-串口句柄指针
+ * @note 如果没有指定参数就设置为默认（串口1,115200,8,1,N）
+ * @retval Null
+*/
+static void S_Uart_ParamMatch(tagUART_T *_tUART)
+{
+	/* 串口参数 */
+	DEFAULT(_tUART->tUARTHandle.Instance,USART1);
+	DEFAULT(_tUART->tUARTHandle.Init.BaudRate,115200);
+	DEFAULT(_tUART->tUARTHandle.Init.Mode,UART_MODE_TX_RX);
+	DEFAULT(_tUART->tUARTHandle.Init.WordLength,UART_WORDLENGTH_8B);
+	DEFAULT(_tUART->tUARTHandle.Init.StopBits,UART_STOPBITS_1);
+	DEFAULT(_tUART->tUARTHandle.Init.Parity,UART_PARITY_NONE);
+	DEFAULT(_tUART->ucPriority,1);
+	DEFAULT(_tUART->ucSubPriority,3);
+
+	/* 串口DMA参数 */
+	if(_tUART->tUartDMA.bTxEnable == true)
+	{
+		/* 根据串口号选择DMA通道 */
+		if(_tUART->tUARTHandle.Instance == USART1)
+			_tUART->tUartDMA.tDMATx.Instance = DMA1_Channel4;
+		else if(_tUART->tUARTHandle.Instance == USART2)
+			_tUART->tUartDMA.tDMATx.Instance = DMA1_Channel7;
+		else if(_tUART->tUARTHandle.Instance == USART3)
+			_tUART->tUartDMA.tDMATx.Instance = DMA1_Channel2;
+		else if(_tUART->tUARTHandle.Instance == UART4)
+			_tUART->tUartDMA.tDMATx.Instance = DMA2_Channel5;
+
+		/* DMA工作模式 */
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.Direction,DMA_MEMORY_TO_PERIPH);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.PeriphInc,DMA_PINC_DISABLE);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.MemInc,DMA_MINC_ENABLE);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.PeriphDataAlignment,DMA_PDATAALIGN_BYTE);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.MemDataAlignment,DMA_MDATAALIGN_BYTE);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.Mode,DMA_NORMAL);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.Priority,DMA_PRIORITY_LOW);
+
+		/* DMA中断优先级 */
+		DEFAULT(_tUART->tUartDMA.ucDMATxPriority,1);
+		DEFAULT(_tUART->tUartDMA.ucDMATxSubPriority,1);
+
+		/* DMA发送缓冲区大小 */
+		DEFAULT(_tUART->tTxInfo.usDMATxMAXSize, 100);
+	}
+
+	if(_tUART->tUartDMA.bRxEnable == true)
+	{
+		/* 根据串口号选择DMA通道 */
+		if(_tUART->tUARTHandle.Instance == USART1)
+			_tUART->tUartDMA.tDMARx.Instance = DMA1_Channel5;
+		else if(_tUART->tUARTHandle.Instance == USART2)
+			_tUART->tUartDMA.tDMARx.Instance = DMA1_Channel6;
+		else if(_tUART->tUARTHandle.Instance == USART3)
+			_tUART->tUartDMA.tDMARx.Instance = DMA1_Channel3;
+		else if(_tUART->tUARTHandle.Instance == UART4)
+			_tUART->tUartDMA.tDMARx.Instance = DMA2_Channel3;
+
+		/* DMA工作模式 */
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.Direction,DMA_PERIPH_TO_MEMORY);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.PeriphInc,DMA_PINC_DISABLE);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.MemInc,DMA_MINC_ENABLE);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.PeriphDataAlignment,DMA_PDATAALIGN_BYTE);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.MemDataAlignment,DMA_MDATAALIGN_BYTE);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.Mode,DMA_CIRCULAR);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.Priority,DMA_PRIORITY_LOW);
+		
+		/* DMA中断优先级 */
+		DEFAULT(_tUART->tUartDMA.ucDMARxPriority,1);
+		DEFAULT(_tUART->tUartDMA.ucDMARxSubPriority,1);
+
+		/* DMA接收缓冲区大小 */
+		DEFAULT(_tUART->tRxInfo.usDMARxMAXSize, 100);
+	}
+
+	/* 串口I/O设置 [0]TX [1]RX */
+	/* 如果复用I/O退则出函数 */
+	if(_tUART->tGPIO[0].tGPIOInit.Pin != 0 && _tUART->tGPIO[1].tGPIOInit.Pin != 0)
+		return;
+
+	/* 根据使用的串口选择相对应的默认I/O */
+	if(_tUART->tUARTHandle.Instance == USART1)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_9;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOA;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_10;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOA;
+	}
+	else if(_tUART->tUARTHandle.Instance == USART2)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_2;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOA;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_3;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOA;
+	}
+	else if(_tUART->tUARTHandle.Instance == USART3)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_10;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOB;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_11;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOB;
+	}
+	else if(_tUART->tUARTHandle.Instance == UART4)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_10;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOC;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_11;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOC;
+	}
+	else if(_tUART->tUARTHandle.Instance == UART5)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_12;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOC;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_2;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOD;
+	}
+
+	_tUART->tGPIO[0].tGPIOInit.Mode = GPIO_MODE_AF_PP;
+	_tUART->tGPIO[1].tGPIOInit.Mode = GPIO_MODE_INPUT;
+
+	_tUART->tGPIO->tGPIOInit.Pull 	= GPIO_NOPULL;
+	_tUART->tGPIO->tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH;
+	_tUART->tGPIO->ucAFMode 		= NO_REMAP;
 }
 
 /**
@@ -335,8 +469,10 @@ void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _usp
 	/* 获取DMA状态 */
 	while(HAL_DMA_GetState(&_tUART->tUartDMA.tDMATx) != HAL_DMA_STATE_READY);
 
+	_tUART->tTxInfo.usDMATxLength = _uspSize * 2;
+
 	/* 准备状态即可发送 */
-	HAL_UART_Transmit_DMA(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
+	HAL_UART_Transmit_DMA(&_tUART->tUARTHandle, _ucpTxData, _tUART->tTxInfo.usDMATxLength);
 }
 
 /**
@@ -392,8 +528,9 @@ void Drv_Uart_ReceIT_Enable(tagUART_T *_tUART, uint8_t *_ucpBuffer, uint16_t _us
 void Drv_Uart_ITInit(tagUART_T *_tUART)
 {
 	S_Uart_CLKConfig();
-	S_UART_CLKEnable(_tUART);
-	S_UART_GPIOConfig(_tUART);
+	S_Uart_ParamMatch(_tUART);
+	S_Uart_CLKEnable(_tUART);
+	S_Uart_GPIOConfig(_tUART);
 	S_Uart_ParamConfig(_tUART);		/* 设置串口参数 */
 	S_Uart_NVICConfig(_tUART);		/* 设置中断优先级 */
 
@@ -413,14 +550,17 @@ void Drv_Uart_DMAInit(tagUART_T *_tUART)
 {
 	S_Uart_CLKConfig();				/* L4所需 */
 	
+	/* 参数匹配 */
+	S_Uart_ParamMatch(_tUART);
+
 	/* DMA配置 */
-	S_UART_DMA_CLKEnable(_tUART);
+	S_Uart_DMA_CLKEnable(_tUART);
 	S_Uart_DMA_NVICConfig(_tUART);	/* DMA中断配置 */
 	S_Uart_DMAParamConfig(_tUART);	/* 设置DMA参数 */
 
 	/* 串口配置 */
-	S_UART_CLKEnable(_tUART);
-	S_UART_GPIOConfig(_tUART);
+	S_Uart_CLKEnable(_tUART);
+	S_Uart_GPIOConfig(_tUART);
 	S_Uart_NVICConfig(_tUART);		/* 串口中断配置 */
 	S_Uart_ParamConfig(_tUART);		/* 设置串口参数 */
 
@@ -464,13 +604,14 @@ void Drv_Uart_IRQHandler(tagUART_T *_tUART)
 /**
  * @brief 串口中断接收处理子函数(用于串口中断接收完成回调函数中)
  * @param _tUART-串口结构体指针
- * @note 默认检测换行符。数据保存的起始地址为ucpITRxCache,接收到的长度为usRxLength。
+ * @param _ucEndChar 需要检测的结尾符
+ * @note 数据保存的起始地址为ucpITRxCache,接收到的长度为usRxLength。
  * @retval Null
 */
-void Drv_Uart_IT_RxHandler(tagUART_T *_tUART)
+void Drv_Uart_IT_RxHandler(tagUART_T *_tUART, uint8_t _ucEndChar)
 {
-	/* 默认检测到换行符'\n'代表接收结束 */
-	if(_tUART->tRxInfo.ucpRxBuffer[0] == '\n')
+	/* 检测到结尾符ucEndChar代表接收结束 */
+	if(_tUART->tRxInfo.ucpRxBuffer[0] == _ucEndChar)
 	{
 		/* 替换为'\0'表示字符串结尾 */
 		_tUART->tRxInfo.ucpITRxCache[_tUART->tRxInfo.usRxCnt] = '\0';
@@ -571,8 +712,12 @@ void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART)
 		/* 清除发送完成标志位 */
 		__HAL_DMA_CLEAR_FLAG(&_tUART->tUartDMA.tDMATx,ulDMAFlag);
 
-		/* 重载CNDTR寄存器，数量为最大传递数组大小 */
-		_tUART->tUartDMA.tDMATx.Instance->CNDTR = _tUART->tTxInfo.usDMATxMAXSize;
+		/* 重载CNDTR寄存器，数量为传递数组大小 */
+		_tUART->tUartDMA.tDMATx.Instance->CNDTR = _tUART->tTxInfo.usDMATxLength;
+		_tUART->tTxInfo.usDMATxLength = 0;
+        
+		/* 发送完成标志位置1 */
+        _tUART->tTxInfo.ucDMATxCplt = 1;
 
 		/* 开启DMA发送 */
 		__HAL_DMA_ENABLE(&_tUART->tUartDMA.tDMATx);
