@@ -18,6 +18,8 @@
                 "d:\\STM32code\\SGA_Demo\\Hardware\\STM32F1XX\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
                 "d:\\STM32code\\SGA_Demo\\Hardware\\STM32F1XX\\STM32F1xx_HAL_Driver\\Inc",
                 "d:\\STM32code\\SGA_Demo\\Hardware\\STM32F1XX\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
+                "f:\\Keil_v5\\ARM\\ARMCC\\include",
+                "f:\\Keil_v5\\ARM\\ARMCC\\include\\rw",
                 "d:\\STM32code\\SGA_Demo\\Apply\\Logic\\Src",
                 "d:\\STM32code\\SGA_Demo\\Apply\\Task\\Src",
                 "d:\\STM32code\\SGA_Demo\\Bsp\\OCD\\Src",

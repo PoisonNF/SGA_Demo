@@ -592,7 +592,7 @@ void Drv_Uart_DMAInit(tagUART_T *_tUART)
 }
 
 /**
- * @brief 串口1中断帽子函数
+ * @brief 串口中断帽子函数
  * @param _tUART-串口结构体指针
  * @retval Null
 */
