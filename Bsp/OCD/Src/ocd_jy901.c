@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期	  作者			说明
+*     		2023-07-09  鲍程璐		修复无法设定输出速率的问题
+
 *  2.6 		2023-07-03  鲍程璐		删除IT初始化函数，增加安装方向和解算算法的接口
                                     增加参数匹配函数，减少结构体长度，精简代码
 
@@ -88,7 +90,7 @@ static void S_JY901_Setting(tagJY901_T *_tJY901, uint8_t *_ucpWrite)
 	S_JY901_UnLock(_tJY901);
 	S_JY901_Delay();
 	
-	Drv_Uart_Transmit(&_tJY901->tUART, _ucpWrite, sizeof(_ucpWrite));
+	Drv_Uart_Transmit(&_tJY901->tUART, _ucpWrite, 5);
 	S_JY901_Delay();
 	
 	S_JY901_SaveConfig(_tJY901, SAVE_NOW);	
@@ -139,6 +141,10 @@ static void S_JY901_ParamMatch(tagJY901_T *_tJY901)
     
     /* IM板默认JY901连接串口2 */
     DEFAULT(_tJY901->tUART.tUARTHandle.Instance,USART2);
+    
+    /* 默认使用DMA接收 */
+    if(_tJY901->tUART.tUARTHandle.Instance != UART5)
+        DEFAULT(_tJY901->tUART.tUartDMA.bRxEnable,true);
 }
 
 /**
@@ -359,9 +365,9 @@ void OCD_JY901_DataConversion(tagJY901_T *_tJY901)
 	/* 读取欧拉角 */
 	if (_tJY901->tConfig.usType & JY901_OUTPUT_ANGLE)
 	{
-		_tJY901->stcAngle.ConRoll = (float)_tJY901->stcAngle.Roll/32768*180;
+		_tJY901->stcAngle.ConRoll  = (float)_tJY901->stcAngle.Roll/32768*180;
 		_tJY901->stcAngle.ConPitch = (float)_tJY901->stcAngle.Pitch/32768*180;
-		_tJY901->stcAngle.ConYaw = (float)_tJY901->stcAngle.Yaw/32768*180;
+		_tJY901->stcAngle.ConYaw   = (float)_tJY901->stcAngle.Yaw/32768*180;
 	}
 	/* 读取磁场 */
 	if (_tJY901->tConfig.usType & JY901_OUTPUT_MAG)

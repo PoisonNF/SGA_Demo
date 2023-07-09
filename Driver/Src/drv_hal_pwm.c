@@ -182,7 +182,7 @@ void Drv_PWM_DutyFactorSet(tagPWM_T *_tPWM, float _fDuty)
 /**
  * @brief PWM波高电平时间设置
  * @param _tPWM-PWM结构体指针
- * @param _ulTime -高电平时间(单位：us)
+ * @param _usTime-高电平时间(单位：us)
  * @note 在PWM波频率为50HZ的前提下
  * @retval Null
 */

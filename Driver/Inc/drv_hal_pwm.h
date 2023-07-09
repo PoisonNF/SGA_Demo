@@ -22,11 +22,11 @@ typedef struct
 
 	TIM2	full remap (CH1/ETR/PA15, CH2/PB3, CH3/PB10, CH4/PB11)
 			partial remap2 (CH1/ETR/PA0,  CH2/PA1, CH3/PB10, CH4/PB11)
-			partila remap1 (CH1/ETR/PA15, CH2/PB3, CH3/PA2,  CH4/PA3)
+			partial remap1 (CH1/ETR/PA15, CH2/PB3, CH3/PA2,  CH4/PA3)
 			no remap (CH1/ETR/PA0,  CH2/PA1, CH3/PA2,  CH4/PA3)
 
 	TIM3 	full remap (CH1/PC6, CH2/PC7, CH3/PC8, CH4/PC9)
-			partila remap (CH1/PB4, CH2/PB5, CH3/PB0, CH4/PB1)
+			partial remap (CH1/PB4, CH2/PB5, CH3/PB0, CH4/PB1)
 			no remap (CH1/PA6, CH2/PA7, CH3/PB0, CH4/PB1)
 
 	TIM4 	full remap (TIM4_CH1/PD12, TIM4_CH2/PD13, TIM4_CH3/PD14, TIM4_CH4/PD15)
