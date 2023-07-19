@@ -453,9 +453,9 @@
               <FilePath>..\Bsp\OCD\Src\ocd_fatfs.c</FilePath>
             </File>
             <File>
-              <FileName>ocd_sdcard.c</FileName>
+              <FileName>ocd_ms5837.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Bsp\OCD\Src\ocd_sdcard.c</FilePath>
+              <FilePath>..\Bsp\OCD\Src\ocd_ms5837.c</FilePath>
             </File>
             <File>
               <FileName>ocd_oled.c</FileName>
@@ -466,6 +466,11 @@
               <FileName>ocd_rm3100.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\OCD\Src\ocd_rm3100.c</FilePath>
+            </File>
+            <File>
+              <FileName>ocd_sdcard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\OCD\Src\ocd_sdcard.c</FilePath>
             </File>
           </Files>
         </Group>

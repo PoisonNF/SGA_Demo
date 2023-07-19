@@ -66,7 +66,7 @@ static void S_DAC_GPIOConfig(tagDAC_T *_tDAC)
         _tDAC->tGPIO.tGPIOPort      = GPIOA;
     }
 
-    /* 如果是通道2，对PA4进行配置 */
+    /* 如果是通道2，对PA5进行配置 */
     if(_tDAC->ulDACChannelSelect == DAC_CHANNEL_2)
     {
         _tDAC->tGPIO.tGPIOInit.Pin  = GPIO_PIN_5;

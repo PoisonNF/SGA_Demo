@@ -357,7 +357,7 @@ static void S_Uart_ParamMatch(tagUART_T *_tUART)
 	}
 
 	/* 串口I/O设置 [0]TX [1]RX */
-	/* 如果复用I/O退则出函数 */
+	/* 如果复用I/O则退出函数 */
 	if(_tUART->tGPIO[0].tGPIOInit.Pin != 0 && _tUART->tGPIO[1].tGPIOInit.Pin != 0)
 		return;
 

@@ -621,6 +621,27 @@ tagRM3100_T RM3100[4] =
 	},
 };
 
+/* MS5837示例 */
+tagMS5837_T MS5837 = 
+{
+    /* 采样分辨率设置 */
+	.setOSR = MS5837_OSR4096,
+
+	/* SCL线 */
+	.tIIC.tIICSoft[0].tGPIOInit.Pin 		= GPIO_PIN_4,				/* GPIO引脚 */
+	.tIIC.tIICSoft[0].tGPIOInit.Mode 		= GPIO_MODE_OUTPUT_PP,		/* GPIO模式 */
+	.tIIC.tIICSoft[0].tGPIOInit.Pull 		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tIIC.tIICSoft[0].tGPIOInit.Speed 		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tIIC.tIICSoft[0].tGPIOPort 			= GPIOC,					/* GPIO分组 */
+
+	/* SDA线 */
+	.tIIC.tIICSoft[1].tGPIOInit.Pin 		= GPIO_PIN_5,				/* GPIO引脚 */
+	.tIIC.tIICSoft[1].tGPIOInit.Mode		= GPIO_MODE_INPUT,			/* GPIO模式 */
+	.tIIC.tIICSoft[1].tGPIOInit.Pull		= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
+	.tIIC.tIICSoft[1].tGPIOInit.Speed		= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
+	.tIIC.tIICSoft[1].tGPIOPort 			= GPIOC,					/* GPIO分组 */
+};
+
 /* PID示例 */
 tagPID_T PID = 
 {
