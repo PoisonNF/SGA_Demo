@@ -11,6 +11,7 @@
 * 文件历史：
 
 * 版本号	日期		作者		说明
+*    	 2023-07-21   鲍程璐	格式优化
 
 * 1.1.5  2022-09-08   鲍程璐	创建该文件
 
@@ -28,7 +29,7 @@
 static void S_OLED_WR_Byte(tagOLED_T *_tOLED,uint8_t _ucDat,uint8_t _ucCmd)
 {
     Drv_IICSoft_Start(&_tOLED->tIIC);
-    Drv_IICSoft_SendByte(&_tOLED->tIIC,0x78);
+    Drv_IICSoft_SendByte(&_tOLED->tIIC,OLED_ADDR);
     Drv_IICSoft_WaitAck(&_tOLED->tIIC);
     if(_ucCmd)
     {
@@ -93,6 +94,7 @@ void OCD_OLED_DisplayOFF(tagOLED_T *_tOLED)
 void OCD_OLED_Clear(tagOLED_T *_tOLED)
 {
     uint8_t i,n;
+    
     for(i = 0;i < 8;i++)
     {	
 		S_OLED_WR_Byte(_tOLED,0xb0+i,OLED_CMD);
@@ -106,82 +108,82 @@ void OCD_OLED_Clear(tagOLED_T *_tOLED)
  * @brief 	OLED设置光标位置
  * @param   _tOLED-OLED结构体
  * @param 	x-横坐标	x(0-127)
- * @param 	y-纵坐标	y(0-127)
+ * @param 	_ucPage-页码 (0-7)
  * @retval	NULL
  */
-void OCD_OLED_SetCursorAddrese(tagOLED_T *_tOLED,uint8_t x,uint8_t y)
+void OCD_OLED_SetCursorAddress(tagOLED_T *_tOLED,uint8_t x,uint8_t _ucPage)
 {
-		S_OLED_WR_Byte(_tOLED,0xB0+y,OLED_CMD); 				/* 设置页地址 */
-		S_OLED_WR_Byte(_tOLED,(x&0xF0)>>4|0x10,OLED_CMD);		/* 设置列高起始地址(半字节) */
-		S_OLED_WR_Byte(_tOLED,(x&0x0F)|0x00,OLED_CMD);   		/* 设置列低起始地址(半字节) */			
+	S_OLED_WR_Byte(_tOLED,0xB0+_ucPage,OLED_CMD); 			/* 设置页地址 */
+	S_OLED_WR_Byte(_tOLED,(x&0xF0)>>4|0x10,OLED_CMD);		/* 设置列高起始地址(半字节) */
+	S_OLED_WR_Byte(_tOLED,(x&0x0F)|0x00,OLED_CMD);   		/* 设置列低起始地址(半字节) */			
 }
 
 /**
  * @brief 	OLED按页清屏函数
  * @param   _tOLED-OLED结构体
- * @param 	_ucPage-(0-7)
+ * @param 	_ucPage-页码(0-7)
  * @retval	NULL
  */
 void OCD_OLED_PageClear(tagOLED_T *_tOLED,uint8_t _ucPage)
 {
-		uint8_t j;
-		S_OLED_WR_Byte(_tOLED,0xB0+_ucPage,OLED_CMD); /* 设置页地址 */
-		S_OLED_WR_Byte(_tOLED,0x10,OLED_CMD);      	 /* 设置列高起始地址(半字节) */
-		S_OLED_WR_Byte(_tOLED,0x00,OLED_CMD);      	 /* 设置列低起始地址(半字节) */
-		for(j = 0;j < 128;j++)
-		{
-				S_OLED_WR_Byte(_tOLED,0,OLED_DATA);  /* 写数据 */
-		}
+	uint8_t j;
+
+	S_OLED_WR_Byte(_tOLED,0xB0+_ucPage,OLED_CMD); /* 设置页地址 */
+	S_OLED_WR_Byte(_tOLED,0x10,OLED_CMD);      	 /* 设置列高起始地址(半字节) */
+	S_OLED_WR_Byte(_tOLED,0x00,OLED_CMD);      	 /* 设置列低起始地址(半字节) */
+	for(j = 0;j < 128;j++)
+	{
+		S_OLED_WR_Byte(_tOLED,0,OLED_DATA);  /* 写数据 */
+	}
 }
 
 /**
  * @brief 	OLED写一个字符
  * @param   _tOLED-OLED结构体
  * @param 	x-横坐标	x(0-127)
- * @param 	y-纵坐标	y(0-127)
+ * @param 	_ucPage-页码 (0-7)
  * @param 	_ucStr-所写字符
  * @param	_ucChar_Size-显示大小 可选8或者16
  * @retval	NULL
  */
-void OCD_OLED_ShowChar(tagOLED_T *_tOLED,uint8_t x,uint8_t y,uint8_t _ucStr,uint8_t _ucChar_Size)
+void OCD_OLED_ShowChar(tagOLED_T *_tOLED,uint8_t x,uint8_t _ucPage,uint8_t _ucStr,uint8_t _ucChar_Size)
 {      	
-	uint8_t addr=0,i=0;
+	uint8_t addr = 0,i = 0;
 	uint8_t *strflag = &_ucStr;
 
-	if(*strflag >= ' '&& *strflag <= '~') /* 显示英文 */
+	if(*strflag >= ' ' && *strflag <= '~') /* 显示英文 */
 	{
-		addr= *strflag-' '; /* 取模从空格开始的，计算下标 */
+		addr = *strflag - ' '; /* 取模从空格开始的，计算下标 */
 		if(_ucChar_Size == 16)
 		{
 			/* 写8*16ASCII字符的上半部分 */
-			OCD_OLED_SetCursorAddrese(_tOLED,x,y); /* 设置光标的位置 */
+			OCD_OLED_SetCursorAddress(_tOLED,x,_ucPage); /* 设置光标的位置 */
 
-			for(i=0;i<_ucChar_Size/2;i++)      	/* 横向写width列 */
+			for(i = 0;i < _ucChar_Size/2;i++)      	/* 横向写width列 */
 			{
 				S_OLED_WR_Byte(_tOLED,ASCII_8_16[addr][i],OLED_DATA); 
 			}
 
 			/* 写8*16ASCII字符的下半部分 */
-			OCD_OLED_SetCursorAddrese(_tOLED,x,y+1); /* 设置光标的位置 */
+			OCD_OLED_SetCursorAddress(_tOLED,x,_ucPage+1); /* 设置光标的位置 */
 
-			for(i=0;i<_ucChar_Size/2;i++)        /* 横向写width列 */
+			for(i = 0;i < _ucChar_Size/2;i++)        /* 横向写width列 */
 			{
 				S_OLED_WR_Byte(_tOLED,ASCII_8_16[addr][i+_ucChar_Size/2],OLED_DATA); 
 			}
 			strflag++; /* 继续显示下一个字符 */
 		}
-		if((_ucChar_Size == 8))
+		else if(_ucChar_Size == 8)
 		{
 			/* 写6*8ASCII字符 */
-			OCD_OLED_SetCursorAddrese(_tOLED,x,y); /* 设置光标的位置 */
+			OCD_OLED_SetCursorAddress(_tOLED,x,_ucPage); /* 设置光标的位置 */
 
-			for(i=0;i<6;i++)      /* 横向写width列 */
+			for(i = 0;i < 6;i++)      /* 横向写width列 */
 			{
 				S_OLED_WR_Byte(_tOLED,ASCII_6_8[addr][i],OLED_DATA); 
 			}
 			strflag++; /* 继续显示下一个字符 */
 		}
-      
 	}
 }
 
@@ -189,38 +191,39 @@ void OCD_OLED_ShowChar(tagOLED_T *_tOLED,uint8_t x,uint8_t y,uint8_t _ucStr,uint
  * @brief 	OLED写字符串
  * @param   _tOLED-OLED结构体
  * @param 	x-横坐标	x(0-127)
- * @param 	y-纵坐标	y(0-127)
+ * @param 	_ucPage-页码 (0-7)
  * @param 	_ucpStr-字符串首地址，输入显示字符串即可
  * @param	_ucChar_Size-显示大小 可选8或者16
  * @retval	NULL
  */
-void OCD_OLED_ShowString(tagOLED_T *_tOLED,uint8_t x,uint8_t y,uint8_t *_ucpStr,uint8_t _ucChar_Size)
+void OCD_OLED_ShowString(tagOLED_T *_tOLED,uint8_t x,uint8_t _ucPage,char *_cpStr,uint8_t _ucChar_Size)
 {
-	uint8_t i=0;
-	while(_ucpStr[i]!='\0') /* 连续显示 */
+	uint8_t i = 0;
+    
+	while(_cpStr[i] != '\0') /* 连续显示 */
 	{
-		OCD_OLED_ShowChar(_tOLED,x,y,_ucpStr[i],_ucChar_Size);
+		OCD_OLED_ShowChar(_tOLED,x,_ucPage,_cpStr[i],_ucChar_Size);
 		/* 如果是8*16字体 */
         if(_ucChar_Size == 16)
 		{
 			x += _ucChar_Size/2;
 			/* 溢出则换行 */
-			if((x+_ucChar_Size/2) > MAX_COLUMN)
+			if((x+8) > MAX_COLUMN)
 			{
 				x = 0;
-				y += 2;
+				_ucPage += 2;
 			}
 		}
 
 		/* 如果是6*8字体 */
-		if(_ucChar_Size == 8)
+		else if(_ucChar_Size == 8)
 		{
-			x+= 6;
+			x += 6;
 			/* 溢出则换行 */
 			if((x+6) > MAX_COLUMN)
 			{
 				x = 0;
-				y += 1;
+				_ucPage += 1;
 			}
 		}
 		i++;
@@ -231,32 +234,32 @@ void OCD_OLED_ShowString(tagOLED_T *_tOLED,uint8_t x,uint8_t y,uint8_t *_ucpStr,
  * @brief 	OLED显示数字
  * @param   _tOLED-OLED结构体
  * @param 	x-横坐标	x(0-127)
- * @param 	y-纵坐标	y(0-127)
+ * @param 	_ucPage-页码 (0-7)
  * @param 	_ulNum-需显示数字
  * @param	_ucLen-需显示数字长度
  * @param	_ucChar_Size-显示大小 可选8或者16
  * @retval	NULL
  */
-void OCD_OLED_ShowNum(tagOLED_T *_tOLED,uint8_t x,uint8_t y,uint32_t _ulNum,uint8_t _ucLen,uint8_t _ucChar_Size)
+void OCD_OLED_ShowNum(tagOLED_T *_tOLED,uint8_t x,uint8_t _ucPage,uint32_t _ulNum,uint8_t _ucLen,uint8_t _ucChar_Size)
 {         	
 	uint8_t t,temp;
-	uint8_t enshow=0;
+	uint8_t enshow = 0;
 
-	for(t=0;t<_ucLen;t++)
+	for(t = 0;t < _ucLen;t++)
 	{
-		temp=(_ulNum/S_OLED_Pow(10,_ucLen-t-1))%10;
-		if(enshow==0&&t<(_ucLen-1))
+		temp = (_ulNum/S_OLED_Pow(10,_ucLen-t-1))%10;
+		if(enshow == 0 && t < (_ucLen-1))
 		{
-			if(temp==0)
+			if(temp == 0)
 			{
-				if(_ucChar_Size == 16)	OCD_OLED_ShowChar(_tOLED,x+(_ucChar_Size/2)*t,y,' ',_ucChar_Size);
-				if(_ucChar_Size == 8)	OCD_OLED_ShowChar(_tOLED,x+_ucChar_Size*t,y,' ',_ucChar_Size);
+				if(_ucChar_Size == 16)	OCD_OLED_ShowChar(_tOLED,x+(_ucChar_Size/2)*t,_ucPage,' ',_ucChar_Size);
+				else if(_ucChar_Size == 8)	OCD_OLED_ShowChar(_tOLED,x+_ucChar_Size*t,_ucPage,' ',_ucChar_Size);
 				continue;
-			}else enshow=1; 
+			}else enshow = 1;
 		 	 
 		}
-	 	if(_ucChar_Size == 16)	OCD_OLED_ShowChar(_tOLED,x+(_ucChar_Size/2)*t,y,temp+'0',_ucChar_Size);
-		if(_ucChar_Size == 8)	OCD_OLED_ShowChar(_tOLED,x+6*t,y,temp+'0',_ucChar_Size);
+	 	if(_ucChar_Size == 16)	OCD_OLED_ShowChar(_tOLED,x+(_ucChar_Size/2)*t,_ucPage,temp+'0',_ucChar_Size);
+		else if(_ucChar_Size == 8)	OCD_OLED_ShowChar(_tOLED,x+6*t,_ucPage,temp+'0',_ucChar_Size);
 	}
 } 
 
@@ -264,29 +267,29 @@ void OCD_OLED_ShowNum(tagOLED_T *_tOLED,uint8_t x,uint8_t y,uint32_t _ulNum,uint
  * @brief 	OLED显示浮点数
  * @param   _tOLED-OLED结构体
  * @param 	x-横坐标	x(0-127)
- * @param 	y-纵坐标	y(0-127)
+ * @param 	_ucPage-页码 (0-7)
  * @param 	_fNum-需显示浮点数
  * @param	_ucChar_Size-显示大小 可选8或者16
  * @retval	NULL
  */
-void OCD_OLED_ShowFNum(tagOLED_T *_tOLED,uint8_t x,uint8_t y,float _fNum,uint8_t _ucChar_Size)
+void OCD_OLED_ShowFloatNum(tagOLED_T *_tOLED,uint8_t x,uint8_t _ucPage,float _fNum,uint8_t _ucChar_Size)
 {
 	char Data[] = "";
 	sprintf(Data,"%.3f",_fNum);
-	uint8_t i=0;
+	uint8_t i = 0;
 
-	while(Data[i]!='\0') /* 连续显示 */
+	while(Data[i] != '\0') /* 连续显示 */
 	{
-		OCD_OLED_ShowChar(_tOLED,x,y,Data[i],_ucChar_Size);
+		OCD_OLED_ShowChar(_tOLED,x,_ucPage,Data[i],_ucChar_Size);
         if(_ucChar_Size == 16)	/* 如果是8*16字体 */
 		{
-			x+= _ucChar_Size/2;
-			if((x+_ucChar_Size/2) > MAX_COLUMN)  {x=0;y+=2;}	/* 溢出则换行 */
+			x += _ucChar_Size/2;
+			if((x+_ucChar_Size/2) > MAX_COLUMN)  {x = 0;_ucPage += 2;}	/* 溢出则换行 */
 		}
-		if(_ucChar_Size == 8) /* 如果是6*8字体 */
+		else if(_ucChar_Size == 8) /* 如果是6*8字体 */
 		{
-			x+= 6;
-			if((x+6) > MAX_COLUMN)  {x=0;y+=1;}	/* 溢出则换行 */
+			x += 6;
+			if((x+6) > MAX_COLUMN)  {x = 0;_ucPage += 1;}	/* 溢出则换行 */
 		}
 		i++;
 	}
@@ -296,24 +299,24 @@ void OCD_OLED_ShowFNum(tagOLED_T *_tOLED,uint8_t x,uint8_t y,float _fNum,uint8_t
  * @brief 	OLED显示BMP位图
  * @param   _tOLED-OLED结构体
  * @param 	x0-起始横坐标	横坐标	x(0-127)
- * @param 	y0-起始纵坐标	纵坐标	y(0-127)
+ * @param 	y0-起始页码		页码	y(0-7)
  * @param	x1-终止横坐标	横坐标	x(0-127)
- * @param	y1-终止纵坐标	纵坐标	y(0-127)
+ * @param	y1-终止页码		页码	y(0-7)
  * @param 	_ucaBMP-bmp解析数组
  * @retval	NULL
  */
-void OCD_OLED_DrawBMP(tagOLED_T *_tOLED,uint8_t x0, uint8_t y0,uint8_t x1, uint8_t y1,uint8_t _ucaBMP[])
+void OCD_OLED_ShowBMP(tagOLED_T *_tOLED,uint8_t x0, uint8_t y0,uint8_t x1, uint8_t y1,uint8_t _ucaBMP[])
 { 	
-	unsigned int j=0;
+	unsigned int j = 0;
 	uint8_t x,y;
   
-  	if(y1%8==0) y=y1/8;      
-  	else y=y1/8+1;
+  	if(y1%8 == 0) y = y1/8;      
+  	else y = y1/8 + 1;
 
-	for(y=y0;y<y1;y++)
+	for(y = y0;y < y1;y++)
 	{
-		OCD_OLED_SetCursorAddrese(_tOLED,x0,y);
-    	for(x=x0;x<x1;x++)
+		OCD_OLED_SetCursorAddress(_tOLED,x0,y);
+    	for(x = x0;x < x1;x++)
 	    {     
 	    	S_OLED_WR_Byte(_tOLED,_ucaBMP[j++],OLED_DATA);	    	
 	    }
@@ -358,7 +361,5 @@ void OCD_OLED_Init(tagOLED_T *_tOLED)
 	S_OLED_WR_Byte(_tOLED,0xA6,OLED_CMD);	/* 设置显示方式;bit0:1,反相显示;0,正常显示 (0xa6/a7)  */
 	S_OLED_WR_Byte(_tOLED,0xAF,OLED_CMD);	/* 开启显示	 */
 	OCD_OLED_Clear(_tOLED);
-	OCD_OLED_SetCursorAddrese(_tOLED,0,0);
-	/* printf("OLED Init OK !\n"); */
-
+	OCD_OLED_SetCursorAddress(_tOLED,0,0);
 }
