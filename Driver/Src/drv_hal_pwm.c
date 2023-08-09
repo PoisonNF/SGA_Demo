@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	   日期		  	作者		  说明
+*  2.7		2023-08-09   鲍程璐		减少初始化结构体必要参数，现仅需I/O即可输出
+
 *  2.6     	2023-06-07   鲍程璐		更改部分函数命名
 
 * 2.3.1 	2023-05-05   鲍程璐		格式优化
@@ -148,6 +150,336 @@ static void S_PWM_GPIOConfig(tagPWM_T *_tPWM)
 }
 
 /**
+ * @brief PWM波参数匹配函数
+ * @param _tPWM-PWM结构体指针
+ * @retval Null
+*/
+static void S_PWM_ParamMatch(tagPWM_T *_tPWM)
+{
+	/* PWM波参数 */
+	DEFAULT(_tPWM->fDuty,7.5);
+	DEFAULT(_tPWM->ulFreq,50);
+
+	/* 如果指定定时器则退出 */
+	if(_tPWM->tPWMHandle.Instance != NULL)
+		return;
+
+	/* 根据选择的GPIO来配置定时器 */
+	if(_tPWM->tGPIO.tGPIOPort == GPIOA)
+	{
+		switch(_tPWM->tGPIO.tGPIOInit.Pin)
+		{
+			case GPIO_PIN_0:
+				_tPWM->tPWMHandle.Instance = TIM5;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM5_CH1))
+					printf("TIM5_CH1 is only used by PA0\r\n");
+				*(s_ucpCheckCache + TIM5_CH1) = 1;
+				break;
+			case GPIO_PIN_1:
+				_tPWM->tPWMHandle.Instance = TIM5;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM5_CH2))
+					printf("TIM5_CH2 is only used by PA1\r\n");
+				*(s_ucpCheckCache + TIM5_CH2) = 1;
+				break;
+			case GPIO_PIN_2:
+				_tPWM->tPWMHandle.Instance = TIM5;
+				_tPWM->ucChannel = TIM_CHANNEL_3;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM5_CH3))
+					printf("TIM5_CH3 is only used by PA2\r\n");
+				*(s_ucpCheckCache + TIM5_CH3) = 1;
+				break;				
+			case GPIO_PIN_3:
+				_tPWM->tPWMHandle.Instance = TIM2;
+				_tPWM->ucChannel = TIM_CHANNEL_4;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM2_CH4))
+					printf("TIM2_CH4 is only used by PA3\r\n");
+				*(s_ucpCheckCache + TIM2_CH4) = 1;
+				break;
+			case GPIO_PIN_6:
+				_tPWM->tPWMHandle.Instance = TIM3;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM3_CH1))
+					printf("TIM3_CH1 is only used by PA6\r\n");
+				*(s_ucpCheckCache + TIM3_CH1) = 1;
+				break;
+			case GPIO_PIN_7:
+				_tPWM->tPWMHandle.Instance = TIM3;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM3_CH2))
+					printf("TIM3_CH2 is only used by PA7\r\n");
+				*(s_ucpCheckCache + TIM3_CH2) = 1;
+				break;
+			case GPIO_PIN_8:
+				_tPWM->tPWMHandle.Instance = TIM1;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM1_CH1))	
+					printf("TIM1_CH1 is only used by PA8\r\n");
+				*(s_ucpCheckCache + TIM1_CH1) = 1;
+				break;	
+			case GPIO_PIN_9:
+				_tPWM->tPWMHandle.Instance = TIM1;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM1_CH2))
+					printf("TIM1_CH2 is only used by PA9\r\n");
+				*(s_ucpCheckCache + TIM1_CH2) = 1;
+				break;
+			case GPIO_PIN_10:
+				_tPWM->tPWMHandle.Instance = TIM1;
+				_tPWM->ucChannel = TIM_CHANNEL_3;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM1_CH3))
+					printf("TIM1_CH3 is only used by PA10\r\n");
+				*(s_ucpCheckCache + TIM1_CH3) = 1;
+				break;	
+			case GPIO_PIN_11:
+				_tPWM->tPWMHandle.Instance = TIM1;
+				_tPWM->ucChannel = TIM_CHANNEL_4;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM1_CH4))
+					printf("TIM1_CH4 is only used by PA11\r\n");
+				*(s_ucpCheckCache + TIM1_CH4) = 1;
+				break;
+			case GPIO_PIN_15:
+				_tPWM->tPWMHandle.Instance = TIM2;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM2_CH1))
+					printf("TIM2_CH1 is only used by PA15\r\n");
+				*(s_ucpCheckCache + TIM2_CH1) = 1;
+				break;
+			default:
+				printf("The I/O port cannot output PWM");					
+		}
+	}
+	else if(_tPWM->tGPIO.tGPIOPort == GPIOB)
+	{
+		switch(_tPWM->tGPIO.tGPIOInit.Pin)
+		{
+			case GPIO_PIN_0:
+				_tPWM->tPWMHandle.Instance = TIM3;
+				_tPWM->ucChannel = TIM_CHANNEL_3;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM3_CH3))
+					printf("TIM3_CH3 is only used by PB0\r\n");
+				*(s_ucpCheckCache + TIM3_CH3) = 1;
+				break;
+			case GPIO_PIN_1:
+				_tPWM->tPWMHandle.Instance = TIM3;
+				_tPWM->ucChannel = TIM_CHANNEL_4;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM3_CH4))
+					printf("TIM3_CH4 is only used by PB1\r\n");
+				*(s_ucpCheckCache + TIM3_CH4) = 1;
+				break;
+			case GPIO_PIN_3:
+				_tPWM->tPWMHandle.Instance = TIM2;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM2_CH2))
+					printf("TIM2_CH2 is only used by PB3\r\n");
+				*(s_ucpCheckCache + TIM2_CH2) = 1;
+				break;
+			case GPIO_PIN_4:
+				_tPWM->tPWMHandle.Instance = TIM3;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = PARTIAL_REMAP;
+				if(*(s_ucpCheckCache + TIM3_CH1))
+					printf("TIM3_CH1 is only used by PB4\r\n");
+				*(s_ucpCheckCache + TIM3_CH1) = 1;
+				break;
+			case GPIO_PIN_5:
+				_tPWM->tPWMHandle.Instance = TIM3;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = PARTIAL_REMAP;
+				if(*(s_ucpCheckCache + TIM3_CH2))
+					printf("TIM3_CH2 is only used by PB5\r\n");
+				*(s_ucpCheckCache + TIM3_CH2) = 1;
+				break;
+			case GPIO_PIN_6:
+				_tPWM->tPWMHandle.Instance = TIM4;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM4_CH1))
+					printf("TIM4_CH1 is only used by PB6\r\n");
+				*(s_ucpCheckCache + TIM4_CH1) = 1;
+				break;
+			case GPIO_PIN_7:
+				_tPWM->tPWMHandle.Instance = TIM4;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM4_CH2))
+					printf("TIM4_CH2 is only used by PB7\r\n");
+				*(s_ucpCheckCache + TIM4_CH2) = 1;
+				break;
+			case GPIO_PIN_8:
+				_tPWM->tPWMHandle.Instance = TIM4;
+				_tPWM->ucChannel = TIM_CHANNEL_3;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM4_CH3))
+					printf("TIM4_CH3 is only used by PB8\r\n");
+				*(s_ucpCheckCache + TIM4_CH3) = 1;
+				break;
+			case GPIO_PIN_9:
+				_tPWM->tPWMHandle.Instance = TIM4;
+				_tPWM->ucChannel = TIM_CHANNEL_4;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM4_CH4))
+					printf("TIM4_CH4 is only used by PB9\r\n");
+				*(s_ucpCheckCache + TIM4_CH4) = 1;
+				break;
+			case GPIO_PIN_10:
+				_tPWM->tPWMHandle.Instance = TIM2;
+				_tPWM->ucChannel = TIM_CHANNEL_3;
+				_tPWM->tGPIO.ucAFMode = PARTIAL_REMAP2;
+				if(*(s_ucpCheckCache + TIM2_CH3))
+					printf("TIM2_CH3 is only used by PB10\r\n");
+				*(s_ucpCheckCache + TIM2_CH3) = 1;
+				break;
+			case GPIO_PIN_11:
+				_tPWM->tPWMHandle.Instance = TIM2;
+				_tPWM->ucChannel = TIM_CHANNEL_4;
+				_tPWM->tGPIO.ucAFMode = PARTIAL_REMAP2;
+				if(*(s_ucpCheckCache + TIM2_CH4))
+					printf("TIM2_CH4 is only used by PB11\r\n");
+				*(s_ucpCheckCache + TIM2_CH4) = 1;
+				break;
+			default:
+				printf("The I/O port cannot output PWM");	
+		}
+	}
+	else if(_tPWM->tGPIO.tGPIOPort == GPIOC)
+	{
+		switch(_tPWM->tGPIO.tGPIOInit.Pin)
+		{
+			case GPIO_PIN_6:
+				_tPWM->tPWMHandle.Instance = TIM8;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM8_CH1))
+					printf("TIM8_CH1 is only used by PC6\r\n");
+				*(s_ucpCheckCache + TIM8_CH1) = 1;
+				break;
+			case GPIO_PIN_7:
+				_tPWM->tPWMHandle.Instance = TIM8;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM8_CH2))
+					printf("TIM8_CH2 is only used by PC7\r\n");
+				*(s_ucpCheckCache + TIM8_CH2) = 1;
+				break;
+			case GPIO_PIN_8:
+				_tPWM->tPWMHandle.Instance = TIM8;
+				_tPWM->ucChannel = TIM_CHANNEL_3;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM8_CH3))
+					printf("TIM8_CH3 is only used by PC8\r\n");
+				*(s_ucpCheckCache + TIM8_CH3) = 1;
+				break;
+			case GPIO_PIN_9:
+				_tPWM->tPWMHandle.Instance = TIM8;
+				_tPWM->ucChannel = TIM_CHANNEL_4;
+				_tPWM->tGPIO.ucAFMode = NO_REMAP;
+				if(*(s_ucpCheckCache + TIM8_CH4))
+					printf("TIM8_CH4 is only used by PC9\r\n");
+				*(s_ucpCheckCache + TIM8_CH4) = 1;
+				break;
+			default:
+				printf("The I/O port cannot output PWM");	
+		}
+	}
+	else if(_tPWM->tGPIO.tGPIOPort == GPIOD)
+	{
+		switch(_tPWM->tGPIO.tGPIOInit.Pin)
+		{
+			case GPIO_PIN_12:
+				_tPWM->tPWMHandle.Instance = TIM4;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM4_CH1))
+					printf("TIM4_CH1 is only used by PD12\r\n");
+				*(s_ucpCheckCache + TIM4_CH1) = 1;
+				break;
+			case GPIO_PIN_13:
+				_tPWM->tPWMHandle.Instance = TIM4;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM4_CH2))
+					printf("TIM4_CH2 is only used by PD13\r\n");
+				*(s_ucpCheckCache + TIM4_CH2) = 1;
+				break;
+			case GPIO_PIN_14:
+				_tPWM->tPWMHandle.Instance = TIM4;
+				_tPWM->ucChannel = TIM_CHANNEL_3;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM4_CH3))
+					printf("TIM4_CH3 is only used by PD14\r\n");
+				*(s_ucpCheckCache + TIM4_CH3) = 1;
+				break;
+			case GPIO_PIN_15:
+				_tPWM->tPWMHandle.Instance = TIM4;
+				_tPWM->ucChannel = TIM_CHANNEL_4;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM4_CH4))
+					printf("TIM4_CH4 is only used by PD15\r\n");
+				*(s_ucpCheckCache + TIM4_CH4) = 1;
+				break;
+			default:
+				printf("The I/O port cannot output PWM");	
+		}
+	}
+	else if(_tPWM->tGPIO.tGPIOPort == GPIOE)
+	{
+		switch(_tPWM->tGPIO.tGPIOInit.Pin)
+		{
+			case GPIO_PIN_9:
+				_tPWM->tPWMHandle.Instance = TIM1;
+				_tPWM->ucChannel = TIM_CHANNEL_1;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM1_CH1))
+					printf("TIM1_CH1 is only used by PE9\r\n");
+				*(s_ucpCheckCache + TIM1_CH1) = 1;
+				break;
+			case GPIO_PIN_11:
+				_tPWM->tPWMHandle.Instance = TIM1;
+				_tPWM->ucChannel = TIM_CHANNEL_2;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM1_CH2))
+					printf("TIM1_CH2 is only used by PE11\r\n");
+				*(s_ucpCheckCache + TIM1_CH2) = 1;
+				break;
+			case GPIO_PIN_13:
+				_tPWM->tPWMHandle.Instance = TIM1;
+				_tPWM->ucChannel = TIM_CHANNEL_3;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM1_CH3))
+					printf("TIM1_CH3 is only used by PE13\r\n");
+				*(s_ucpCheckCache + TIM1_CH3) = 1;
+				break;	
+			case GPIO_PIN_14:
+				_tPWM->tPWMHandle.Instance = TIM1;
+				_tPWM->ucChannel = TIM_CHANNEL_4;
+				_tPWM->tGPIO.ucAFMode = FULL_REMAP;
+				if(*(s_ucpCheckCache + TIM1_CH4))
+					printf("TIM1_CH4 is only used by PE14\r\n");
+				*(s_ucpCheckCache + TIM1_CH4) = 1;
+				break;
+			default:
+				printf("The I/O port cannot output PWM");	
+		}
+	}
+}
+
+/**
  * @brief PWM波占空比设置
  * @param _tPWM-PWM结构体指针
  * @param _fDuty-占空比(单位：%)
@@ -224,12 +556,17 @@ void Drv_PWM_HighLvTimeSet(tagPWM_T *_tPWM, uint16_t _usTime)
 void Drv_PWM_Init(tagPWM_T *_tPWM, uint8_t _ucNum)
 {
 	uint8_t index;
+
+    s_ucpCheckCache = (uint8_t *)calloc(0,24);
 	
 	for(index = 0;index < _ucNum;index++)
 	{
+		S_PWM_ParamMatch(&_tPWM[index]);
 		S_PWM_CLKEnable(&_tPWM[index]);
 		S_PWM_GPIOConfig(&_tPWM[index]);
 		S_PWM_PramConfig(&_tPWM[index]);
 	}
+
+	free(s_ucpCheckCache);
 }
 #endif

@@ -5,6 +5,23 @@
 
 #define MAX_RELOAD		1000000
 
+static uint8_t *s_ucpCheckCache;	/* PWM通道占用检验 */
+
+enum
+{
+	TIM1_CH1,TIM1_CH2,TIM1_CH3,TIM1_CH4,
+
+	TIM2_CH1,TIM2_CH2,TIM2_CH3,TIM2_CH4,
+
+	TIM3_CH1,TIM3_CH2,TIM3_CH3,TIM3_CH4,
+
+	TIM4_CH1,TIM4_CH2,TIM4_CH3,TIM4_CH4,
+
+	TIM5_CH1,TIM5_CH2,TIM5_CH3,TIM5_CH4,
+
+	TIM8_CH1,TIM8_CH2,TIM8_CH3,TIM8_CH4,
+};
+
 typedef struct
 {
 	TIM_HandleTypeDef 	tPWMHandle;		/* STM32内部PWM设备句柄 */
