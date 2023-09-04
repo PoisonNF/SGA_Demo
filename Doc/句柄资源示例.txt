@@ -167,14 +167,10 @@ tagIICSoft_T demoIIC =
 /* 定时器Timer资源结构体示例 */
 tagTIM_T tTimer = 
 {
-    /* 定时100ms */
-	.tTimerHandle.Instance				= TIM3,						/* 通用定时器3 */
-    .tTimerHandle.Init.Prescaler		= 7200-1,					/* 分频系数，最大值65535 */
-    .tTimerHandle.Init.CounterMode		= TIM_COUNTERMODE_UP,		/* 向上计数器 */
-    .tTimerHandle.Init.Period			= 1000-1,					/* 自动装载值，最大值65535 */
-    .tTimerHandle.Init.ClockDivision	= TIM_CLOCKDIVISION_DIV1,	/* 时钟分频因子 */
-	
-	.ucPriority							= 3,						/* 中断优先级 */
+	.tTimerHandle.Instance				= TIM6,						/* 通用定时器6 */
+	.fTimingLength						= 100,						/* 定时时长(ms) */
+
+	.ucPriority							= 2,						/* 中断优先级 */
 	.ucSubPriority						= 2,						/* 中断子优先级 */
 };
 

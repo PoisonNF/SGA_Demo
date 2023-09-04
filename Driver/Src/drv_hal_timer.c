@@ -8,9 +8,10 @@
 
 * 文件历史：
 
-* 版本号	日期		作者		说明
+* 版本号		日期		作者		说明
+* 		 	2023-09-04	  鲍程璐	定时器设定计时简化
 
-* 1.0.0a 	2020-02-22	李环宇		创建该文件
+* 1.0.0a 	2020-02-22	  李环宇	创建该文件
 
 ****************************************************************************/
 #include "drv_hal_conf.h"
@@ -98,6 +99,43 @@ static void S_TIM_NVICConfig(tagTIM_T *_tTimer)
 }
 
 /**
+ * @brief 定时器参数匹配函数
+ * @param _tTimer-Timer结构体指针
+ * @retval Null
+*/
+static void S_TIM_ParamMatch(tagTIM_T *_tTimer)
+{
+	DEFAULT(_tTimer->tTimerHandle.Init.CounterMode,TIM_COUNTERMODE_UP);
+	DEFAULT(_tTimer->tTimerHandle.Init.ClockDivision,TIM_CLOCKDIVISION_DIV1);
+	DEFAULT(_tTimer->ucPriority,2);
+	DEFAULT(_tTimer->ucSubPriority,2);
+
+	if(_tTimer->fTimingLength < 0)	_tTimer->fTimingLength = 0;
+	else if(_tTimer->fTimingLength > 59650.503125)	_tTimer->fTimingLength = 59650.503125;
+
+	if(_tTimer->fTimingLength > 52428)
+	{
+		_tTimer->tTimerHandle.Init.Prescaler = 65535-1;
+		_tTimer->tTimerHandle.Init.Period = (uint32_t)(_tTimer->fTimingLength*72000/(_tTimer->tTimerHandle.Init.Prescaler+1));
+	}
+	else if(_tTimer->fTimingLength > 26214)
+	{
+		_tTimer->tTimerHandle.Init.Prescaler = 57600-1;
+		_tTimer->tTimerHandle.Init.Period = (uint32_t)(_tTimer->fTimingLength*72000/(_tTimer->tTimerHandle.Init.Prescaler+1));
+	}
+	else if(_tTimer->fTimingLength > 6553.5)
+	{
+		_tTimer->tTimerHandle.Init.Prescaler = 28800-1;
+		_tTimer->tTimerHandle.Init.Period = (uint32_t)(_tTimer->fTimingLength*72000/(_tTimer->tTimerHandle.Init.Prescaler+1));
+	}
+	else if(_tTimer->fTimingLength >= 0)
+	{
+		_tTimer->tTimerHandle.Init.Prescaler = 7200-1;
+		_tTimer->tTimerHandle.Init.Period = (uint32_t)(_tTimer->fTimingLength*72000/(_tTimer->tTimerHandle.Init.Prescaler+1));
+	}
+}
+
+/**
  * @brief 定时器配置
  * @param _tTimer-Timer结构体指针
  * @retval Null
@@ -150,7 +188,8 @@ void Drv_Timer_Disable(tagTIM_T *_tTimer)
 */
 void Drv_Timer_Init(tagTIM_T *_tTimer)
 {
-	S_TIM_CLKEnable(_tTimer);		/* 使能TIM时钟 */		
+	S_TIM_CLKEnable(_tTimer);		/* 使能TIM时钟 */	
+	S_TIM_ParamMatch(_tTimer);	
 	S_TIM_PramConfig(_tTimer);
 }
 

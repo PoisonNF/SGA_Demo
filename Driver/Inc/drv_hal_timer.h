@@ -6,6 +6,7 @@
 typedef struct
 {
 	TIM_HandleTypeDef 	tTimerHandle;
+	float 				fTimingLength;	/* 定时时长范围0-59650.503125毫秒 */
 	uint8_t				ucPriority;		/* 中断优先级，0-15 */
 	uint8_t 			ucSubPriority;	/* 中断子优先级，0-15 */
 }tagTIM_T;
