@@ -48,6 +48,7 @@
 #define DRV_HAL_DAC_ENABLE
 #define DRV_HAL_WDG_ENABLE
 #define DRV_HAL_PWR_ENABLE
+#define DRV_HAL_FLASH_ENABLE
 
 #include "drv_hal.h"
 
@@ -97,6 +98,10 @@
 
 #ifdef DRV_HAL_PWR_ENABLE
 #include "drv_hal_pwr.h"
+#endif
+
+#ifdef DRV_HAL_FLASH_ENABLE
+#include "drv_hal_flash.h"
 #endif
 
 /* CÓïÑÔ±ê×¼¿â */

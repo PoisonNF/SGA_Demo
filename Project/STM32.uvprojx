@@ -538,6 +538,11 @@
               <FilePath>..\Driver\Src\drv_hal_delay.c</FilePath>
             </File>
             <File>
+              <FileName>drv_hal_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Driver\Src\drv_hal_flash.c</FilePath>
+            </File>
+            <File>
               <FileName>drv_hal_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Driver\Src\drv_hal_gpio.c</FilePath>
