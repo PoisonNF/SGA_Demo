@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	  日期		  作者				说明
+*  2.8 		2023-10-15   鲍程璐		修复串口DMA发送的问题
+
 *  2.7		2023-07-06   鲍程璐		串口初始化结构体增加默认值，串口中断接收处理子函数增加结尾符检测参数
 
 *  2.4		2023-05-12   鲍程璐		新增串口中断接收相关函数，格式优化
@@ -415,24 +417,42 @@ static void S_Uart_ParamMatch(tagUART_T *_tUART)
  * @brief 串口发送数据函数
  * @param _tUART-串口实例指针
  * @param _ucpTxData-发送数据地址指针
- * @param _uspSize-发送数据大小
+ * @param _usSize-发送数据大小
  * @retval Null
 */
-void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
+void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _usSize)
 {
-	HAL_UART_Transmit(&_tUART->tUARTHandle, _ucpTxData, _uspSize, UART_TIME_OUT);
+	HAL_UART_Transmit(&_tUART->tUARTHandle, _ucpTxData, _usSize, UART_TIME_OUT);
 }
 
 /**
  * @brief 串口中断发送数据函数
  * @param _tUART-串口实例指针
  * @param _ucpTxData-发送数据地址指针
- * @param _uspSize-发送数据大小
+ * @param _usSize-发送数据大小
  * @retval Null
 */
-void Drv_Uart_Transmit_IT(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
+void Drv_Uart_Transmit_IT(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _usSize)
 {
-	HAL_UART_Transmit_IT(&_tUART->tUARTHandle, _ucpTxData, _uspSize);
+	HAL_UART_Transmit_IT(&_tUART->tUARTHandle, _ucpTxData, _usSize);
+}
+
+/**
+ * @brief 串口DMA发送数据函数
+ * @param _tUART-串口实例指针
+ * @param _ucpTxData-发送数据地址指针
+ * @param _usSize-发送数据大小
+ * @retval Null
+*/
+void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _usSize)
+{
+	/* 获取DMA状态 */
+	while(HAL_DMA_GetState(&_tUART->tUartDMA.tDMATx) != HAL_DMA_STATE_READY);
+
+	_tUART->tTxInfo.usDMATxLength = _usSize;
+
+	/* 准备状态即可发送 */
+	HAL_UART_Transmit_DMA(&_tUART->tUARTHandle, _ucpTxData, _tUART->tTxInfo.usDMATxLength);
 }
 
 /**
@@ -455,24 +475,6 @@ uint16_t Drv_Uart_Receive_IT(tagUART_T *_tUART, uint8_t *_ucpRxData)
 	}
 	
 	return 0;
-}
-
-/**
- * @brief 串口DMA发送数据函数
- * @param _tUART-串口实例指针
- * @param _ucpTxData-发送数据地址指针
- * @param _uspSize-发送数据大小
- * @retval Null
-*/
-void Drv_Uart_Transmit_DMA(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _uspSize)
-{
-	/* 获取DMA状态 */
-	while(HAL_DMA_GetState(&_tUART->tUartDMA.tDMATx) != HAL_DMA_STATE_READY);
-
-	_tUART->tTxInfo.usDMATxLength = _uspSize * 2;
-
-	/* 准备状态即可发送 */
-	HAL_UART_Transmit_DMA(&_tUART->tUARTHandle, _ucpTxData, _tUART->tTxInfo.usDMATxLength);
 }
 
 /**
@@ -511,13 +513,13 @@ uint16_t Drv_Uart_Receive_DMA(tagUART_T *_tUART, uint8_t *_ucpRxData)
 /**
  * @brief 串口接收中断重置函数
  * @param _tUART-串口实例指针
- * @param _ucpBuffer-发送数据指针
- * @param _usSize-发送数据大小
+ * @param _ucpRxData-接收数据指针
+ * @param _usSize-接收数据大小
  * @retval Null 
 */
-void Drv_Uart_ReceIT_Enable(tagUART_T *_tUART, uint8_t *_ucpBuffer, uint16_t _usSize)
+void Drv_Uart_ReceIT_Enable(tagUART_T *_tUART, uint8_t *_ucpRxData, uint16_t _usSize)
 {
-	HAL_UART_Receive_IT(&_tUART->tUARTHandle, _ucpBuffer, _usSize);
+	HAL_UART_Receive_IT(&_tUART->tUARTHandle, _ucpRxData, _usSize);
 }
 
 /**
@@ -592,7 +594,8 @@ void Drv_Uart_DMAInit(tagUART_T *_tUART)
 }
 
 /**
- * @brief 串口中断帽子函数
+ * @brief 串口中断帽子函数(用于串口中断处理函数中)
+ * @note 在类似void USART1_IRQHandler(void)函数中调用，根据使用的串口号进行更改
  * @param _tUART-串口结构体指针
  * @retval Null
 */
@@ -602,10 +605,11 @@ void Drv_Uart_IRQHandler(tagUART_T *_tUART)
 }
 
 /**
- * @brief 串口中断接收处理子函数(用于串口中断接收完成回调函数中)
+ * @brief 串口中断接收处理子函数(用于串口接收完成回调函数中)
+ * @note 在函数名为void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)中调用
  * @param _tUART-串口结构体指针
  * @param _ucEndChar 需要检测的结尾符
- * @note 数据保存的起始地址为ucpITRxCache,接收到的长度为usRxLength。
+ * @note 数据保存的起始地址为ucpITRxCache,接收到的长度为usRxLength
  * @retval Null
 */
 void Drv_Uart_IT_RxHandler(tagUART_T *_tUART, uint8_t _ucEndChar)
@@ -655,6 +659,7 @@ void Drv_Uart_IT_RxHandler(tagUART_T *_tUART, uint8_t _ucEndChar)
 
 /**
  * @brief 串口DMA中断接收处理子函数(用于串口中断处理函数中)
+ * @note 在类似void USART1_IRQHandler(void)函数中调用，根据使用的串口号进行更改
  * @param _tUART-串口结构体指针
  * @note 数据保存的起始地址为ucpDMARxCache，接收到的长度为usDMARxLength
  * @retval Null
@@ -675,16 +680,16 @@ void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART)
 
 		/* 接收标志位置1 */
         _tUART->tRxInfo.ucDMARxCplt = 1;
-
-		/* 重新启动DMA接收 */
-        HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpDMARxCache,_tUART->tRxInfo.usDMARxMAXSize);
 	}
+
+	/* 重新启动DMA接收 */
+    while(HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpDMARxCache,_tUART->tRxInfo.usDMARxMAXSize) != HAL_OK);
 }
 
 /**
- * @brief 串口DMA中断发送处理子函数(用于DMA中断处理函数中)
+ * @brief 串口DMA中断发送处理子函数(用于串口发送完成回调函数中)
+ * @note 在函数名为void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)中调用
  * @param _tUART-串口结构体指针
- * @note 串口DMA连续发送必须在对应DMA中断处理函数中加入此函数，不然只能单次发送
  * @retval Null
 */
 void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART)
