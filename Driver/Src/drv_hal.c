@@ -16,8 +16,9 @@
 ****************************************************************************/
 #include "drv_hal_conf.h"
 
-static char s_cpOutput[256]={0};
 #ifdef DRV_HAL_ENABLE
+
+static char s_cpOutput[256] = {0};
 /**
  * @brief DebugÊä³ö
  * @param _cpMsg

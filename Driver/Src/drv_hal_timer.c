@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期		作者		说明
+*   	 	2023-11-16	  鲍程璐	定时器兼容老版初始化方式
+
 *  2.8	 	2023-09-04	  鲍程璐	定时器设定计时简化
 
 * 1.0.0a 	2020-02-22	  李环宇	创建该文件
@@ -110,9 +112,15 @@ static void S_TIM_ParamMatch(tagTIM_T *_tTimer)
 	DEFAULT(_tTimer->ucPriority,2);
 	DEFAULT(_tTimer->ucSubPriority,2);
 
+	/* 如果用户指定了分频系数和重载值，则退出函数 */
+	if((_tTimer->tTimerHandle.Init.Period != 0) && (_tTimer->tTimerHandle.Init.Prescaler != 0))
+		return;
+
+	/* fTimingLength限幅 */
 	if(_tTimer->fTimingLength < 0)	_tTimer->fTimingLength = 0;
 	else if(_tTimer->fTimingLength > 59650.503125)	_tTimer->fTimingLength = 59650.503125;
 
+	/* 根据fTimingLength匹配分频系数和重载值 */
 	if(_tTimer->fTimingLength > 52428)
 	{
 		_tTimer->tTimerHandle.Init.Prescaler = 65535-1;
