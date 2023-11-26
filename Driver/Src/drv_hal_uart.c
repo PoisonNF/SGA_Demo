@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	  日期		  作者				说明
+*    		2023-11-26   鲍程璐		增加串口DMA通道中断处理子函数
+
 *  2.8 		2023-10-15   鲍程璐		修复串口DMA发送的问题
 
 *  2.7		2023-07-06   鲍程璐		串口初始化结构体增加默认值，串口中断接收处理子函数增加结尾符检测参数
@@ -683,7 +685,7 @@ void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART)
 	}
 
 	/* 重新启动DMA接收 */
-    while(HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpDMARxCache,_tUART->tRxInfo.usDMARxMAXSize) != HAL_OK);
+    HAL_UART_Receive_DMA(&_tUART->tUARTHandle,_tUART->tRxInfo.ucpDMARxCache,_tUART->tRxInfo.usDMARxMAXSize);
 }
 
 /**
@@ -727,6 +729,23 @@ void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART)
 		/* 开启DMA发送 */
 		__HAL_DMA_ENABLE(&_tUART->tUartDMA.tDMATx);
 	}
+}
+
+/**
+ * @brief 串口DMA通道中断处理子函数(用于DMA通道中断函数中)
+ * @note 在函数名为void DMAX_ChannelX_IRQHandler(void)中调用
+ * @param _tUART-串口结构体指针
+ * @retval Null
+*/
+void Drv_Uart_DMA_IRQHandler(tagUART_T *_tUART)
+{
+	/* 如果使能DMA发送 */
+	if(_tUART->tUartDMA.bTxEnable)
+		HAL_DMA_IRQHandler(&_tUART->tUartDMA.tDMATx);
+
+	/* 如果使能DMA接收 */
+	if(_tUART->tUartDMA.bRxEnable)
+		HAL_DMA_IRQHandler(&_tUART->tUartDMA.tDMARx);
 }
 
 #endif

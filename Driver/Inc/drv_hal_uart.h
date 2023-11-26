@@ -69,7 +69,7 @@ typedef struct
 	uint8_t 			ucSubPriority;	/* 中断子优先级，0-15 */
 }tagUART_T;
 
-/* 串口重映射表
+/* F1系列串口重映射表
 	USART1	full remap (TX/PB6, RX/PB7)
 			no remap (TX/PA9, RX/PA10)
 	USART2	full remap (CTS/PD3, RTS/PD4, TX/PD5, RX/PD6, CK/PD7)
@@ -77,6 +77,17 @@ typedef struct
 	USART3	full remap (TX/PD8,  RX/PD9,  CK/PD10, CTS/PD11, RTS/PD12)
 			partial	remap (TX/PC10, RX/PC11, CK/PC12, CTS/PB13, RTS/PB14)
 			no remap (TX/PB10, RX/PB11, CK/PB12, CTS/PB13, RTS/PB14)
+*/
+
+/* F1系列串口DMA通道对应 
+	USART1	TX	DMA1_Channel4_IRQHandler
+			RX	DMA1_Channel5_IRQHandler
+	USART2	TX	DMA1_Channel7_IRQHandler
+			RX	DMA1_Channel6_IRQHandler
+	USART3	TX	DMA1_Channel2_IRQHandler
+			RX	DMA1_Channel3_IRQHandler
+	UART4	TX	DMA2_Channel5_IRQHandler
+			RX	DMA2_Channel3_IRQHandler
 */
 
 void Drv_Uart_ITInit(tagUART_T *_tUART);
@@ -91,5 +102,6 @@ void Drv_Uart_IRQHandler(tagUART_T *_tUART);
 void Drv_Uart_IT_RxHandler(tagUART_T *_tUART, uint8_t _ucEndChar);
 void Drv_Uart_DMA_RxHandler(tagUART_T *_tUART);
 void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART);
+void Drv_Uart_DMA_IRQHandler(tagUART_T *_tUART);
 
 #endif
