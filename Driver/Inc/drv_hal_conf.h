@@ -1,7 +1,7 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2023/10/15 V2.8"
+#define DRIVER_VERSION	"2023/12/27 V2.9"
 
 /* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
 //#define RTT_ENABLE   
@@ -49,6 +49,7 @@
 #define DRV_HAL_WDG_ENABLE
 #define DRV_HAL_PWR_ENABLE
 #define DRV_HAL_FLASH_ENABLE
+#define DRV_HAL_CAN_ENABLE
 
 #include "drv_hal.h"
 
@@ -103,6 +104,11 @@
 #ifdef DRV_HAL_FLASH_ENABLE
 #include "drv_hal_flash.h"
 #endif
+
+#ifdef DRV_HAL_CAN_ENABLE
+#include "drv_hal_can.h"
+#endif
+
 
 /* C语言标准库 */
 #include <stdio.h>

@@ -64,7 +64,7 @@ static void S_PWM_CLKEnable(tagPWM_T *_tPWM)
  * @param _tPWM-PWM结构体指针
  * @retval Null
 */
-static void S_PWM_PramConfig(tagPWM_T *_tPWM)
+static void S_PWM_ParamConfig(tagPWM_T *_tPWM)
 {	
 	_tPWM->tPWMHandle.Init.Prescaler			= SYSTEM_CLOCK - 1;         		/* 定时器分频 */
 	_tPWM->tPWMHandle.Init.CounterMode			= TIM_COUNTERMODE_UP;			    /* 向上计数模式 */
@@ -564,7 +564,7 @@ void Drv_PWM_Init(tagPWM_T *_tPWM, uint8_t _ucNum)
 		S_PWM_ParamMatch(&_tPWM[index]);
 		S_PWM_CLKEnable(&_tPWM[index]);
 		S_PWM_GPIOConfig(&_tPWM[index]);
-		S_PWM_PramConfig(&_tPWM[index]);
+		S_PWM_ParamConfig(&_tPWM[index]);
 	}
 
 	free(s_ucpCheckCache);

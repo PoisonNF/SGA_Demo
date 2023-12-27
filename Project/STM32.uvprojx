@@ -528,6 +528,11 @@
               <FilePath>..\Driver\Src\drv_hal_adc.c</FilePath>
             </File>
             <File>
+              <FileName>drv_hal_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Driver\Src\drv_hal_can.c</FilePath>
+            </File>
+            <File>
               <FileName>drv_hal_dac.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Driver\Src\drv_hal_dac.c</FilePath>
