@@ -9,6 +9,7 @@
 * 文件历史：
 
 * 版本号	日期		作者		说明
+*    	2024-01-02	  鲍程璐	修改形参符合规范
 
 *  2.9 	2023-12-27	  鲍程璐	创建该文件
 
@@ -78,7 +79,7 @@ static void S_CAN_ParamConfig(tagCAN_T *_tCAN)
 /**
  * @brief CAN设置模式
  * @param _tCAN-CAN结构体指针
- * @param ulMode-模式选择
+ * @param _ulMode-模式选择
  *        这个参数可以为以下值: 
  *        CAN_MODE_NORMAL           正常模式
  *        CAN_MODE_LOOPBACK         回环模式
@@ -86,9 +87,9 @@ static void S_CAN_ParamConfig(tagCAN_T *_tCAN)
  *        CAN_MODE_SILENT_LOOPBACK  静默回环模式
  * @retval Null
 */
-void Drv_CAN_ModeConfig(tagCAN_T *_tCAN,uint32_t ulMode)
+void Drv_CAN_ModeConfig(tagCAN_T *_tCAN,uint32_t _ulMode)
 {
-    _tCAN->tCANHandle.Init.Mode = ulMode;
+    _tCAN->tCANHandle.Init.Mode = _ulMode;
 
     /* 重新对CAN初始化 */
     Drv_CAN_Init(_tCAN);
@@ -97,36 +98,36 @@ void Drv_CAN_ModeConfig(tagCAN_T *_tCAN,uint32_t ulMode)
 /**
  * @brief CAN设置TX标识符ID函数
  * @param _tCAN-CAN结构体指针
- * @param ulMode-模式选择
+ * @param _ulID-指定的ID号
  * @retval Null
 */
-void Drv_CAN_TxIDConfig(tagCAN_T *_tCAN,uint32_t ulID)
+void Drv_CAN_TxIDConfig(tagCAN_T *_tCAN,uint32_t _ulID)
 {
     /* 判断是不是标准标识符 */
     if(_tCAN->tCANTxHeader.IDE == CAN_ID_STD)
-        _tCAN->tCANTxHeader.StdId = ulID;
+        _tCAN->tCANTxHeader.StdId = _ulID;
     else
-        _tCAN->tCANTxHeader.ExtId = ulID;
+        _tCAN->tCANTxHeader.ExtId = _ulID;
 }
 
 /**
  * @brief CAN发送数据
  * @param _tCAN-CAN结构体指针
- * @param ucpMsg-发送数据指针，最大为8字节
- * @param ucLen-发送数据长度，最大为8
+ * @param _ucpMsg-发送数据指针，最大为8字节
+ * @param _ucLen-发送数据长度，最大为8
  * @retval uint8_t 0成功 1失败
 */
-uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *ucpMsg,uint8_t ucLen)
+uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg,uint8_t _ucLen)
 {
     uint8_t index = 0;
     uint8_t ucTemp[8];
 
-    _tCAN->tCANTxHeader.DLC = ucLen;    /* 发送长度设置 */
+    _tCAN->tCANTxHeader.DLC = _ucLen;    /* 发送长度设置 */
 
     /* 数据拷贝 */
-    for(index = 0;index < ucLen;index ++)
+    for(index = 0;index < _ucLen;index ++)
     {
-        ucTemp[index] = ucpMsg[index];
+        ucTemp[index] = _ucpMsg[index];
     }
 
     /* 将数据存储到发送邮箱中 */
@@ -141,10 +142,10 @@ uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *ucpMsg,uint8_t ucLen)
 /**
  * @brief CAN接收数据
  * @param _tCAN-CAN结构体指针
- * @param ucpMsg-接收数据指针
+ * @param _ucpMsg-接收数据指针
  * @retval uint8_t 接收数据长度
 */
-uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *ucpMsg)
+uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg)
 {
     uint8_t index = 0;
     uint8_t ucTemp[8];
@@ -161,7 +162,7 @@ uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *ucpMsg)
 
     for(index = 0;index < _tCAN->tCANRxHeader.DLC; index++)
     {
-        ucpMsg[index] = ucTemp[index];
+        _ucpMsg[index] = ucTemp[index];
     }
 
     return _tCAN->tCANRxHeader.DLC;

@@ -13,10 +13,10 @@ typedef struct
 
 }tagCAN_T;
 
-void Drv_CAN_ModeConfig(tagCAN_T *_tCAN,uint32_t ulMode);
-void Drv_CAN_TxIDConfig(tagCAN_T *_tCAN,uint32_t ulID);
-uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *ucpMsg,uint8_t ucLen);
-uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *ucpMsg);
+void Drv_CAN_ModeConfig(tagCAN_T *_tCAN,uint32_t _ulMode);
+void Drv_CAN_TxIDConfig(tagCAN_T *_tCAN,uint32_t _ulID);
+uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg,uint8_t _ucLen);
+uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg);
 void Drv_CAN_Init(tagCAN_T *_tCAN);
 
 #endif

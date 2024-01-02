@@ -96,7 +96,7 @@
 
 ## Driver层
 
-- 目前驱动层已有adc、dac、flash、gpio、iic_soft、pwm、pwr、spi_soft、spi、timer、uart、wdg相关驱动可以直接使用，不排除有隐藏BUG的可能
+- 目前驱动层已有adc、can、dac、flash、gpio、iic_soft、pwm、pwr、spi_soft、spi、timer、uart、wdg相关驱动可以直接使用，不排除有隐藏BUG的可能
 
 ## RTOS支持
 
