@@ -7,7 +7,7 @@
 
 static uint8_t *s_ucpCheckCache;	/* PWM通道占用检验 */
 
-enum
+typedef enum
 {
 	TIM1_CH1,TIM1_CH2,TIM1_CH3,TIM1_CH4,
 
@@ -20,7 +20,23 @@ enum
 	TIM5_CH1,TIM5_CH2,TIM5_CH3,TIM5_CH4,
 
 	TIM8_CH1,TIM8_CH2,TIM8_CH3,TIM8_CH4,
-};
+
+#ifdef STM32F4_SGA_ENABLE
+	TIM9_CH1,TIM9_CH2,
+
+	TIM10_CH1,
+
+	TIM11_CH1,
+
+	TIM12_CH1,TIM12_CH2,
+
+	TIM13_CH1,
+
+	TIM14_CH1,
+#endif
+
+	TIM_CHANNEL_COUNT,	/* 用于对枚举型内部常量数量统计 */
+}TIM_CHANNEL_E;
 
 typedef struct
 {

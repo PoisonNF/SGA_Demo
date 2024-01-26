@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	  日期		  作者		   说明
+*  3.0 	  2023-01-26	鲍程璐		适配STM32F4系列
+
 *  2.2 	  2023-03-29	鲍程璐		收纳task_irq.c下底层中断函数
 
 * 1.0.0a  2020-02-22	李环宇		创建该文件
@@ -126,6 +128,45 @@ static void S_HAL_CLKConfig(void)
 	{
 		while(1);
 	}
+#endif
+
+#if defined (STM32F4_SGA_ENABLE)
+
+  	/** Configure the main internal regulator output voltage
+  	*/
+  	__HAL_RCC_PWR_CLK_ENABLE();
+  	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  	/** Initializes the RCC Oscillators according to the specified parameters
+  	* in the RCC_OscInitTypeDef structure.
+  	*/
+  	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  	RCC_OscInitStruct.PLL.PLLM = 4;
+  	RCC_OscInitStruct.PLL.PLLN = 168;
+  	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  	RCC_OscInitStruct.PLL.PLLQ = 7;
+  	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  	{
+  	 	while(1);
+  	}
+
+  	/** Initializes the CPU, AHB and APB buses clocks
+  	*/
+  	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+  	                            |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+
+  	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  	{
+  	  	while(1);
+  	}
+
 #endif
 
 #if defined (STM32L4_SGA_ENABLE)	
@@ -424,6 +465,32 @@ void HAL_MspInit(void)
     __HAL_AFIO_REMAP_SWJ_NOJTAG();
 
 #endif
+
+#ifdef STM32F4_SGA_ENABLE
+	__HAL_RCC_SYSCFG_CLK_ENABLE();
+   	__HAL_RCC_PWR_CLK_ENABLE();
+
+	/* MemoryManagement_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
+
+    /* BusFault_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(BusFault_IRQn, 0, 0);
+
+    /* UsageFault_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
+
+    /* SVCall_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0);
+
+    /* DebugMonitor_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
+
+    /* PendSV_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+
+    /* SysTick_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
+#endif
 }
 
 /**
@@ -448,14 +515,14 @@ int fputc(int ch, FILE *f)
 {      
     uint16_t usCnt=0;
 
-#if	defined (STM32F1_SGA_ENABLE)
-	/* F1系列 */
+#if	defined (STM32F1_SGA_ENABLE) || defined (STM32F4_SGA_ENABLE)
+	/* F1 和 F4系列 */
 	while((PRINTF_UART->SR&0X40)==0)	/* 循环发送,直到发送完毕 */  
+#endif
 
-#else
+#if defined(STM32L4_SGA_ENABLE)
 	/* L4系列 */
 	while((PRINTF_UART->ISR&0X40)==0)	/* 循环发送,直到发送完毕 */
-
 #endif
     {
 		/* 防止异常超时退出 */
@@ -464,11 +531,12 @@ int fputc(int ch, FILE *f)
             break;
         }          
     }   
-#if	defined (STM32F1_SGA_ENABLE)	
-	/* F1系列 */
+#if	defined (STM32F1_SGA_ENABLE) || defined (STM32F4_SGA_ENABLE)
+	/* F1 和 F4系列 */
     PRINTF_UART->DR = (uint8_t) ch; 
+#endif
 
-#else
+#if defined (STM32L4_SGA_ENABLE)
 	/* L4系列 */
 	PRINTF_UART->TDR = (uint8_t) ch; 
 

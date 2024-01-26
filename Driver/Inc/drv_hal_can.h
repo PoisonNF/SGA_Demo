@@ -5,11 +5,11 @@
 
 typedef struct
 {
-    CAN_HandleTypeDef tCANHandle;           /* CANå¥æŸ„ */
-    CAN_TxHeaderTypeDef tCANTxHeader;       /* CANå‘é€å¥æŸ„ */
-    CAN_RxHeaderTypeDef tCANRxHeader;       /* CANæ¥æ”¶å¥æŸ„ */
-    CAN_FilterTypeDef tCANFilter;           /* CANè¿‡æ»¤å™¨é…ç½®å¥æŸ„ */
-    tagGPIO_T tGPIO[2];                     /* GPIOé…ç½® */
+    CAN_HandleTypeDef tCANHandle;           /* CAN¾ä±ú */
+    CAN_TxHeaderTypeDef tCANTxHeader;       /* CAN·¢ËÍ¾ä±ú */
+    CAN_RxHeaderTypeDef tCANRxHeader;       /* CAN½ÓÊÕ¾ä±ú */
+    CAN_FilterTypeDef tCANFilter;           /* CAN¹ıÂËÆ÷ÅäÖÃ¾ä±ú */
+    tagGPIO_T tGPIO[2];                     /* GPIOÅäÖÃ */
 
 }tagCAN_T;
 

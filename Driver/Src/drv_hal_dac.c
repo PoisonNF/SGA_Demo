@@ -9,6 +9,7 @@
 * 文件历史：
 
 * 版本号	日期		作者		说明
+*  3.0 	 2023-01-26	  鲍程璐	适配STM32F4系列
 
 *  2.5 	 2023-06-01	  鲍程璐	创建该文件
 
@@ -134,14 +135,14 @@ void Drv_DAC_SetValue(tagDAC_T *_tDAC, float _fValue)
 {
     uint32_t ulDACData = 0;
 
-    if(_fValue < 0 || _fValue > 3.3)
+    if(_fValue < 0.0f || _fValue > 3.3f)
     {
         Drv_HAL_Error(__FILE__, __LINE__);
         while(1);
     }
 
     /* 转换为直接值 */
-    ulDACData = (uint32_t)(_fValue / 3.3 * 4095);
+    ulDACData = (uint32_t)(_fValue / 3.3f * 4095);
 
     /* 开启DAC输出 */
     HAL_DAC_Start(&_tDAC->tDACHandle,_tDAC->ulDACChannelSelect);

@@ -61,7 +61,18 @@
         "algo_pid.h": "c",
         "stm32f1xx_hal.h": "c",
         "stm32f1xx_hal_conf.h": "c",
-        "drv_hal_flash.h": "c"
+        "drv_hal_flash.h": "c",
+        "stm32f4xx_hal.h": "c",
+        "stm32f4xx_hal_conf.h": "c",
+        "limits": "c",
+        "memory": "c",
+        "atomic": "c",
+        "bit": "c",
+        "compare": "c",
+        "cstddef": "c",
+        "xmemory": "c",
+        "xstring": "c",
+        "xutility": "c"
     },
     "files.encoding": "gb2312"
 }

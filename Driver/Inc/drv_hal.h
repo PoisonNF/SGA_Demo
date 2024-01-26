@@ -22,6 +22,10 @@
 	
 	#define STM32F1XX_HAL_DRIVER
 #endif
+
+#ifdef STM32F4_SGA_ENABLE
+	#include "stm32f4xx_hal.h"
+#endif
 	
 #ifdef STM32L4_SGA_ENABLE
 	#include "stm32l4xx_hal.h"

@@ -1,7 +1,7 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2023/12/27 V2.9"
+#define DRIVER_VERSION	"2024/01/26 V3.0"
 
 /* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
 //#define RTT_ENABLE   
@@ -27,6 +27,10 @@
 /* STM32芯片选择 */
 #ifdef STM32F1_SGA_ENABLE
 	#define SYSTEM_CLOCK 	72			/* 系统主频时钟：72，单位：M */
+#endif
+
+#ifdef STM32F4_SGA_ENABLE
+	#define SYSTEM_CLOCK 	168			/* 系统主频时钟：168，单位：M */
 #endif
 
 #ifdef STM32L4_SGA_ENABLE

@@ -84,11 +84,18 @@ static int uart_init(void)
     GPIO_InitStruct.Pin = GPIO_PIN_9;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+#ifdef STM32F4_SGA_ENABLE
+	GPIO_InitStruct.Alternate = GPIO_AF7_USART1,
+#endif
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = GPIO_PIN_10;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
+#ifdef STM32F4_SGA_ENABLE
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Alternate = GPIO_AF7_USART1,
+#endif
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     /* TODO: Please modify the UART port number according to your needs */
     UartHandle.Instance = USART1;

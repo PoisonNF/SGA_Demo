@@ -111,8 +111,8 @@
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
           <SimDllArguments> -REMAP</SimDllArguments>
-          <SimDlgDll>DRAMSTM.DLL</SimDlgDll>
-          <SimDlgDllArguments>-pSTM32F103ZE</SimDlgDllArguments>
+          <SimDlgDll>DCM.DLL</SimDlgDll>
+          <SimDlgDllArguments>-pCM3</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
           <TargetDllArguments></TargetDllArguments>
           <TargetDlgDll>TCM.DLL</TargetDlgDll>
@@ -138,7 +138,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE,STM32F1_SGA_ENABLE</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Apply\Logic\Inc;..\Apply\Task\Inc;..\Bsp\OCD\Inc;..\Bsp\FatFs\Inc;..\Bsp\Algo\Inc;..\Bsp\Dev\Inc;..\Bsp\RTOS\RT-Thread\include;..\Bsp\RTOS\FreeRTOS\include;..\Bsp\RTOS\FreeRTOS\CMSIS_RTOS_V2;..\Bsp\RTOS\FreeRTOS\portable\RVDS\ARM_CM3;..\Driver\Inc;..\Hardware\STM32F1XX\CMSIS\Include;..\Hardware\STM32F1XX\CMSIS\Device\ST\STM32F1xx\Include;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc\Legacy</IncludePath>
+              <IncludePath>..\Apply\Logic\Inc;..\Apply\Task\Inc;..\Bsp\OCD\Inc;..\Bsp\FatFs\Inc;..\Bsp\Algo\Inc;..\Bsp\Dev\Inc;..\Bsp\RTOS\RT-Thread\include;..\Bsp\RTOS\FreeRTOS\include;..\Bsp\RTOS\FreeRTOS\CMSIS_RTOS_V2;..\Bsp\RTOS\FreeRTOS\portable\RVDS\ARM_CM3;..\Bsp\RTOS\FreeRTOS\portable\RVDS\ARM_CM4F;..\Driver\Inc;..\Hardware\STM32F1XX\CMSIS\Include;..\Hardware\STM32F1XX\CMSIS\Device\ST\STM32F1xx\Include;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc;..\Hardware\STM32F1XX\STM32F1xx_HAL_Driver\Inc\Legacy;..\Hardware\STM32F4XX\CMSIS\Include;..\Hardware\STM32F4XX\CMSIS\Device\ST\STM32F4xx\Include;..\Hardware\STM32F4XX\STM32F4xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

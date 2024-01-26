@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期		作者		说明
+*  3.0	 	2023-01-26	 鲍程璐		适配STM32F4系列
+
 * 1.1.7 	2022-10-11   鲍程璐		优化执行顺序
 
 * 1.1.4 	2022-09-03   鲍程璐		新增SPI引脚重映射代码
@@ -48,6 +50,7 @@ static void S_SPI_CLKEnable(tagSPI_T *_tSPI)
 */
 static void S_SPI_GPIOConfig(tagSPI_T *_tSPI)
 {
+#ifdef STM32F1_SGA_ENABLE
 	/* 开启复用模式时钟 */
 	__HAL_RCC_AFIO_CLK_ENABLE();
 
@@ -57,7 +60,28 @@ static void S_SPI_GPIOConfig(tagSPI_T *_tSPI)
 		if(_tSPI->tGPIO->ucAFMode == NO_REMAP)				__HAL_AFIO_REMAP_SPI1_DISABLE();
 		else if(_tSPI->tGPIO->ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_SPI1_ENABLE();		
 	}
-	
+#endif
+
+#ifdef STM32F4_SGA_ENABLE
+	if(_tSPI->tSPIHandle.Instance == SPI1)
+	{
+		_tSPI->tGPIO[0].tGPIOInit.Alternate = GPIO_AF5_SPI1;
+		_tSPI->tGPIO[1].tGPIOInit.Alternate = GPIO_AF5_SPI1;
+		_tSPI->tGPIO[2].tGPIOInit.Alternate = GPIO_AF5_SPI1;
+	}
+	else if(_tSPI->tSPIHandle.Instance == SPI2)
+	{
+		_tSPI->tGPIO[0].tGPIOInit.Alternate = GPIO_AF5_SPI2;
+		_tSPI->tGPIO[1].tGPIOInit.Alternate = GPIO_AF5_SPI2;
+		_tSPI->tGPIO[2].tGPIOInit.Alternate = GPIO_AF5_SPI2;
+	}
+	else if(_tSPI->tSPIHandle.Instance == SPI3)
+	{
+		_tSPI->tGPIO[0].tGPIOInit.Alternate = GPIO_AF6_SPI3;
+		_tSPI->tGPIO[1].tGPIOInit.Alternate = GPIO_AF6_SPI3;
+		_tSPI->tGPIO[2].tGPIOInit.Alternate = GPIO_AF6_SPI3;
+	}
+#endif
 	Drv_GPIO_Init(_tSPI->tGPIO, 4);	/* GPIO初始化 */
 }
 

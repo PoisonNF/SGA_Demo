@@ -239,7 +239,7 @@ void OCD_MS5837_GetData(tagMS5837_T *_tMS5837)
     OFF2  = OFF - OFFi;
     SENS2 = SENS - SENSi;
     _tMS5837->fPress2 = (float)((D1_Press * SENS2)/2097152L - OFF2) / 8192L / 10;           /* 校准后压力数据 */
-    _tMS5837->fTemp2 = (float)(TEMP - Ti)/100.0;                                            /* 校准后温度数据 */
+    _tMS5837->fTemp2 = (float)(TEMP - Ti)/100.0f;                                           /* 校准后温度数据 */
 
     _tMS5837->fTemperature = _tMS5837->fTemp2;                                              /* 保存实际温度 */
     _tMS5837->fDepth = (_tMS5837->fPress2 - ATM)/1000 * G * 100;                            /* 保存实际深度 */

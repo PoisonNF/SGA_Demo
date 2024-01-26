@@ -5,10 +5,14 @@
 
 typedef struct
 {
-	TIM_HandleTypeDef 	tTimerHandle;
-	float 				fTimingLength;	/* 定时时长范围0-59650.503125毫秒 */
-	uint8_t				ucPriority;		/* 中断优先级，0-15 */
-	uint8_t 			ucSubPriority;	/* 中断子优先级，0-15 */
+	TIM_HandleTypeDef 		tTimerHandle;
+#ifdef STM32F4_SGA_ENABLE
+	TIM_ClockConfigTypeDef	tClockSourceConfig;
+	TIM_MasterConfigTypeDef tMasterConfig;
+#endif
+	float 					fTimingLength;	/* 定时时长范围(单位ms) */
+	uint8_t					ucPriority;		/* 中断优先级，0-15 */
+	uint8_t 				ucSubPriority;	/* 中断子优先级，0-15 */
 }tagTIM_T;
 
 void Drv_Timer_Reset(tagTIM_T *_tTimer);

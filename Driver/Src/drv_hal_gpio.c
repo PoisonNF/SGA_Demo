@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	   日期		  作者		  说明
+*  3.0	 	2023-01-26	鲍程璐		适配STM32F4系列
+
 *  2.6	 	2023-06-15	鲍程璐		新增GPIO状态翻转函数
 
 *  2.5	 	2023-05-29	鲍程璐		修复外部中断5-15无法使用的问题
@@ -51,6 +53,24 @@ static void S_GPIO_CLKEnable(tagGPIO_T *_tGPIO)
 	{
 		__HAL_RCC_GPIOE_CLK_ENABLE();
 	}
+#ifdef STM32F4_SGA_ENABLE
+	else if(_tGPIO->tGPIOPort == GPIOF)
+	{
+		__HAL_RCC_GPIOF_CLK_ENABLE();
+	}
+	else if(_tGPIO->tGPIOPort == GPIOG)
+	{
+		__HAL_RCC_GPIOG_CLK_ENABLE();
+	}
+	else if(_tGPIO->tGPIOPort == GPIOH)
+	{
+		__HAL_RCC_GPIOH_CLK_ENABLE();
+	}
+	else if(_tGPIO->tGPIOPort == GPIOI)
+	{
+		__HAL_RCC_GPIOI_CLK_ENABLE();
+	}
+#endif
 }
 
 /**

@@ -19,7 +19,7 @@
 #define C6 _tMS5837->usaCaliData[6]
 
 /* 重力加速度(m/s^2) */
-#define G   9.8
+#define G   9.8f
 /* 标准大气压值（mBar） */
 #define ATM 1013
 

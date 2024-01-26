@@ -24,13 +24,19 @@ tagUART_T demoUart =
 	
 	//串口DMA接收参数配置
 	.tUartDMA.bRxEnable							= true,						/* DMA接收使能 */
+#ifdef STM32F1_SGA_ENABLE
 	.tUartDMA.tDMARx.Instance					= DMA1_Channel5,
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tUartDMA.tDMARx.Instance					= DMA2_Stream2,
+	.tUartDMA.tDMARx.Init.Channel				= DMA_CHANNEL_4,
+#endif
 	.tUartDMA.tDMARx.Init.Direction				= DMA_PERIPH_TO_MEMORY,
 	.tUartDMA.tDMARx.Init.PeriphInc				= DMA_PINC_DISABLE,
 	.tUartDMA.tDMARx.Init.MemInc				= DMA_MINC_ENABLE,
 	.tUartDMA.tDMARx.Init.PeriphDataAlignment 	= DMA_PDATAALIGN_BYTE,
 	.tUartDMA.tDMARx.Init.MemDataAlignment	  	= DMA_MDATAALIGN_BYTE,
-	.tUartDMA.tDMARx.Init.Mode					= DMA_CIRCULAR,
+	.tUartDMA.tDMARx.Init.Mode					= DMA_NORMAL,
 	.tUartDMA.tDMARx.Init.Priority				= DMA_PRIORITY_LOW,
 
 	.tRxInfo.usDMARxMAXSize             		= 100,              		/* DMA接收缓冲区大小 大小保持在协议最长字节*2以上，确保缓存池一定能够稳定接收一个完整的数据帧*/
@@ -40,14 +46,21 @@ tagUART_T demoUart =
 	
 	//串口DMA发送参数配置
 	.tUartDMA.bTxEnable							= true,						/* DMA发送使能 */
+#ifdef STM32F1_SGA_ENABLE
 	.tUartDMA.tDMATx.Instance					= DMA1_Channel4,
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tUartDMA.tDMATx.Instance					= DMA2_Stream7,
+	.tUartDMA.tDMATx.Init.Channel				= DMA_CHANNEL_4,
+	.tUartDMA.tDMATx.Init.FIFOMode				= DMA_FIFOMODE_ENABLE,
+#endif
 	.tUartDMA.tDMATx.Init.Direction				= DMA_MEMORY_TO_PERIPH,
 	.tUartDMA.tDMATx.Init.PeriphInc				= DMA_PINC_DISABLE,
 	.tUartDMA.tDMATx.Init.MemInc				= DMA_MINC_ENABLE,
 	.tUartDMA.tDMATx.Init.PeriphDataAlignment	= DMA_PDATAALIGN_BYTE,
 	.tUartDMA.tDMATx.Init.MemDataAlignment		= DMA_MDATAALIGN_BYTE,
 	.tUartDMA.tDMATx.Init.Mode					= DMA_NORMAL,
-	.tUartDMA.tDMATx.Init.Priority				= DMA_PRIORITY_LOW,
+	.tUartDMA.tDMATx.Init.Priority				= DMA_PRIORITY_HIGH,
 
 	.tTxInfo.usDMATxMAXSize						= 50,						/* DMA发送缓冲区大小 */
 	
@@ -60,14 +73,25 @@ tagUART_T demoUart =
 	.tGPIO[0].tGPIOInit.Pull 					= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tGPIO[0].tGPIOInit.Speed 					= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tGPIO[0].tGPIOPort 						= GPIOA,					/* GPIO分组 */
+#ifdef STM32F1_SGA_ENABLE
 	.tGPIO[0].ucAFMode							= NO_REMAP,					/* GPIO重映射 */
-	
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tGPIO[0].tGPIOInit.Alternate				= GPIO_AF7_USART1,
+#endif
+
 	.tGPIO[1].tGPIOInit.Pin 					= GPIO_PIN_10,				/* GPIO引脚 */
-	.tGPIO[1].tGPIOInit.Mode 					= GPIO_MODE_INPUT,			/* GPIO模式 */
 	.tGPIO[1].tGPIOInit.Pull 					= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tGPIO[1].tGPIOInit.Speed 					= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tGPIO[1].tGPIOPort 						= GPIOA,					/* GPIO分组 */
+#ifdef STM32F1_SGA_ENABLE	
+	.tGPIO[1].tGPIOInit.Mode 					= GPIO_MODE_INPUT,			/* F4系列需要设置为输入模式 */
 	.tGPIO[1].ucAFMode							= NO_REMAP,					/* GPIO重映射 */
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tGPIO[1].tGPIOInit.Mode 					= GPIO_MODE_AF_PP,			/* F4系列需要设置为复用推挽 */
+	.tGPIO[1].tGPIOInit.Alternate				= GPIO_AF7_USART1,
+#endif
 };
 
 /* GPIO句柄示例 */
@@ -167,8 +191,8 @@ tagIICSoft_T demoIIC =
 /* 定时器Timer资源结构体示例 */
 tagTIM_T tTimer = 
 {
-	.tTimerHandle.Instance				= TIM6,						/* 通用定时器6 */
-	.fTimingLength						= 100,						/* 定时时长(ms) */
+	.tTimerHandle.Instance				= TIM6,						/* 定时器6 */
+	.fTimingLength						= 100,						/* 定时时长(单位ms) */
 
 	.ucPriority							= 2,						/* 中断优先级 */
 	.ucSubPriority						= 2,						/* 中断子优先级 */
@@ -231,22 +255,27 @@ tagPWM_T tPWMDemo[] =
 		.ucChannel				= TIM_CHANNEL_1,	/* 通道 */
 		.tGPIO.tGPIOInit.Pin	= GPIO_PIN_6,		/* IO映射 */
 		.tGPIO.tGPIOPort		= GPIOA,			/* IO组映射 */
+#ifdef STM32F1_SGA_ENABLE
 		.tGPIO.ucAFMode			= NO_REMAP,			/* IO重映射模式 */
+#endif
 	},
 };
 
 /* ADC句柄示例 */
-tagADC_T demoADC[1] = 
+tagADC_T demoADC[] = 
 {
 	[0]=
 	{ 
-		.tGPIO.tGPIOInit.Pin 					= GPIO_PIN_0,					/* GPIO引脚 */
+		.tGPIO.tGPIOInit.Pin 					= GPIO_PIN_6,					/* GPIO引脚 */
 		.tGPIO.tGPIOInit.Mode 					= GPIO_MODE_ANALOG,				/* GPIO模式 */
 		.tGPIO.tGPIOInit.Pull 					= GPIO_NOPULL,					/* GPIO上下拉设置，是否需要上下拉看硬件 */
 		.tGPIO.tGPIOInit.Speed 					= GPIO_SPEED_FREQ_HIGH,			/* GPIO速度 */	
 		.tGPIO.tGPIOPort 						= GPIOA,						/* GPIO分组 */
 		
 		.tADCHandle.Instance					= ADC1,
+#ifdef STM32F4_SGA_ENABLE
+		.tADCHandle.Init.ClockPrescaler			= ADC_CLOCK_SYNC_PCLK_DIV4,		/* 时钟配置 */
+#endif
 		.tADCHandle.Init.DataAlign				= ADC_DATAALIGN_RIGHT,			/* 右对齐 */
 		.tADCHandle.Init.ScanConvMode			= DISABLE,						/* 非扫描模式 */
 		.tADCHandle.Init.ContinuousConvMode		= DISABLE,						/* 关闭连续转换 */
@@ -255,10 +284,14 @@ tagADC_T demoADC[1] =
 		.tADCHandle.Init.NbrOfDiscConversion	= 0,							/* 不连续采样通道数为0 */
 		.tADCHandle.Init.ExternalTrigConv		= ADC_SOFTWARE_START,			/* 软件触发 */
 		
-		.tADCChannel.Channel					= ADC_CHANNEL_0,				/* 通道 */
+		.tADCChannel.Channel					= ADC_CHANNEL_6,				/* 通道 */
 		.tADCChannel.Rank						= 1,							/* 第1个序列，序列1 */
+#ifdef STM32F1_SGA_ENABLE
 		.tADCChannel.SamplingTime				= ADC_SAMPLETIME_239CYCLES_5,	/* 采样时间 */
-		
+#endif
+#ifdef STM32F4_SGA_ENABLE
+		.tADCChannel.SamplingTime				= ADC_SAMPLETIME_3CYCLES,		/* 采样时间 */
+#endif
 		.ucAverageNum							= 10,							/* 均值滤波均值数 */
 	},
 };
@@ -286,12 +319,21 @@ tagDAC_T demoDAC[] =
 tagCAN_T CAN =
 {
 	/* CAN配置 */
+    /* 500kbps举例 */
 	.tCANHandle.Instance 								= CAN1,
+    .tCANHandle.Init.Mode 								= CAN_MODE_LOOPBACK,			/* 模式设置 */
+#ifdef STM32F1_SGA_ENABLE
 	.tCANHandle.Init.Prescaler 							= 4,							/* 分频系数 */
-	.tCANHandle.Init.Mode 								= CAN_MODE_LOOPBACK,			/* 模式设置 */
 	.tCANHandle.Init.SyncJumpWidth 						= CAN_SJW_1TQ,					/* 重新同步跳跃宽度 */
 	.tCANHandle.Init.TimeSeg1 							= CAN_BS1_9TQ,					/* Tbs1 */
 	.tCANHandle.Init.TimeSeg2 							= CAN_BS2_8TQ,					/* Tbs2 */
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tCANHandle.Init.Prescaler 							= 4,							/* 分频系数 */
+	.tCANHandle.Init.SyncJumpWidth 						= CAN_SJW_1TQ,					/* 重新同步跳跃宽度 */
+	.tCANHandle.Init.TimeSeg1 							= CAN_BS1_12TQ,					/* Tbs1 */
+	.tCANHandle.Init.TimeSeg2 							= CAN_BS2_8TQ,					/* Tbs2 */
+#endif
 	.tCANHandle.Init.TimeTriggeredMode 					= DISABLE,						/* 非时间触发通信模式 */
 	.tCANHandle.Init.AutoBusOff 						= DISABLE,						/* 软件自动离线管理 */
 	.tCANHandle.Init.AutoRetransmission 				= DISABLE,						/* 睡眠模式通过软件唤醒 */
@@ -325,7 +367,12 @@ tagCAN_T CAN =
 	.tGPIO[0].tGPIOPort 								= GPIOA,						/* GPIO分组 */			
 
 	.tGPIO[1].tGPIOInit.Pin 							= GPIO_PIN_11,					/* GPIO引脚 */
+#ifdef STM32F1_SGA_ENABLE
 	.tGPIO[1].tGPIOInit.Mode 							= GPIO_MODE_AF_INPUT,			/* GPIO模式 */
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tGPIO[1].tGPIOInit.Mode 							= GPIO_MODE_AF_PP,			    /* GPIO模式 */
+#endif
 	.tGPIO[1].tGPIOInit.Pull 							= GPIO_PULLUP,					/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tGPIO[1].tGPIOInit.Speed 							= GPIO_SPEED_FREQ_HIGH,			/* GPIO速度 */	
 	.tGPIO[1].tGPIOPort 								= GPIOA,						/* GPIO分组 */			
@@ -466,7 +513,7 @@ tagAT24CXX_T tAT24CXX =
 };
 
 /* OLED示例 */
-tagOLED_T tOLED= 
+tagOLED_T tOLED = 
 {
 	/* SCL线 */
 	.tIIC.tIICSoft[0].tGPIOInit.Pin 		= GPIO_PIN_0,				/* GPIO引脚 */

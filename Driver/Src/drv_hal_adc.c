@@ -9,8 +9,9 @@
 * 文件历史：
 
 * 版本号	日期		作者		说明
+*  3.0 	   2023-01-26	鲍程璐		适配STM32F4系列
 
-* 1.0.0a 	2020-02-22	李环宇		创建该文件
+* 1.0.0a   2020-02-22	李环宇		创建该文件
 
 ****************************************************************************/
 #include "drv_hal_conf.h"
@@ -43,8 +44,6 @@ static void S_ADC_CLKConfig(void)
 */
 static void S_ADC_CLKEnable(tagADC_T *_tADC)
 {
-#ifdef STM32F1_SGA_ENABLE
-
 	if(_tADC->tADCHandle.Instance == ADC1)
 	{
 		__HAL_RCC_ADC1_CLK_ENABLE();
@@ -57,8 +56,6 @@ static void S_ADC_CLKEnable(tagADC_T *_tADC)
 	{
 		__HAL_RCC_ADC3_CLK_ENABLE();
 	}
-
-#endif
 }
 
 /**
@@ -105,10 +102,10 @@ void Drv_ADC_Init(tagADC_T *_tADC, uint8_t _ucNum)
 	
 	for(index = 0; index < _ucNum; index++)
 	{
-		S_ADC_CLKConfig();					/* adc时钟树配置 */
-		S_ADC_CLKEnable(&_tADC[index]);		/* adc时钟使能 */
-		S_ADC_GPIOConfig(&_tADC[index]);	/* adc的GPIO配置 */
-		S_ADC_ParamConfig(&_tADC[index]);	/* adc参数配置 */
+		S_ADC_CLKConfig();					/* ADC时钟树配置 */
+		S_ADC_CLKEnable(&_tADC[index]);		/* ADC时钟使能 */
+		S_ADC_GPIOConfig(&_tADC[index]);	/* ADC的GPIO配置 */
+		S_ADC_ParamConfig(&_tADC[index]);	/* ADC参数配置 */
 	}
 }
 
@@ -144,7 +141,7 @@ float Drv_ADC_PollGetValue(tagADC_T *_tADC)
 	/* 循环读取，取平均值 */
 	for(ucNum = 0;ucNum < _tADC->ucAverageNum;ucNum++)
 	{
-		ulADCData += Drv_ADC_PollGetData(_tADC);		/* 返回最近一次ADC1规则组的转换结果 */
+		ulADCData += Drv_ADC_PollGetData(_tADC);		/* 返回最近一次ADC规则组的转换结果 */
 		Drv_Delay_Ms(5);
 	}
 	

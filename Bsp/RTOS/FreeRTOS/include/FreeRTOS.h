@@ -636,6 +636,18 @@ extern "C" {
 	#define traceTASK_NOTIFY_GIVE_FROM_ISR()
 #endif
 
+#ifndef traceISR_EXIT_TO_SCHEDULER
+    #define traceISR_EXIT_TO_SCHEDULER()
+#endif
+
+#ifndef traceISR_EXIT
+    #define traceISR_EXIT()
+#endif
+
+#ifndef traceISR_ENTER
+    #define traceISR_ENTER()
+#endif
+
 #ifndef traceSTREAM_BUFFER_CREATE_FAILED
 	#define traceSTREAM_BUFFER_CREATE_FAILED( xIsMessageBuffer )
 #endif

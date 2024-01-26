@@ -55,13 +55,19 @@ tagUART_T demoUart =
 	
 	//串口DMA接收参数配置
 	.tUartDMA.bRxEnable							= true,						/* DMA接收使能 */
+#ifdef STM32F1_SGA_ENABLE
 	.tUartDMA.tDMARx.Instance					= DMA1_Channel5,
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tUartDMA.tDMARx.Instance					= DMA2_Stream2,
+	.tUartDMA.tDMARx.Init.Channel				= DMA_CHANNEL_4,
+#endif
 	.tUartDMA.tDMARx.Init.Direction				= DMA_PERIPH_TO_MEMORY,
 	.tUartDMA.tDMARx.Init.PeriphInc				= DMA_PINC_DISABLE,
 	.tUartDMA.tDMARx.Init.MemInc				= DMA_MINC_ENABLE,
 	.tUartDMA.tDMARx.Init.PeriphDataAlignment 	= DMA_PDATAALIGN_BYTE,
 	.tUartDMA.tDMARx.Init.MemDataAlignment	  	= DMA_MDATAALIGN_BYTE,
-	.tUartDMA.tDMARx.Init.Mode					= DMA_CIRCULAR,
+	.tUartDMA.tDMARx.Init.Mode					= DMA_NORMAL,
 	.tUartDMA.tDMARx.Init.Priority				= DMA_PRIORITY_LOW,
 
 	.tRxInfo.usDMARxMAXSize             		= 100,              		/* DMA接收缓冲区大小 大小保持在协议最长字节*2以上，确保缓存池一定能够稳定接收一个完整的数据帧*/
@@ -71,14 +77,21 @@ tagUART_T demoUart =
 	
 	//串口DMA发送参数配置
 	.tUartDMA.bTxEnable							= true,						/* DMA发送使能 */
+#ifdef STM32F1_SGA_ENABLE
 	.tUartDMA.tDMATx.Instance					= DMA1_Channel4,
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tUartDMA.tDMATx.Instance					= DMA2_Stream7,
+	.tUartDMA.tDMATx.Init.Channel				= DMA_CHANNEL_4,
+	.tUartDMA.tDMATx.Init.FIFOMode				= DMA_FIFOMODE_ENABLE,
+#endif
 	.tUartDMA.tDMATx.Init.Direction				= DMA_MEMORY_TO_PERIPH,
 	.tUartDMA.tDMATx.Init.PeriphInc				= DMA_PINC_DISABLE,
 	.tUartDMA.tDMATx.Init.MemInc				= DMA_MINC_ENABLE,
 	.tUartDMA.tDMATx.Init.PeriphDataAlignment	= DMA_PDATAALIGN_BYTE,
 	.tUartDMA.tDMATx.Init.MemDataAlignment		= DMA_MDATAALIGN_BYTE,
 	.tUartDMA.tDMATx.Init.Mode					= DMA_NORMAL,
-	.tUartDMA.tDMATx.Init.Priority				= DMA_PRIORITY_LOW,
+	.tUartDMA.tDMATx.Init.Priority				= DMA_PRIORITY_HIGH,
 
 	.tTxInfo.usDMATxMAXSize						= 50,						/* DMA发送缓冲区大小 */
 	
@@ -91,12 +104,24 @@ tagUART_T demoUart =
 	.tGPIO[0].tGPIOInit.Pull 					= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tGPIO[0].tGPIOInit.Speed 					= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tGPIO[0].tGPIOPort 						= GPIOA,					/* GPIO分组 */
+#ifdef STM32F1_SGA_ENABLE
 	.tGPIO[0].ucAFMode							= NO_REMAP,					/* GPIO重映射 */
-	
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tGPIO[0].tGPIOInit.Alternate				= GPIO_AF7_USART1,
+#endif
+
 	.tGPIO[1].tGPIOInit.Pin 					= GPIO_PIN_10,				/* GPIO引脚 */
-	.tGPIO[1].tGPIOInit.Mode 					= GPIO_MODE_INPUT,			/* GPIO模式 */
 	.tGPIO[1].tGPIOInit.Pull 					= GPIO_NOPULL,				/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tGPIO[1].tGPIOInit.Speed 					= GPIO_SPEED_FREQ_HIGH,		/* GPIO速度 */	
 	.tGPIO[1].tGPIOPort 						= GPIOA,					/* GPIO分组 */
+#ifdef STM32F1_SGA_ENABLE	
+	.tGPIO[1].tGPIOInit.Mode 					= GPIO_MODE_INPUT,			/* F4系列需要设置为输入模式 */
 	.tGPIO[1].ucAFMode							= NO_REMAP,					/* GPIO重映射 */
+#endif
+#ifdef STM32F4_SGA_ENABLE
+	.tGPIO[1].tGPIOInit.Mode 					= GPIO_MODE_AF_PP,			/* F4系列需要设置为复用推挽 */
+	.tGPIO[1].tGPIOInit.Alternate				= GPIO_AF7_USART1,
+#endif
 };
+

@@ -1,6 +1,6 @@
 # SGA Library
 
-- 一个基于STM32F1系列和STM32L4系列的代码库
+- 一个基于STM32F1系列、STM32F4系列和STM32L4系列（未测试）的代码库
 
 ## 基本说明
 
@@ -32,14 +32,10 @@
 **Hardware**: 硬件抽象层
 
 - **STM32F1XX**
-    CMSIS : 
-    - core版本: V5.6.0_cm4
-    - device F1版本：V4.3.2 
     - STM32F1XX系列MCU的HAL固件库源代码、驱动程序版本: V1.1.7
+- **STM32F4XX**
+    - STM32F4XX系列MCU的HAL固件库源代码、驱动程序版本 V1.8.1
 - **STM32L4XX**
-    CMSIS : 
-    - core版本: V5.4.0_cm4
-    - device L4版本：V1.5.1
     - STM32L4XX系列MCU的HAL固件库源代码、驱动程序版本: V1.10.0 
 
 **Project**		: 存放工程相关文件
@@ -103,6 +99,10 @@
 - **RT-Thread** —— 使用时须在**drv_hal_conf.h**中解开`#define RTT_ENABLE`注释，同时在工程中加入kernel文件
 - **FreeRTOS** —— 使用时须在**drv_hal_conf.h**中解开`#define FREERTOS_ENABLE`注释，同时在工程中加入kernel文件
 - 其他操作系统等待后续使用后加入
+
+## 芯片库切换方法
+
+查看Doc文件夹中《不同系列芯片库切换流程》
 
 ## 库函数维护
 

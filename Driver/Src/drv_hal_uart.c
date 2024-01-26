@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	  日期		  作者				说明
+*  3.0	 	2023-01-26	 鲍程璐		适配STM32F4系列
+
 *  2.9 		2023-11-26   鲍程璐		增加串口DMA通道中断处理子函数
 
 *  2.8 		2023-10-15   鲍程璐		修复串口DMA发送的问题
@@ -66,6 +68,13 @@ static void S_Uart_NVICConfig(tagUART_T *_tUART)
 		HAL_NVIC_SetPriority(UART5_IRQn, _tUART->ucPriority, _tUART->ucSubPriority);
 		HAL_NVIC_EnableIRQ(UART5_IRQn);
 	}
+#ifdef STM32F4_SGA_ENABLE
+	else if(_tUART->tUARTHandle.Instance == USART6)
+	{
+		HAL_NVIC_SetPriority(USART6_IRQn, _tUART->ucPriority, _tUART->ucSubPriority);
+		HAL_NVIC_EnableIRQ(USART6_IRQn);
+	}
+#endif 
 }
 
 /**
@@ -75,6 +84,7 @@ static void S_Uart_NVICConfig(tagUART_T *_tUART)
 */
 static void S_Uart_DMA_NVICConfig(tagUART_T *_tUART)
 {
+#ifdef STM32F1_SGA_ENABLE
 	/* DMA接收使能 */
 	if(_tUART->tUartDMA.bRxEnable == true)
 	{
@@ -132,6 +142,93 @@ static void S_Uart_DMA_NVICConfig(tagUART_T *_tUART)
 			HAL_NVIC_EnableIRQ(DMA2_Channel4_5_IRQn);
 		}
 	}
+
+#endif
+
+#ifdef STM32F4_SGA_ENABLE
+	/* DMA接收使能 */
+	if(_tUART->tUartDMA.bRxEnable == true)
+	{
+		if(_tUART->tUARTHandle.Instance == USART1)
+		{
+			/* DMA2_Stream5_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA2_Stream5_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA2_Stream5_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART2)
+		{
+			/* DMA1_Stream5_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Stream5_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART3)
+		{
+			/* DMA1_Stream1_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Stream1_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == UART4)
+		{
+			/* DMA1_Stream2_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Stream2_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == UART5)
+		{
+			/* DMA1_Stream0_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Stream0_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART6)
+		{
+			/* DMA2_Stream1_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA2_Stream1_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
+		}
+	}
+
+	/* DMA发送使能 */
+	if(_tUART->tUartDMA.bTxEnable == true)
+	{
+		if(_tUART->tUARTHandle.Instance == USART1)
+		{
+			/* DMA2_Stream7_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA2_Stream7_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART2)
+		{
+			/* DMA1_Stream6_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Stream6_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART3)
+		{
+			/* DMA1_Stream3_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Stream3_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == UART4)
+		{
+			/* DMA1_Stream4_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Stream4_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == UART5)
+		{
+			/* DMA1_Stream7_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA1_Stream7_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA1_Stream7_IRQn);
+		}
+		else if(_tUART->tUARTHandle.Instance == USART6)
+		{
+			/* DMA2_Stream6_IRQn interrupt configuration */
+			HAL_NVIC_SetPriority(DMA2_Stream6_IRQn,_tUART->tUartDMA.ucDMARxPriority, _tUART->tUartDMA.ucDMARxSubPriority);
+			HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
+		}		
+	}
+
+#endif
 }
 
 /**
@@ -226,6 +323,12 @@ static void S_Uart_CLKEnable(tagUART_T *_tUART)
 	{
 		__HAL_RCC_UART5_CLK_ENABLE();
 	}
+#ifdef STM32F4_SGA_ENABLE
+	else if(_tUART->tUARTHandle.Instance == USART6)
+	{
+		__HAL_RCC_USART6_CLK_ENABLE();
+	}
+#endif
 }
 
 /**
@@ -235,6 +338,7 @@ static void S_Uart_CLKEnable(tagUART_T *_tUART)
 */
 static void S_Uart_DMA_CLKEnable(tagUART_T *_tUART)
 {
+#ifdef STM32F1_SGA_ENABLE
 	if(_tUART->tUARTHandle.Instance == USART1)			__HAL_RCC_DMA1_CLK_ENABLE();
 	else if(_tUART->tUARTHandle.Instance == USART2)		__HAL_RCC_DMA1_CLK_ENABLE();
 	else if(_tUART->tUARTHandle.Instance == USART3)		__HAL_RCC_DMA1_CLK_ENABLE();
@@ -245,6 +349,16 @@ static void S_Uart_DMA_CLKEnable(tagUART_T *_tUART)
 		Drv_HAL_Error(__FILE__,__LINE__);
 		while(1);
 	}
+#endif
+
+#ifdef STM32F4_SGA_ENABLE
+	if(_tUART->tUARTHandle.Instance == USART1)			__HAL_RCC_DMA2_CLK_ENABLE();
+	else if(_tUART->tUARTHandle.Instance == USART2)		__HAL_RCC_DMA1_CLK_ENABLE();
+	else if(_tUART->tUARTHandle.Instance == USART3)		__HAL_RCC_DMA1_CLK_ENABLE();
+	else if(_tUART->tUARTHandle.Instance == UART4)		__HAL_RCC_DMA1_CLK_ENABLE();
+	else if(_tUART->tUARTHandle.Instance == UART5)		__HAL_RCC_DMA1_CLK_ENABLE();
+	else if(_tUART->tUARTHandle.Instance == USART6)		__HAL_RCC_DMA2_CLK_ENABLE();
+#endif
 }
 
 /**
@@ -254,6 +368,7 @@ static void S_Uart_DMA_CLKEnable(tagUART_T *_tUART)
 */
 static void S_Uart_GPIOConfig(tagUART_T *_tUART)
 {
+#ifdef STM32F1_SGA_ENABLE
 	/* 开启复用模式时钟 */
 	__HAL_RCC_AFIO_CLK_ENABLE();
 
@@ -279,6 +394,40 @@ static void S_Uart_GPIOConfig(tagUART_T *_tUART)
 		else if(_tUART->tGPIO->ucAFMode == PARTIAL_REMAP2)	while(1);
 		else if(_tUART->tGPIO->ucAFMode == FULL_REMAP)		__HAL_AFIO_REMAP_USART3_ENABLE();
 	}
+#endif
+
+#ifdef STM32F4_SGA_ENABLE
+	if(_tUART->tUARTHandle.Instance == USART1)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Alternate = GPIO_AF7_USART1;
+		_tUART->tGPIO[1].tGPIOInit.Alternate = GPIO_AF7_USART1;
+	}
+	else if (_tUART->tUARTHandle.Instance == USART2)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Alternate = GPIO_AF7_USART2;
+		_tUART->tGPIO[1].tGPIOInit.Alternate = GPIO_AF7_USART2;		
+	}
+	else if (_tUART->tUARTHandle.Instance == USART3)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Alternate = GPIO_AF7_USART3;
+		_tUART->tGPIO[1].tGPIOInit.Alternate = GPIO_AF7_USART3;		
+	}
+	else if (_tUART->tUARTHandle.Instance == UART4)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Alternate = GPIO_AF8_UART4;
+		_tUART->tGPIO[1].tGPIOInit.Alternate = GPIO_AF8_UART4;		
+	}
+	else if (_tUART->tUARTHandle.Instance == UART5)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Alternate = GPIO_AF8_UART5;
+		_tUART->tGPIO[1].tGPIOInit.Alternate = GPIO_AF8_UART5;		
+	}
+	else if (_tUART->tUARTHandle.Instance == USART6)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Alternate = GPIO_AF8_USART6;
+		_tUART->tGPIO[1].tGPIOInit.Alternate = GPIO_AF8_USART6;		
+	}
+#endif
 	
 	Drv_GPIO_Init(_tUART->tGPIO, 2); 	/* GPIO初始化 */
 }
@@ -301,6 +450,7 @@ static void S_Uart_ParamMatch(tagUART_T *_tUART)
 	DEFAULT(_tUART->ucPriority,1);
 	DEFAULT(_tUART->ucSubPriority,3);
 
+#ifdef STM32F1_SGA_ENABLE
 	/* 串口DMA参数 */
 	if(_tUART->tUartDMA.bTxEnable == true)
 	{
@@ -413,6 +563,164 @@ static void S_Uart_ParamMatch(tagUART_T *_tUART)
 	_tUART->tGPIO->tGPIOInit.Pull 	= GPIO_NOPULL;
 	_tUART->tGPIO->tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH;
 	_tUART->tGPIO->ucAFMode 		= NO_REMAP;
+#endif
+
+#ifdef STM32F4_SGA_ENABLE
+	/* 串口DMA参数 */
+	if(_tUART->tUartDMA.bTxEnable == true)
+	{
+		/* 根据串口号选择DMA通道 */
+		if(_tUART->tUARTHandle.Instance == USART1)
+		{
+			_tUART->tUartDMA.tDMATx.Instance = DMA2_Stream7;
+		}
+		else if(_tUART->tUARTHandle.Instance == USART2)
+		{
+			_tUART->tUartDMA.tDMATx.Instance = DMA1_Stream6;
+		}
+		else if(_tUART->tUARTHandle.Instance == USART3)
+		{
+			_tUART->tUartDMA.tDMATx.Instance = DMA1_Stream3;
+		}
+		else if(_tUART->tUARTHandle.Instance == UART4)
+		{
+			_tUART->tUartDMA.tDMATx.Instance = DMA1_Stream4;
+		}
+		else if(_tUART->tUARTHandle.Instance == UART5)
+		{
+			_tUART->tUartDMA.tDMATx.Instance = DMA1_Stream7;
+		}
+		else if(_tUART->tUARTHandle.Instance == USART6)
+		{
+			_tUART->tUartDMA.tDMATx.Instance = DMA2_Stream6;
+		}
+
+		/* DMA工作模式 */
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.Channel,DMA_CHANNEL_4);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.Direction,DMA_MEMORY_TO_PERIPH);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.PeriphInc,DMA_PINC_DISABLE);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.MemInc,DMA_MINC_ENABLE);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.PeriphDataAlignment,DMA_PDATAALIGN_BYTE);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.MemDataAlignment,DMA_MDATAALIGN_BYTE);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.Mode,DMA_NORMAL);
+		DEFAULT(_tUART->tUartDMA.tDMATx.Init.Priority,DMA_PRIORITY_LOW);
+
+		/* DMA中断优先级 */
+		DEFAULT(_tUART->tUartDMA.ucDMATxPriority,1);
+		DEFAULT(_tUART->tUartDMA.ucDMATxSubPriority,1);
+
+		/* DMA发送缓冲区大小 */
+		DEFAULT(_tUART->tTxInfo.usDMATxMAXSize, 100);
+	}
+
+	if(_tUART->tUartDMA.bRxEnable == true)
+	{
+		/* 根据串口号选择DMA通道 */
+		if(_tUART->tUARTHandle.Instance == USART1)
+		{
+			_tUART->tUartDMA.tDMARx.Instance = DMA2_Stream5;
+		}
+		else if(_tUART->tUARTHandle.Instance == USART2)
+		{
+			_tUART->tUartDMA.tDMARx.Instance = DMA1_Stream5;
+		}
+		else if(_tUART->tUARTHandle.Instance == USART3)
+		{
+			_tUART->tUartDMA.tDMARx.Instance = DMA1_Stream1;
+		}
+		else if(_tUART->tUARTHandle.Instance == UART4)
+		{
+			_tUART->tUartDMA.tDMARx.Instance = DMA1_Stream2;
+		}
+		else if(_tUART->tUARTHandle.Instance == UART5)
+		{
+			_tUART->tUartDMA.tDMARx.Instance = DMA1_Stream0;
+		}
+		else if(_tUART->tUARTHandle.Instance == USART6)
+		{
+			_tUART->tUartDMA.tDMARx.Instance = DMA2_Stream1;
+		}
+
+		/* DMA工作模式 */
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.Channel,DMA_CHANNEL_4);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.Direction,DMA_PERIPH_TO_MEMORY);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.PeriphInc,DMA_PINC_DISABLE);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.MemInc,DMA_MINC_ENABLE);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.PeriphDataAlignment,DMA_PDATAALIGN_BYTE);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.MemDataAlignment,DMA_MDATAALIGN_BYTE);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.Mode,DMA_CIRCULAR);
+		DEFAULT(_tUART->tUartDMA.tDMARx.Init.Priority,DMA_PRIORITY_LOW);
+		
+		/* DMA中断优先级 */
+		DEFAULT(_tUART->tUartDMA.ucDMARxPriority,1);
+		DEFAULT(_tUART->tUartDMA.ucDMARxSubPriority,1);
+
+		/* DMA接收缓冲区大小 */
+		DEFAULT(_tUART->tRxInfo.usDMARxMAXSize, 100);
+	}
+
+	/* 串口I/O设置 [0]TX [1]RX */
+	/* 如果复用I/O则退出函数 */
+	if(_tUART->tGPIO[0].tGPIOInit.Pin != 0 && _tUART->tGPIO[1].tGPIOInit.Pin != 0)
+		return;
+
+	/* 根据使用的串口选择相对应的默认I/O */
+	if(_tUART->tUARTHandle.Instance == USART1)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_9;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOA;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_10;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOA;
+	}
+	else if(_tUART->tUARTHandle.Instance == USART2)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_2;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOA;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_3;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOA;
+	}
+	else if(_tUART->tUARTHandle.Instance == USART3)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_10;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOB;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_11;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOB;
+	}
+	else if(_tUART->tUARTHandle.Instance == UART4)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_0;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOA;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_1;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOA;
+	}
+	else if(_tUART->tUARTHandle.Instance == UART5)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_12;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOC;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_2;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOD;
+	}
+	else if(_tUART->tUARTHandle.Instance == USART6)
+	{
+		_tUART->tGPIO[0].tGPIOInit.Pin 	= GPIO_PIN_6;
+		_tUART->tGPIO[0].tGPIOPort 		= GPIOC;
+
+		_tUART->tGPIO[1].tGPIOInit.Pin 	= GPIO_PIN_7;
+		_tUART->tGPIO[1].tGPIOPort 		= GPIOC;
+	}
+
+	_tUART->tGPIO[0].tGPIOInit.Mode = GPIO_MODE_AF_PP;
+	_tUART->tGPIO[1].tGPIOInit.Mode = GPIO_MODE_AF_PP;
+
+	_tUART->tGPIO->tGPIOInit.Pull 	= GPIO_NOPULL;
+	_tUART->tGPIO->tGPIOInit.Speed 	= GPIO_SPEED_FREQ_HIGH;
+#endif
+
 }
 
 /**
@@ -698,13 +1006,14 @@ void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART)
 {
 	uint32_t ulDMAFlag;
 
-	/* UART1发送通道 */
+#ifdef STM32F1_SGA_ENABLE
+	/* USART1发送通道 */
 	if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel4)		ulDMAFlag = DMA_FLAG_TC4;
 
-	/* UART2发送通道 */
+	/* USART2发送通道 */
 	else if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel7)	ulDMAFlag = DMA_FLAG_TC7;
 
-	/* UART3发送通道 */
+	/* USART3发送通道 */
 	else if(_tUART->tUartDMA.tDMATx.Instance == DMA1_Channel2) 	ulDMAFlag = DMA_FLAG_TC2;
 
 	/* UART4发送通道 */
@@ -729,6 +1038,49 @@ void Drv_Uart_DMA_TxHandler(tagUART_T *_tUART)
 		/* 开启DMA发送 */
 		__HAL_DMA_ENABLE(&_tUART->tUartDMA.tDMATx);
 	}
+#endif
+
+#ifdef STM32F4_SGA_ENABLE
+	/* USART1发送通道 */
+	if(_tUART->tUARTHandle.Instance == USART1)		ulDMAFlag = DMA_FLAG_TCIF3_7;
+
+	/* USART2发送通道 */
+	else if(_tUART->tUARTHandle.Instance == USART2)	ulDMAFlag = DMA_FLAG_TCIF3_7;
+
+	/* USART3发送通道 */
+	else if(_tUART->tUARTHandle.Instance == USART3) ulDMAFlag = DMA_FLAG_TCIF0_4;
+
+	/* UART4发送通道 */
+	else if(_tUART->tUARTHandle.Instance == UART4)	ulDMAFlag = DMA_FLAG_TCIF2_6;
+
+	/* UART5发送通道 */
+	else if(_tUART->tUARTHandle.Instance == UART5)	ulDMAFlag = DMA_FLAG_TCIF3_7;
+
+	/* USART6发送通道 */
+	else if(_tUART->tUARTHandle.Instance == USART6) ulDMAFlag = DMA_FLAG_TCIF3_7;
+
+	/* 判断对应数据流是否完成发送 */
+	if(__HAL_DMA_GET_FLAG(&_tUART->tUartDMA.tDMATx,ulDMAFlag))
+	{
+		
+		/* 关闭串口DMA */
+		HAL_UART_DMAStop(&_tUART->tUARTHandle);
+
+		/* 清除发送完成标志位 */
+		__HAL_DMA_CLEAR_FLAG(&_tUART->tUartDMA.tDMATx,ulDMAFlag);
+
+		/* 重载NDTR寄存器，数量为传递数组大小 */
+		_tUART->tUartDMA.tDMATx.Instance->NDTR = _tUART->tTxInfo.usDMATxLength;
+		_tUART->tTxInfo.usDMATxLength = 0;
+        
+		/* 发送完成标志位置1 */
+        _tUART->tTxInfo.ucDMATxCplt = 1;
+
+		/* 开启DMA发送 */
+		__HAL_DMA_ENABLE(&_tUART->tUartDMA.tDMATx);
+	}
+#endif
+
 }
 
 /**

@@ -21,18 +21,13 @@
 ├─Hardware		    : 硬件抽象层
 │  │
 │  ├─STM32F1XX
-│  │	  ├─CMSIS :  	Cortex微控制器软件接口程序（Cortex Microcontroller Software Interface Standard (CMSIS). ）
-│  │  			core版本: V5.6.0_cm4
-│  │ 			device F1版本：V4.3.2
-│  │           ├─ STM32F1XX系列MCU的HAL固件库源代码、驱动程序
-│  │			版本: V1.1.7
+|  |	  ├─STM32F1XX系列MCU的HAL固件库源代码、驱动程序版本: V1.1.7
+|  |
+│  ├─STM32F4XX
+|  |	  ├─STM32F4XX系列MCU的HAL固件库源代码、驱动程序版本: V1.8.1
 │  │			
 │  └─STM32L4XX
-│  │	  ├─CMSIS :  	Cortex微控制器软件接口程序（Cortex Microcontroller Software Interface Standard (CMSIS). ）
-│  │  			core版本: V5.4.0_cm4
-│  │ 			device L4版本：V1.5.1
-│  │           ├─ STM32L4XX系列MCU的HAL固件库源代码、驱动程序
-│  │			版本: V1.10.0 
+|  |	  ├─STM32L4XX系列MCU的HAL固件库源代码、驱动程序版本: V1.10.0 
 │  │
 └─Project			: 存放工程相关文件
 │  

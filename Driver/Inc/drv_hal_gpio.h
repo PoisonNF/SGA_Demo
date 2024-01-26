@@ -18,7 +18,9 @@ typedef struct
 	GPIO_TypeDef        *tGPIOPort;
 	uint8_t				ucPriority;		/* 中断优先级，0-15 */
 	uint8_t 			ucSubPriority;	/* 中断子优先级，0-15 */
+#ifdef STM32F1_SGA_ENABLE
 	uint8_t				ucAFMode;		/* 重映射设置参数 @ref ucAFMode_define*/
+#endif
 }tagGPIO_T;
 
 void Drv_GPIO_Set(tagGPIO_T *_tGPIO);

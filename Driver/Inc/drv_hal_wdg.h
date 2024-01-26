@@ -7,7 +7,7 @@
 typedef struct
 {
     IWDG_HandleTypeDef  tIWDGHandle;
-	uint16_t			usResetTime;	/* 复位时间(ms)，最大值26,208ms */
+	uint16_t			usResetTime;	/* 复位时间(ms)，F1最大值26,208ms F4最大值32,760ms*/
 }tagIWDG_T;
 
 void Drv_IWDG_Init(tagIWDG_T *_tIWDG);

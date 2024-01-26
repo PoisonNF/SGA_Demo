@@ -90,6 +90,32 @@ typedef struct
 			RX	DMA2_Channel3_IRQHandler
 */
 
+/* F4系列串口重映射表
+	|        | TXD1 | RXD1 | TXD2     | RXD2     |
+	| ------ | ---- | ---- | -------- | -------- |
+	| USART1 | PA9  | PA10 | PB6      | PB7      |
+	| USART2 | PA2  | PA3  | PD5      | PD6      |
+	| USART3 | PB10 | PB11 | PC10/PD8 | PC11/PD9 |
+	| UART4  | PA0  | PA1  | PC10     | PC11     |
+	| UART5  | PC12 | PD2  |          |          |
+	| USART6 | PC6  | PC7  | PG14     | PG9      |
+*/
+
+/* F4系列串口DMA通道对应 
+	USART1	TX	DMA2_Stream7_IRQHandler
+			RX	DMA2_Stream2_IRQHandler | DMA2_Stream5_IRQHandler
+	USART2	TX	DMA1_Stream6_IRQHandler
+			RX	DMA1_Stream5_IRQHandler
+	USART3	TX	DMA1_Stream3_IRQHandler
+			RX	DMA1_Stream1_IRQHandler
+	UART4	TX	DMA1_Stream4_IRQHandler
+			RX	DMA1_Stream2_IRQHandler
+	UART5	TX	DMA1_Stream7_IRQHandler
+			RX	DMA1_Stream0_IRQHandler
+	USART6	TX	DMA2_Stream6_IRQHandler | DMA2_Stream7_IRQHandler
+			RX	DMA2_Stream1_IRQHandler	| DMA2_Stream2_IRQHandler
+*/
+
 void Drv_Uart_ITInit(tagUART_T *_tUART);
 void Drv_Uart_DMAInit(tagUART_T *_tUART);
 void Drv_Uart_Transmit(tagUART_T *_tUART, uint8_t *_ucpTxData, uint16_t _usSize);
