@@ -359,6 +359,12 @@ tagCAN_T CAN =
 	.tCANTxHeader.IDE 									= CAN_ID_STD,    				/* 使用标准帧 */
 	.tCANTxHeader.RTR 									= CAN_RTR_DATA,					/* 数据帧 */
 
+	/* CAN 中断优先级配置 */
+	.ucTxPriority										= 3,							/* 发送主优先级 */
+	.ucTxSubPriority									= 1,							/* 发送子优先级 */
+	.ucRxPriority										= 2,							/* 接收主优先级 */
+	.ucRxSubPriority									= 1,							/* 接收子优先级 */
+
 	/* CAN GPIO配置 */
 	.tGPIO[0].tGPIOInit.Pin 							= GPIO_PIN_12,					/* GPIO引脚 */
 	.tGPIO[0].tGPIOInit.Mode 							= GPIO_MODE_AF_PP,				/* GPIO模式 */
