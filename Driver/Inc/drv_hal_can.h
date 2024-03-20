@@ -51,6 +51,7 @@ void Drv_CAN_TxIDConfig(tagCAN_T *_tCAN,uint32_t _ulID);
 uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg,uint8_t _ucLen);
 uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg);
 void Drv_CAN_Init(tagCAN_T *_tCAN);
+void Drv_CAN_ITInit(tagCAN_T *_tCAN);
 void Drv_CAN_IRQHandler(tagCAN_T *_tCAN);
 
 #endif

@@ -9,9 +9,11 @@
 * 文件历史：
 
 * 版本号	日期		作者		说明
-*    	2023-02-28	  鲍程璐	增加CAN中断相关函数
+*    	2024-03-20	  鲍程璐	增加CAN中断模式初始化函数
 
-*  3.0 	2023-01-26	  鲍程璐	适配STM32F4系列
+*    	2024-02-28	  鲍程璐	增加CAN中断相关函数
+
+*  3.0 	2024-01-26	  鲍程璐	适配STM32F4系列
 
         2024-01-02	  鲍程璐	修改形参符合规范
 
@@ -268,6 +270,18 @@ uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg)
  * @retval Null
 */
 void Drv_CAN_Init(tagCAN_T *_tCAN)
+{
+	S_CAN_CLKEnable(_tCAN);
+	S_CAN_GPIOConfig(_tCAN);
+	S_CAN_ParamConfig(_tCAN);
+}
+
+/**
+ * @brief CAN中断模式初始化
+ * @param _tCAN-CAN结构体指针
+ * @retval Null
+*/
+void Drv_CAN_ITInit(tagCAN_T *_tCAN)
 {
 	S_CAN_CLKEnable(_tCAN);
 	S_CAN_GPIOConfig(_tCAN);

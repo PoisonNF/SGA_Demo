@@ -53,7 +53,6 @@ static void S_GPIO_CLKEnable(tagGPIO_T *_tGPIO)
 	{
 		__HAL_RCC_GPIOE_CLK_ENABLE();
 	}
-#ifdef STM32F4_SGA_ENABLE
 	else if(_tGPIO->tGPIOPort == GPIOF)
 	{
 		__HAL_RCC_GPIOF_CLK_ENABLE();
@@ -62,6 +61,7 @@ static void S_GPIO_CLKEnable(tagGPIO_T *_tGPIO)
 	{
 		__HAL_RCC_GPIOG_CLK_ENABLE();
 	}
+#ifdef STM32F4_SGA_ENABLE
 	else if(_tGPIO->tGPIOPort == GPIOH)
 	{
 		__HAL_RCC_GPIOH_CLK_ENABLE();
