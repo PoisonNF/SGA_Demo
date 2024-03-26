@@ -110,6 +110,7 @@ void TIM5_IRQHandler(void)
 
 /**
  * @brief 定时器6中断服务函数
+ * @note F4系列使用函数名TIM6_DAC_IRQHandler
  * @retval Null
 */
 void TIM6_IRQHandler(void)

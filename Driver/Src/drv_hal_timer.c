@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期		作者		说明
+*  3.1	 	2024-03-26	  鲍程璐	修复定时器中断使能直接进入中断的问题
+
 *  3.0	 	2023-01-26	  鲍程璐	适配STM32F4系列
 
 *  2.9	 	2023-11-16	  鲍程璐	定时器兼容老版初始化方式
@@ -251,7 +253,7 @@ static void S_TIM_ParamMatch(tagTIM_T *_tTimer)
 			_tTimer->tTimerHandle.Init.Period = (uint32_t)(_tTimer->fTimingLength*168000/(_tTimer->tTimerHandle.Init.Prescaler+1));
 		}	
 	}
-	/* TIM2-TIM7、TIM12-TIM14的时钟为APB1的时钟的两倍即84M */
+	/* TIM3-TIM7、TIM12-TIM14的时钟为APB1的时钟的两倍即84M */
 	else if(_tTimer->tTimerHandle.Instance == TIM3 
 		|| _tTimer->tTimerHandle.Instance == TIM4 
 		|| _tTimer->tTimerHandle.Instance == TIM6 
@@ -361,7 +363,8 @@ void Drv_Timer_Reset(tagTIM_T *_tTimer)
 */
 void Drv_Timer_Enable(tagTIM_T *_tTimer)
 {
-	HAL_TIM_Base_Start_IT(&(_tTimer->tTimerHandle));
+    __HAL_TIM_CLEAR_FLAG(&_tTimer->tTimerHandle, TIM_IT_UPDATE); 	/* 使能前清除SR状态寄存器，防止直接进入中断 */
+	HAL_TIM_Base_Start_IT(&_tTimer->tTimerHandle);
 }
 
 /**
