@@ -9,7 +9,9 @@
 * 文件历史：
 
 * 版本号	  日期		  作者				说明
-*  3.0	 	2023-01-26	 鲍程璐		适配STM32F4系列
+*   	 	2024-03-28	 鲍程璐		修复串口DMA接收函数操作越界的问题
+
+*  3.0	 	2024-01-26	 鲍程璐		适配STM32F4系列
 
 *  2.9 		2023-11-26   鲍程璐		增加串口DMA通道中断处理子函数
 
@@ -808,7 +810,7 @@ uint16_t Drv_Uart_Receive_DMA(tagUART_T *_tUART, uint8_t *_ucpRxData)
 		usRxNum = _tUART->tRxInfo.usDMARxLength;
 
 		/* 清空接收数据地址指针 */
-        memset(_ucpRxData,0,usRxNum+1);
+        memset(_ucpRxData,0,usRxNum);
 
 		/* 数据拷贝 */
 		memcpy(_ucpRxData,_tUART->tRxInfo.ucpDMARxCache,usRxNum);

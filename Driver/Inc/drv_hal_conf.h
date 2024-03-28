@@ -1,7 +1,7 @@
 #ifndef __DRV_CONF_H_
 #define __DRV_CONF_H_
 
-#define DRIVER_VERSION	"2024/01/26 V3.0"
+#define DRIVER_VERSION	"2024/03/28 V3.1"
 
 /* RT-Thread开关 使用RTT时需解除注释，且在工程中导入RTT相关内核 */ 
 //#define RTT_ENABLE   
