@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期		作者		说明
+*   	 	2024-04-18	 鲍程璐		Drv_SPI_Transmit函数增加返回值
+
 *  3.0	 	2024-01-26	 鲍程璐		适配STM32F4系列
 
 * 1.1.7 	2022-10-11   鲍程璐		优化执行顺序
@@ -141,11 +143,15 @@ uint8_t Drv_SPI_TransmitReceive(tagSPI_T *_tSPI, uint8_t _ucTxData)
  * @brief 硬件SPI发送
  * @param _tSPI-spi结构体指针
  * @param _ucTxData-需要发送的一个字节数据
- * @retval NULL
+* @retval uint8_t 发送状态
 */
-void Drv_SPI_Transmit(tagSPI_T *_tSPI, uint8_t _ucTxData)
+uint8_t Drv_SPI_Transmit(tagSPI_T *_tSPI, uint8_t _ucTxData)
 {
-	HAL_SPI_Transmit(&_tSPI->tSPIHandle,&_ucTxData,BYTE_SIZE,SPI_TIME_OUT);
+    uint8_t ucRet;
+    
+	ucRet = HAL_SPI_Transmit(&_tSPI->tSPIHandle,&_ucTxData,BYTE_SIZE,SPI_TIME_OUT);
+    
+    return ucRet;
 }
 
 /**

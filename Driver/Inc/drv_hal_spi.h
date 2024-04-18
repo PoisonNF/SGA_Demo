@@ -23,7 +23,7 @@ typedef struct
 
 void Drv_SPI_SpeedConfig(tagSPI_T *_tSPI, uint8_t _ucSpeed);
 uint8_t Drv_SPI_TransmitReceive(tagSPI_T *_tSPI, uint8_t _ucTxData);
-void Drv_SPI_Transmit(tagSPI_T *_tSPI, uint8_t _ucTxData);
+uint8_t Drv_SPI_Transmit(tagSPI_T *_tSPI, uint8_t _ucTxData);
 void Drv_SPI_Init(tagSPI_T *_tSPI);
 
 #endif
