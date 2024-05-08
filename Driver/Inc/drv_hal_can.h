@@ -8,8 +8,10 @@ typedef struct
     CAN_HandleTypeDef   tCANHandle;             /* CAN句柄 */
     CAN_TxHeaderTypeDef tCANTxHeader;           /* CAN发送句柄 */
     CAN_RxHeaderTypeDef tCANRxHeader;           /* CAN接收句柄 */
-    CAN_FilterTypeDef   tCANFilter;             /* CAN过滤器配置句柄 */
     tagGPIO_T           tGPIO[2];               /* GPIO配置 */
+
+    uint8_t             ucCANFilterNum;         /* 配置的过滤器个数，范围[1-14] */
+    CAN_FilterTypeDef   tCANFilter[14];         /* CAN过滤器配置句柄，单CAN最多配置14个过滤器 */
 
     uint8_t				ucTxPriority;		    /* 发送中断优先级，0-15 */
 	uint8_t 			ucTxSubPriority;	    /* 发送中断子优先级，0-15 */
@@ -49,7 +51,7 @@ typedef struct
 void Drv_CAN_ModeConfig(tagCAN_T *_tCAN,uint32_t _ulMode);
 void Drv_CAN_TxIDConfig(tagCAN_T *_tCAN,uint32_t _ulID);
 uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg,uint8_t _ucLen);
-uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg);
+uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg,uint32_t _ulRxFifo);
 void Drv_CAN_Init(tagCAN_T *_tCAN);
 void Drv_CAN_ITInit(tagCAN_T *_tCAN);
 void Drv_CAN_IRQHandler(tagCAN_T *_tCAN);

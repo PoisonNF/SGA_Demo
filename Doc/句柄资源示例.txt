@@ -319,20 +319,21 @@ tagDAC_T demoDAC[] =
 tagCAN_T CAN =
 {
 	/* CAN配置 */
-    /* 500kbps举例 */
 	.tCANHandle.Instance 								= CAN1,
-    .tCANHandle.Init.Mode 								= CAN_MODE_LOOPBACK,			/* 模式设置 */
-#ifdef STM32F1_SGA_ENABLE
-	.tCANHandle.Init.Prescaler 							= 4,							/* 分频系数 */
+	.tCANHandle.Init.Mode 								= CAN_MODE_LOOPBACK,			/* 模式设置 */
+
+#ifdef STM32F1_SGA_ENABLE	//F1系列500Kbps举例
+	.tCANHandle.Init.Prescaler 							= 6,							/* 分频系数 */
 	.tCANHandle.Init.SyncJumpWidth 						= CAN_SJW_1TQ,					/* 重新同步跳跃宽度 */
-	.tCANHandle.Init.TimeSeg1 							= CAN_BS1_9TQ,					/* Tbs1 */
-	.tCANHandle.Init.TimeSeg2 							= CAN_BS2_8TQ,					/* Tbs2 */
+	.tCANHandle.Init.TimeSeg1 							= CAN_BS1_10TQ,					/* Tbs1 */
+	.tCANHandle.Init.TimeSeg2 							= CAN_BS2_1TQ,					/* Tbs2 */
 #endif
-#ifdef STM32F4_SGA_ENABLE
-	.tCANHandle.Init.Prescaler 							= 4,							/* 分频系数 */
+	
+#ifdef STM32F4_SGA_ENABLE	//F4系列500Kbps举例
+	.tCANHandle.Init.Prescaler 							= 7,							/* 分频系数 */
 	.tCANHandle.Init.SyncJumpWidth 						= CAN_SJW_1TQ,					/* 重新同步跳跃宽度 */
-	.tCANHandle.Init.TimeSeg1 							= CAN_BS1_12TQ,					/* Tbs1 */
-	.tCANHandle.Init.TimeSeg2 							= CAN_BS2_8TQ,					/* Tbs2 */
+	.tCANHandle.Init.TimeSeg1 							= CAN_BS1_10TQ,					/* Tbs1 */
+	.tCANHandle.Init.TimeSeg2 							= CAN_BS2_1TQ,					/* Tbs2 */
 #endif
 	.tCANHandle.Init.TimeTriggeredMode 					= DISABLE,						/* 非时间触发通信模式 */
 	.tCANHandle.Init.AutoBusOff 						= DISABLE,						/* 软件自动离线管理 */
@@ -342,29 +343,43 @@ tagCAN_T CAN =
 	.tCANHandle.Init.TransmitFifoPriority 				= DISABLE,						/* 优先级由报文标识符决定 */
 
 	/* CAN过滤器配置 */
-	.tCANFilter.FilterBank 								= 0,							/* 过滤器0 */
-	.tCANFilter.FilterMode 								= CAN_FILTERMODE_IDMASK,		/* 过滤器模式 */
-	.tCANFilter.FilterScale 							= CAN_FILTERSCALE_32BIT,		/* 过滤器位数 */
-	.tCANFilter.FilterIdHigh 							= 0x0000,
-	.tCANFilter.FilterIdLow 							= 0x0000,
-	.tCANFilter.FilterMaskIdHigh 						= 0x0000,
-	.tCANFilter.FilterMaskIdLow 						= 0x0000,
-	.tCANFilter.FilterFIFOAssignment 					= CAN_RX_FIFO0,					/* 过滤器关联到FIFO0 */
-	.tCANFilter.FilterActivation 						= ENABLE,						/* 激活过滤器0 */
-	.tCANFilter.SlaveStartFilterBank 					= 14,							/* 从CAN过滤器起始 */
+	.ucCANFilterNum										= 2,							/* 需要配置过滤器个数 */
+
+	.tCANFilter[0].FilterBank 							= 0,							/* 过滤器0 */
+	.tCANFilter[0].FilterMode 							= CAN_FILTERMODE_IDLIST,		/* 过滤器模式 */
+	.tCANFilter[0].FilterScale 							= CAN_FILTERSCALE_32BIT,		/* 过滤器位数 */
+	.tCANFilter[0].FilterIdHigh 						= 0x55 << 5,		//0x55通过
+	.tCANFilter[0].FilterIdLow 							= 0x00,
+	.tCANFilter[0].FilterMaskIdHigh 					= 0xffff,			//掩码全通过
+	.tCANFilter[0].FilterMaskIdLow 						= 0|0x02,			//只收数据帧
+	.tCANFilter[0].FilterFIFOAssignment 				= CAN_RX_FIFO0,					/* 过滤器关联到FIFO0 */
+	.tCANFilter[0].FilterActivation 					= ENABLE,						/* 激活过滤器0 */
+	.tCANFilter[0].SlaveStartFilterBank 				= 14,							/* 从CAN过滤器起始 */
+
+	.tCANFilter[1].FilterBank 							= 1,							/* 过滤器1 */
+	.tCANFilter[1].FilterMode 							= CAN_FILTERMODE_IDMASK,		/* 过滤器模式 */
+	.tCANFilter[1].FilterScale 							= CAN_FILTERSCALE_32BIT,		/* 过滤器位数 */
+	.tCANFilter[1].FilterIdHigh 						= 0x55 << 5,		//0x55通过
+	.tCANFilter[1].FilterIdLow 							= 0x0000,
+	.tCANFilter[1].FilterMaskIdHigh 					= 0xffff,			//掩码全通过
+	.tCANFilter[1].FilterMaskIdLow 						= 0|0x02,			//只收数据帧
+	.tCANFilter[1].FilterFIFOAssignment 				= CAN_RX_FIFO1,					/* 过滤器关联到FIFO1 */
+	.tCANFilter[1].FilterActivation 					= ENABLE,						/* 激活过滤器0 */
+	.tCANFilter[1].SlaveStartFilterBank 				= 14,							/* 从CAN过滤器起始 */
 
 	/* CAN TX配置 */
-	.tCANTxHeader.StdId 								= 0x12,							/* 标准标识符 */
-	.tCANTxHeader.ExtId 								= 0x12,							/* 拓展标识符（29位） */
+	.tCANTxHeader.StdId 								= 0x55,							/* 标准标识符 */
+	.tCANTxHeader.ExtId 								= 0x00,							/* 拓展标识符（29位） */
 	.tCANTxHeader.IDE 									= CAN_ID_STD,    				/* 使用标准帧 */
 	.tCANTxHeader.RTR 									= CAN_RTR_DATA,					/* 数据帧 */
+  
+	/* CAN 发送优先级 */
+	.ucTxPriority										= 9,							/* 发送主优先级 */
+	.ucTxSubPriority									= 1,							/* 发送次优先级 */
 
-	/* CAN 中断优先级配置 */
-	.ucTxPriority										= 3,							/* 发送主优先级 */
-	.ucTxSubPriority									= 1,							/* 发送子优先级 */
+	/* CAN 接收优先级 */
 	.ucRxPriority										= 2,							/* 接收主优先级 */
-	.ucRxSubPriority									= 1,							/* 接收子优先级 */
-
+	.ucRxSubPriority									= 1,							/* 接收次优先级 */
 	/* CAN GPIO配置 */
 	.tGPIO[0].tGPIOInit.Pin 							= GPIO_PIN_12,					/* GPIO引脚 */
 	.tGPIO[0].tGPIOInit.Mode 							= GPIO_MODE_AF_PP,				/* GPIO模式 */
@@ -377,7 +392,7 @@ tagCAN_T CAN =
 	.tGPIO[1].tGPIOInit.Mode 							= GPIO_MODE_AF_INPUT,			/* GPIO模式 */
 #endif
 #ifdef STM32F4_SGA_ENABLE
-	.tGPIO[1].tGPIOInit.Mode 							= GPIO_MODE_AF_PP,			    /* GPIO模式 */
+	.tGPIO[1].tGPIOInit.Mode 							= GPIO_MODE_AF_PP,				/* GPIO模式 */
 #endif
 	.tGPIO[1].tGPIOInit.Pull 							= GPIO_PULLUP,					/* GPIO上下拉设置，是否需要上下拉看硬件 */
 	.tGPIO[1].tGPIOInit.Speed 							= GPIO_SPEED_FREQ_HIGH,			/* GPIO速度 */	

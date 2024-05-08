@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	日期		作者		说明
+*  3.2  2024-05-08	  鲍程璐	优化发送和接收逻辑，可以设置多个过滤器并使用多个FIFO
+
 *  3.1  2024-03-20	  鲍程璐	增加CAN中断模式初始化函数
 
 *    	2024-02-28	  鲍程璐	增加CAN中断相关函数
@@ -144,8 +146,27 @@ static void S_CAN_ParamConfig(tagCAN_T *_tCAN)
         Drv_HAL_Error(__FILE__, __LINE__);
 
     /* CAN过滤器配置 */
-    if(HAL_CAN_ConfigFilter(&_tCAN->tCANHandle,&_tCAN->tCANFilter) != HAL_OK)
-        Drv_HAL_Error(__FILE__, __LINE__);
+    for(uint8_t index = 0; index < _tCAN->ucCANFilterNum; index++)
+    {
+        /* 配置过滤器 */
+        HAL_CAN_ConfigFilter(&_tCAN->tCANHandle,&_tCAN->tCANFilter[index]);
+
+        /* 根据选定的FIFO号开始对应的中断通知 */
+        if(_tCAN->tCANFilter[index].FilterFIFOAssignment == CAN_RX_FIFO0)
+        {
+            if(HAL_CAN_ActivateNotification(&_tCAN->tCANHandle, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+                Drv_HAL_Error(__FILE__,__LINE__);
+            if(HAL_CAN_ActivateNotification(&_tCAN->tCANHandle, CAN_IT_RX_FIFO0_FULL) != HAL_OK)
+                Drv_HAL_Error(__FILE__,__LINE__);
+        }
+        else
+        {
+            if(HAL_CAN_ActivateNotification(&_tCAN->tCANHandle, CAN_IT_RX_FIFO1_MSG_PENDING) != HAL_OK)
+                Drv_HAL_Error(__FILE__,__LINE__);
+            if(HAL_CAN_ActivateNotification(&_tCAN->tCANHandle, CAN_IT_RX_FIFO1_FULL) != HAL_OK)
+                Drv_HAL_Error(__FILE__,__LINE__);
+        }
+    }
     
     /* 启动CAN外围设备 */
     if(HAL_CAN_Start(&_tCAN->tCANHandle) != HAL_OK)
@@ -154,20 +175,6 @@ static void S_CAN_ParamConfig(tagCAN_T *_tCAN)
     /* 激活CAN发送中断通知 */
     if(HAL_CAN_ActivateNotification(&_tCAN->tCANHandle,CAN_IT_TX_MAILBOX_EMPTY) != HAL_OK)
         Drv_HAL_Error(__FILE__,__LINE__);
-
-    /* 根据FIFO选择 */
-    if(_tCAN->tCANFilter.FilterFIFOAssignment == CAN_RX_FIFO0)
-    {
-        /* 激活FIFO0接收新消息通知 */
-        if(HAL_CAN_ActivateNotification(&_tCAN->tCANHandle, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
-            Drv_HAL_Error(__FILE__,__LINE__);
-    }
-    else
-    {
-        /* 激活FIFO1接收新消息通知 */
-        if(HAL_CAN_ActivateNotification(&_tCAN->tCANHandle, CAN_IT_RX_FIFO1_MSG_PENDING) != HAL_OK)
-            Drv_HAL_Error(__FILE__,__LINE__);
-    }
 
     /* 激活CAN错误中断通知 */
     if(HAL_CAN_ActivateNotification(&_tCAN->tCANHandle, CAN_IT_ERROR) != HAL_OK)
@@ -215,24 +222,32 @@ void Drv_CAN_TxIDConfig(tagCAN_T *_tCAN,uint32_t _ulID)
  * @param _ucLen-发送数据长度，最大为8
  * @retval uint8_t 0成功 1失败
 */
-uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *ucpMsg,uint8_t ucLen)
+uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg,uint8_t _ucLen)
 {
-    uint8_t index = 0;
-    uint8_t ucTemp[8];
-    uint32_t ulTXMailBox;
+    uint32_t ulTXMailBox = CAN_TX_MAILBOX0;
 
-    _tCAN->tCANTxHeader.DLC = ucLen;    /* 发送长度设置 */
-    
-    ulTXMailBox = CAN_TX_MAILBOX0;      /* 发送邮箱设置 */
-
-    /* 数据拷贝 */
-    for(index = 0;index < ucLen;index ++)
+    _tCAN->tCANTxHeader.DLC = _ucLen;    /* 发送长度设置 */
+	
+	/* Check Tx Mailbox 0 status */
+    if((_tCAN->tCANHandle.Instance->TSR & CAN_TSR_TME0) != 0U)
     {
-        ucTemp[index] = ucpMsg[index];
+        ulTXMailBox = CAN_TX_MAILBOX0;
     }
 
-    /* 将数据存储到发送邮箱中 */
-    if(HAL_CAN_AddTxMessage(&_tCAN->tCANHandle,&_tCAN->tCANTxHeader,ucTemp,&ulTXMailBox))
+    /* Check Tx Mailbox 1 status */
+    else if((_tCAN->tCANHandle.Instance->TSR & CAN_TSR_TME1) != 0U)
+    {
+        ulTXMailBox = CAN_TX_MAILBOX1;
+    }
+
+    /* Check Tx Mailbox 2 status */
+    else if((_tCAN->tCANHandle.Instance->TSR & CAN_TSR_TME2) != 0U)
+    {
+        ulTXMailBox = CAN_TX_MAILBOX2;
+    }
+
+	/* 将数据存储到发送邮箱中 */
+    if(HAL_CAN_AddTxMessage(&_tCAN->tCANHandle,&_tCAN->tCANTxHeader,_ucpMsg,&ulTXMailBox))
     {
         return 1;
     }
@@ -244,21 +259,14 @@ uint8_t Drv_CAN_SendMsg(tagCAN_T *_tCAN,uint8_t *ucpMsg,uint8_t ucLen)
  * @brief CAN接收数据
  * @param _tCAN-CAN结构体指针
  * @param _ucpMsg-接收数据指针
+ * @param _ulRxFifo-接收数据的FIFO号，可选CAN_FILTER_FIFO0、CAN_FILTER_FIFO1
  * @retval uint8_t 接收数据长度
 */
-uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg)
+uint8_t Drv_CAN_ReceMsg(tagCAN_T *_tCAN,uint8_t *_ucpMsg,uint32_t _ulRxFifo)
 {
-    uint8_t index = 0;
-    uint8_t ucTemp[8];
-
-    if(HAL_CAN_GetRxMessage(&_tCAN->tCANHandle,_tCAN->tCANFilter.FilterFIFOAssignment,&_tCAN->tCANRxHeader,ucTemp) != HAL_OK)
+    if(HAL_CAN_GetRxMessage(&_tCAN->tCANHandle,_ulRxFifo,&_tCAN->tCANRxHeader,_ucpMsg) != HAL_OK)
     {
         return 0;
-    }
-
-    for(index = 0;index < _tCAN->tCANRxHeader.DLC; index++)
-    {
-        _ucpMsg[index] = ucTemp[index];
     }
 
     return _tCAN->tCANRxHeader.DLC;
