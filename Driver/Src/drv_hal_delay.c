@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号	    日期	  作者		     说明
+*   		2024-05-31	鲍程璐		提供FreeRTOS下的微秒级延时函数
+
 *  2.4		2023-05-12	鲍程璐		解决FreeRTOS开始调度器前无法使用延时的问题
 
 * 2.3.1		2023-05-05	鲍程璐		毫秒延时函数回退
@@ -25,6 +27,7 @@
 #include "drv_hal_conf.h"
 
 #ifdef DRV_HAL_DELAY_ENABLE
+
 /**
  * @brief 延时函数(ms)
  * @param _ulVal-延时时间有效值（单位ms）
@@ -60,6 +63,7 @@ void Drv_Delay_Ms(uint32_t _ulVal)
 */
 void Drv_Delay_Us(uint32_t _ulVal)
 {
+#if !defined(FREERTOS_ENABLE)
 	/* 延时小于50us使用普通延时法较为精准 */
 	if(_ulVal < 50)
 	{
@@ -83,5 +87,20 @@ void Drv_Delay_Us(uint32_t _ulVal)
 		SysTick->CTRL = 0x00; 	/* 关闭计数器 */
 		SysTick->VAL  = 0X00; 	/* 清空计数器 */
 	}
+#endif
+
+#ifdef FREERTOS_ENABLE
+    uint32_t ulCnt, ulDelayCnt ,ulStart = 0;
+
+    ulStart = DWT_CYCCNT; /* 刚进入时的计数器值 */
+    ulCnt = 0;
+    ulDelayCnt = _ulVal * (SystemCoreClock / 1000000);     /* 需要的节拍数 */  /* SystemCoreClock :系统时钟频率 */   
+
+    while(ulCnt < ulDelayCnt)
+    {
+        ulCnt = DWT_CYCCNT - ulStart; 
+        /* 求减过程中，如果发生第一次32位计数器重新计数，依然可以正确计算 */       
+    }
+#endif
 }
 #endif
