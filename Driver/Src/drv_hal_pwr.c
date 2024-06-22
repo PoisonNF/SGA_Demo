@@ -9,6 +9,7 @@
 * 文件历史：
 
 * 版本号	日期		作者		说明
+*  3.3   2024-06-22	  鲍程璐	增加PVD电源监测驱动
 
 *  2.5   2023-06-03	  鲍程璐	创建该文件
 
@@ -133,6 +134,52 @@ void Drv_PWR_EnterStandByMode(void)
 
     /* 进入待机模式，唤醒后芯片将会复位 */
     HAL_PWR_EnterSTANDBYMode();
+}
+
+/**
+ * @brief 初始化PVD电源监测功能
+ * @param _ulPVDLevel 监测的电压等级
+ *         该参数可以为下列可选值之一
+ *           @arg PWR_PVDLEVEL_0    1.9V
+ *           @arg PWR_PVDLEVEL_1    2.1V
+ *           @arg PWR_PVDLEVEL_2    2.3V
+ *           @arg PWR_PVDLEVEL_3    2.5V
+ *           @arg PWR_PVDLEVEL_4    2.7V
+ *           @arg PWR_PVDLEVEL_5    2.9V
+ *           @arg PWR_PVDLEVEL_6    3.1V
+ *           @arg PWR_PVDLEVEL_7    外部模拟电压输入(PB7)    
+ * @note 1.需要在task_irq.c中void PVD_IRQHandler(void)中调用void Drv_PVD_IRQHandler(void)
+         2.需要在task_irq.c中的void HAL_PWR_PVDCallback(void)函数中写入电源不足时的内容
+ * @retval Null 
+*/
+void Drv_PWR_PVD_Init(uint32_t _ulPVDLevel)
+{
+    /* 开启PWR时钟 */
+    __HAL_RCC_PWR_CLK_ENABLE();
+ 
+    /* 配置PVD中断 */
+    HAL_NVIC_SetPriority(PVD_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(PVD_IRQn);
+ 
+    /* 配置PVD监测电压等级以及触发类型 */
+    PWR_PVDTypeDef tConfigPVD;
+    tConfigPVD.PVDLevel = _ulPVDLevel;
+    tConfigPVD.Mode = PWR_PVD_MODE_IT_RISING;
+    HAL_PWR_ConfigPVD(&tConfigPVD);
+
+    /* 启动PVD监测 */
+    HAL_PWR_EnablePVD();
+}
+
+/**
+ * @brief PVD中断帽子函数(用于PVD中断处理函数中)
+ * @note 在void PVD_IRQHandler(void)函数中调用
+ * @param Null
+ * @retval Null
+*/
+void Drv_PVD_IRQHandler(void)
+{
+    HAL_PWR_PVD_IRQHandler();
 }
 
 #endif

@@ -7,5 +7,7 @@
 void Drv_PWR_EnterSleepMode(void);
 void Drv_PWR_EnterStopMode(void);
 void Drv_PWR_EnterStandByMode(void);
+void Drv_PWR_PVD_Init(uint32_t _ulPVDLevel);
+void Drv_PVD_IRQHandler(void);
 
 #endif
