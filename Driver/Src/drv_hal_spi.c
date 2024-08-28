@@ -9,6 +9,8 @@
 * 文件历史：
 
 * 版本号		日期		作者		说明
+*  3.4 	 	2024-08-28	 鲍程璐		修复SPI速度设置不正确的问题
+
 *  3.2 	 	2024-04-18	 鲍程璐		Drv_SPI_Transmit函数增加返回值
 
 *  3.0	 	2024-01-26	 鲍程璐		适配STM32F4系列
@@ -122,6 +124,7 @@ void Drv_SPI_SpeedConfig(tagSPI_T *_tSPI, uint8_t _ucSpeed)
 			Drv_HAL_Error(__FILE__, __LINE__);
 		break;
 	}
+    Drv_SPI_Init(_tSPI);
 }
 
 /**
